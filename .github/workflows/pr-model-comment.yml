@@ -1,0 +1,142 @@
+name: PR Model Comment
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - reopened
+      - ready_for_review
+      - synchronize
+
+permissions:
+  pull-requests: write
+  models: read
+
+jobs:
+  comment:
+    if: ${{ github.event.pull_request.draft == false }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Generate PR summary with GitHub Models
+        id: model
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          PR_BASE: ${{ github.event.pull_request.base.ref }}
+          PR_HEAD: ${{ github.event.pull_request.head.ref }}
+          PR_ADDITIONS: ${{ github.event.pull_request.additions }}
+          PR_DELETIONS: ${{ github.event.pull_request.deletions }}
+          PR_CHANGED_FILES: ${{ github.event.pull_request.changed_files }}
+        run: |
+          set -euo pipefail
+
+          response="$(
+            jq -n \
+              --arg model "openai/gpt-5" \
+              --arg title "$PR_TITLE" \
+              --arg body "${PR_BODY:-}" \
+              --arg author "$PR_AUTHOR" \
+              --arg base "$PR_BASE" \
+              --arg head "$PR_HEAD" \
+              --arg additions "$PR_ADDITIONS" \
+              --arg deletions "$PR_DELETIONS" \
+              --arg changed_files "$PR_CHANGED_FILES" \
+              '{
+                model: $model,
+                messages: [
+                  {
+                    role: "system",
+                    content: "You summarize GitHub pull requests for maintainers. Reply in Chinese. Keep it concise. Use markdown. Include: 1) 本次改动概述 2) 主要风险点 3) 建议检查项."
+                  },
+                  {
+                    role: "user",
+                    content: (
+                      "PR author: " + $author + "\n" +
+                      "Base branch: " + $base + "\n" +
+                      "Head branch: " + $head + "\n" +
+                      "Changed files: " + $changed_files + "\n" +
+                      "Additions: " + $additions + "\n" +
+                      "Deletions: " + $deletions + "\n\n" +
+                      "Title:\n" + $title + "\n\nBody:\n" + $body
+                    )
+                  }
+                ]
+              }' | \
+            curl -sS -L \
+              -X POST \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer $GITHUB_TOKEN" \
+              -H "X-GitHub-Api-Version: 2026-03-10" \
+              -H "Content-Type: application/json" \
+              https://models.github.ai/inference/chat/completions \
+              -d @-
+          )"
+
+          comment="$(
+            printf '%s' "$response" | jq -r '
+              .choices[0].message.content
+              | if type == "string" then .
+                elif type == "array" then map(.text // .content // "") | join("\n")
+                else empty
+                end
+            '
+          )"
+
+          if [ -z "${comment:-}" ] || [ "$comment" = "null" ]; then
+            comment="## 改动概述
+
+未能生成 AI 摘要，请手动查看 PR 内容。"
+          fi
+
+          {
+            echo "comment<<EOF"
+            echo "$comment"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Create or update PR comment
+        uses: actions/github-script@v7
+        env:
+          MODEL_COMMENT: ${{ steps.model.outputs.comment }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const marker = '<!-- github-models:pr-summary -->';
+            const body = [
+              marker,
+              '## AI PR Summary',
+              '',
+              process.env.MODEL_COMMENT,
+            ].join('\n');
+
+            const { owner, repo } = context.repo;
+            const issue_number = context.payload.pull_request.number;
+            const { data: comments } = await github.rest.issues.listComments({
+              owner,
+              repo,
+              issue_number,
+              per_page: 100,
+            });
+
+            const existing = comments.find((comment) =>
+              comment.user?.type === 'Bot' && comment.body?.includes(marker)
+            );
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner,
+                repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number,
+                body,
+              });
+            }

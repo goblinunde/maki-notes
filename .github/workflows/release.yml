@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  models: read
 
 concurrency:
   group: release-${{ github.ref }}
@@ -19,6 +20,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Build TeX documents
         uses: xu-cheng/latex-action@v4
@@ -53,12 +56,91 @@ jobs:
           cp example.pdf "dist/maki-notes-${tag}-example.pdf"
           cp tikz-template-pages.pdf "dist/maki-notes-${tag}-tikz-templates.pdf"
 
+      - name: Generate AI release notes
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+
+          tag="${GITHUB_REF_NAME}"
+          previous_tag="$(git tag --sort=-v:refname | grep -Fxv "$tag" | head -n 1 || true)"
+
+          if [ -n "$previous_tag" ]; then
+            git log --pretty=format:'- %s (%h)' "${previous_tag}..HEAD" > dist/commit-log.md
+          else
+            git log --pretty=format:'- %s (%h)' HEAD > dist/commit-log.md
+          fi
+
+          if [ ! -s dist/commit-log.md ]; then
+            echo "- Initial release" > dist/commit-log.md
+          fi
+
+          if response="$(
+            jq -n \
+              --arg model "openai/gpt-5" \
+              --arg repository "$REPOSITORY" \
+              --arg tag "$tag" \
+              --arg previous_tag "$previous_tag" \
+              --rawfile commits dist/commit-log.md \
+              '{
+                model: $model,
+                messages: [
+                  {
+                    role: "system",
+                    content: "You write GitHub release notes for a LaTeX template repository. Reply in Chinese. Use markdown. Keep it concise but useful. Include: 本次版本概览, 主要变化, 使用建议."
+                  },
+                  {
+                    role: "user",
+                    content: (
+                      "Repository: " + $repository + "\n" +
+                      "Current tag: " + $tag + "\n" +
+                      "Previous tag: " + (if $previous_tag == "" then "none" else $previous_tag end) + "\n\n" +
+                      "Commit summary:\n" + $commits
+                    )
+                  }
+                ]
+              }' | \
+            curl -sS -L \
+              -X POST \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer $GITHUB_TOKEN" \
+              -H "X-GitHub-Api-Version: 2026-03-10" \
+              -H "Content-Type: application/json" \
+              https://models.github.ai/inference/chat/completions \
+              -d @-
+          )"; then
+            notes="$(
+              printf '%s' "$response" | jq -r '
+                .choices[0].message.content
+                | if type == "string" then .
+                  elif type == "array" then map(.text // .content // "") | join("\n")
+                  else empty
+                  end
+              '
+            )"
+          else
+            notes=""
+          fi
+
+          if [ -z "${notes:-}" ] || [ "$notes" = "null" ]; then
+            {
+              echo "## ${tag}"
+              echo
+              echo "### 提交摘要"
+              cat dist/commit-log.md
+            } > dist/release-notes.md
+          else
+            printf '%s\n' "$notes" > dist/release-notes.md
+          fi
+
       - name: Publish GitHub release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
           name: ${{ github.ref_name }}
-          generate_release_notes: true
+          body_path: dist/release-notes.md
           fail_on_unmatched_files: true
           overwrite_files: true
           files: |

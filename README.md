@@ -105,6 +105,7 @@ workflow 会执行以下动作：
 - 检出代码
 - 用 XeLaTeX 编译示例文档和测试文档
 - 打包一份源码发行包
+- 调用 GitHub Models 生成 release notes
 - 创建或更新与当前 tag 对应的 GitHub Release
 - 上传编译后的 PDF 和源码包作为 release assets
 
@@ -114,6 +115,24 @@ workflow 会执行以下动作：
 - `maki-notes-<tag>-manual.pdf`
 - `maki-notes-<tag>-example.pdf`
 - `maki-notes-<tag>-tikz-templates.pdf`
+
+## GitHub Models 自动化
+
+仓库还提供了 3 个基于 GitHub Models 的自动化 workflow：
+
+- [`.github/workflows/issue-model-comment.yml`](./.github/workflows/issue-model-comment.yml)：在 issue `opened` 或 `edited` 时生成摘要并更新 issue 评论
+- [`.github/workflows/pr-model-comment.yml`](./.github/workflows/pr-model-comment.yml)：在 PR `opened`、`reopened`、`ready_for_review` 或 `synchronize` 时生成摘要并更新 PR 评论
+- [`.github/workflows/release.yml`](./.github/workflows/release.yml)：在 tag push 时生成 AI release notes
+
+这些 workflow 默认使用 GitHub 自动注入的 `${{ secrets.GITHUB_TOKEN }}`，不需要你手动保存或暴露 token。
+
+对应权限如下：
+
+- issue 评论：`models: read` + `issues: write`
+- PR 评论：`models: read` + `pull-requests: write`
+- release note 与发布：`models: read` + `contents: write`
+
+当前 workflow 默认模型标识写的是 `openai/gpt-5`。如果你在 GitHub Models 页面看到的实际 slug 不同，需要同步改掉 workflow 里的 `model` 字段。
 
 ## 开发建议
 
