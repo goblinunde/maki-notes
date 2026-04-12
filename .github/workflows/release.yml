@@ -1,0 +1,66 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "*"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build TeX documents
+        uses: xu-cheng/latex-action@v4
+        with:
+          root_file: |
+            document2.tex
+            example.tex
+            tikz-template-pages.tex
+            smoke-packaging.tex
+            tests/test-basic.tex
+            tests/test-environments.tex
+            tests/test-graphics.tex
+            tests/test-tikz-styles.tex
+          latexmk_use_xelatex: true
+          args: -interaction=nonstopmode -file-line-error -halt-on-error
+
+      - name: Prepare release assets
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          tag="${GITHUB_REF_NAME}"
+          mkdir -p dist/package/maki-notes
+
+          cp README.md Makefile latexmkrc maki-notes.cls maki-notes.sty dist/package/maki-notes/
+          cp document2.tex example.tex tikz-template-pages.tex smoke-packaging.tex dist/package/maki-notes/
+          cp -R tests dist/package/maki-notes/tests
+
+          tar -czf "dist/maki-notes-${tag}-source.tar.gz" -C dist/package maki-notes
+
+          cp document2.pdf "dist/maki-notes-${tag}-manual.pdf"
+          cp example.pdf "dist/maki-notes-${tag}-example.pdf"
+          cp tikz-template-pages.pdf "dist/maki-notes-${tag}-tikz-templates.pdf"
+
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+          overwrite_files: true
+          files: |
+            dist/*.tar.gz
+            dist/*.pdf
