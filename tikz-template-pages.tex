@@ -7,7 +7,7 @@
 	Maki Notes 图形模板集
 	\\[0.8em]
 	\Large
-	Transformer, CNN, ResNet, 拓扑交换图, 流形示意图
+	Transformer, CNN, ResNet, 流程图, 时间轴, 概率图, 图论网络图
 	\\
 }
 \renewcommand{\CoverFooterBlock}{%
@@ -32,6 +32,8 @@
 \item \texttt{skip-connection} 提供了残差支路的结构思路
 \item \texttt{manifold} 提供了流形与潜空间映射的版面思路
 \item \texttt{plane-to-torus} 与 \texttt{torus} 提供了拓扑识别与曲面表达的思路
+\item \texttt{flowchart} 与 \texttt{timeline} 提供了信息流程和时间组织的版面思路
+\item \texttt{venn-diagrams} 与 \texttt{graph-isomorphism} 提供了概率/集合图与节点边图的组织思路
 \end{itemize}
 
 \tableofcontents
@@ -45,7 +47,7 @@
 这一页适合放在“模型结构”或“序列建模”一章. 版式重点不是复刻论文中的每一个算子, 而是把 token、注意力、前馈层、残差与归一化的逻辑顺序表达清楚.
 
 \begin{center}
-\begin{tikzpicture}[x=1cm,y=1cm]
+\begin{tikzpicture}[x=0.79cm,y=0.88cm]
 \foreach \i/\txt in {1/$x_1$,2/$x_2$,3/$x_3$,4/$x_4$,5/$x_5$}{
   \node[nn token] (tok\i) at (\i*1.4,0) {\txt};
   \draw[nn attention] (tok\i.north) -- ++(0,0.7);
@@ -270,6 +272,163 @@
 \end{scope}
 \end{tikzpicture}
 \captionof{figure}{基本域到环面的拓扑模板}
+\end{center}
+
+\chapter{通用讲义图形模板页}
+
+\section{流程图模板}
+
+这一页适合放在“算法流程”“证明路线”“实验流水线”或“数据处理步骤”小节里. 重点是把开始节点、处理步骤、判断节点、旁路反馈和补充说明分成独立样式, 这样后续改流程长度时不需要重写所有参数.
+
+\begin{center}
+\begin{tikzpicture}[x=1cm,y=1cm]
+\node[flow terminal] (start) at (0,2.2) {开始};
+\node[flow process] (collect) at (2.8,2.2) {收集输入\\与设定参数};
+\node[flow process] (build) at (5.8,2.2) {构造模型\\或中间对象};
+\node[flow decision] (check) at (8.8,2.2) {满足\\约束?};
+\node[flow process] (polish) at (11.9,2.2) {整理输出\\与可视化};
+\node[flow terminal] (finish) at (14.8,2.2) {结束};
+
+\node[flow io] (revise) at (8.8,-0.4) {调整参数\\补充条件};
+\node[flow io] (archive) at (11.9,-0.4) {保存日志\\导出结果};
+\node[flow note, anchor=west] at (12.0,-0.4) {把流程说明、例外分支和\\导出动作拆开写, 适合直接用于\\课程讲义或实验报告.};
+
+\draw[flow arrow] (start) -- (collect);
+\draw[flow arrow] (collect) -- (build);
+\draw[flow arrow] (build) -- (check);
+\draw[flow arrow emph] (check) -- node[above, maki label] {是} (polish);
+\draw[flow arrow] (polish) -- (finish);
+\draw[flow arrow] (polish) -- (archive);
+\draw[flow arrow feedback] (check) -- node[left, maki label] {否} (revise);
+\draw[flow arrow] (revise.east) -| (build.south);
+
+\node[maki annotation] at (2.8,4.0) {准备阶段};
+\node[maki annotation] at (5.8,4.0) {主流程};
+\node[maki annotation] at (11.9,4.0) {输出阶段};
+\end{tikzpicture}
+\captionof{figure}{讲义/算法说明中的流程图模板}
+\end{center}
+
+\clearpage
+
+\section{时间轴模板}
+
+这一页适合课程安排、项目里程碑、论文结构导读或者历史脉络概览. 如果你想表达的是“阶段 + 节点”而不是普通折线图, 这类时间轴比表格更容易在讲义中快速建立节奏感.
+
+\begin{center}
+\begin{tikzpicture}[x=0.92cm,y=0.92cm]
+\draw[timeline axis] (0.2,0) -- (14.5,0);
+\foreach \x/\label in {1.0/第 1 周,3.2/第 3 周,5.5/第 5 周,8.1/第 8 周,10.9/第 11 周,13.4/第 14 周}{
+  \draw[timeline tick] (\x,-0.18) -- (\x,0.18);
+  \node[maki label, below] at (\x,-0.2) {\label};
+}
+
+\draw[timeline span] (1.2,0.85) -- (5.2,0.85);
+\draw[timeline span, draw=LogicColor!74!black] (5.8,0.85) -- (10.6,0.85);
+\draw[timeline span, draw=DefColor!76!black] (11.2,0.85) -- (13.2,0.85);
+
+\node[timeline milestone] (m1) at (2.2,1.6) {基础概念};
+\node[timeline milestone] (m2) at (4.5,1.6) {例题训练};
+\node[timeline event] (e1) at (5.5,0) {};
+\node[timeline milestone] (m3) at (7.5,1.6) {专题拓展};
+\node[timeline milestone] (m4) at (10.0,1.6) {项目实践};
+\node[timeline event, fill=LogicBg, draw=LogicColor!80!black] (e2) at (10.9,0) {};
+\node[timeline milestone] (m5) at (12.2,1.6) {总结与发布};
+
+\draw[timeline connector] (m1.south) -- (2.2,0.18);
+\draw[timeline connector] (m2.south) -- (4.5,0.18);
+\draw[timeline connector] (m3.south) -- (7.5,0.18);
+\draw[timeline connector] (m4.south) -- (10.0,0.18);
+\draw[timeline connector] (m5.south) -- (12.2,0.18);
+
+\node[maki label, above=2pt of e1] {期中检查};
+\node[maki label, above=2pt of e2] {验收};
+\node[flow note, anchor=west] at (0.5,-1.45) {粗线可表示阶段, 圆点可表示硬节点, 矩形可表示主题段落.\\把文字改成章节、周次、版本号或历史年份都可以直接复用.};
+\end{tikzpicture}
+\captionof{figure}{课程安排或项目里程碑时间轴模板}
+\end{center}
+
+\clearpage
+
+\section{概率与条件事件模板}
+
+这一页适合概率论、统计推断或集合论导入部分. 左边保留原始样本空间, 右边展示“已知条件成立后”留下的有效区域, 这样既能讲事件之间的关系, 也能自然过渡到条件概率与归一化的概念.
+
+\begin{center}
+\begin{tikzpicture}[x=1cm,y=1cm]
+\begin{scope}
+  \draw[prob universe] (0,0) rectangle (5.8,4.4);
+  \node[maki label, above left] at (0,4.4) {$\Omega$};
+  \filldraw[prob event] (1.7,2.1) ellipse (1.15 and 1.55);
+  \filldraw[prob event alt] (3.95,2.95) ellipse (1.0 and 0.78);
+  \filldraw[prob event alt] (4.05,1.15) ellipse (1.0 and 0.78);
+  \draw[prob condition] (2.95,0) -- (2.95,4.4);
+  \foreach \x/\y in {1.1/3.25,1.45/2.55,1.85/1.85,1.4/1.15,2.0/2.9,3.7/3.0,4.25/2.65,3.7/1.1,4.3/0.95,4.7/1.35}{
+    \node[prob outcome] at (\x,\y) {};
+  }
+  \node[prob label] at (1.7,3.85) {$A$};
+  \node[prob label] at (4.05,3.65) {$B$};
+  \node[prob label] at (4.08,1.9) {$C$};
+  \node[prob label, anchor=west] at (3.1,4.08) {$A^c$};
+  \node[flow note, anchor=west] at (0.15,-1.0) {左图保留全样本空间;\\虚线可表示被条件事件筛掉\\的区域边界.};
+\end{scope}
+
+\begin{scope}[xshift=8.2cm]
+  \draw[prob universe] (0,0) rectangle (4.5,4.4);
+  \filldraw[prob event] (1.55,2.2) ellipse (1.05 and 1.55);
+  \foreach \x/\y in {1.1/3.05,1.45/2.45,1.7/1.85,1.35/1.1,1.95/2.85}{
+    \node[prob outcome] at (\x,\y) {};
+  }
+  \node[prob label] at (1.55,3.85) {$A \mid A$};
+  \node[maki annotation] at (2.75,2.2) {observe $A$\\discard $A^c$};
+  \draw[flow arrow emph] (-1.55,2.2) -- (-0.25,2.2);
+  \node[maki label] at (-0.9,2.65) {条件化};
+  \node[flow note, anchor=west] at (0.0,-1.0) {右图可直接改成“给定 $B$”\\“给定测量值落在某区间内”\\或“过滤异常点后”的版本.};
+\end{scope}
+\end{tikzpicture}
+\captionof{figure}{样本空间与条件事件更新模板}
+\end{center}
+
+\clearpage
+
+\section{图论与网络结构模板}
+
+这一页适合最短路、最小割、网络流、图搜索过程或结构关系图. 核心做法是把普通边、强调边、候选切边和搜索路径拆开, 这样同一张图既能承载“静态结构”, 也能承载“算法过程”.
+
+\begin{center}
+\begin{tikzpicture}[x=1cm,y=1cm]
+\node[graph node accent] (s) at (0,1.9) {};
+\node[graph node] (a) at (2.2,3.2) {};
+\node[graph node] (b) at (4.6,2.6) {};
+\node[graph node muted] (c) at (4.9,0.85) {};
+\node[graph node] (d) at (2.0,0.1) {};
+\node[graph node] (t) at (6.9,1.85) {};
+
+\foreach \u/\v/\w in {
+  s/a/2, s/d/3, a/b/2, a/d/1, d/b/3, d/c/2, b/c/2, b/t/1, c/t/3
+}{
+  \draw[graph edge] (\u) -- (\v) node[midway, graph label, fill=white] {\w};
+}
+
+\draw[graph edge strong] (s) -- (a);
+\draw[graph edge strong] (a) -- (b);
+\draw[graph edge strong] (b) -- (t);
+\draw[graph edge cut] (d) -- (c);
+\draw[graph walk] (s) to[bend right=14] (d);
+\draw[graph walk] (d) to[bend left=8] (b);
+
+\node[maki label, above left=2pt of s] {s};
+\node[maki label, above=2pt of a] {a};
+\node[maki label, above=2pt of b] {b};
+\node[maki label, below=2pt of c] {c};
+\node[maki label, below=2pt of d] {d};
+\node[maki label, right=2pt of t] {t};
+
+\node[flow note, anchor=west] at (8.0,2.95) {红色强调边: 当前主路径\\虚线边: cut / bottleneck candidate\\箭头: 搜索或松弛的访问轨迹};
+\node[maki annotation] at (3.45,4.15) {shortest-path view};
+\node[maki annotation] at (4.2,-1.0) {same graph, different overlays};
+\end{tikzpicture}
+\captionof{figure}{图搜索、最短路或网络流示意模板}
 \end{center}
 
 \end{document}

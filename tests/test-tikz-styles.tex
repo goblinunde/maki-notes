@@ -1,12 +1,49 @@
-\documentclass[a4paper,12pt,oneside]{maki-notes}
+\documentclass[a4paper,12pt,oneside,theme=amber]{maki-notes}
 
 \renewcommand{\LectureNotesTitle}{TikZ Style Gallery}
 \renewcommand{\AuthorInfo}{Test Runner}
+
+\newcommand{\ThemeCard}[1]{%
+  \begingroup
+  \csname makiapplytheme#1\endcsname
+  \begin{tikzpicture}[x=1cm,y=1cm,baseline=(base.center)]
+    \node[inner sep=0pt] (base) at (0,0) {};
+    \path[draw=MainText!18, fill=white, rounded corners=2.5pt] (0,0) rectangle (4.25,1.2);
+    \fill[LogicColor] (0.22,0.78) rectangle +(0.74,0.18);
+    \fill[DefColor]   (1.08,0.78) rectangle +(0.74,0.18);
+    \fill[ExColor]    (1.94,0.78) rectangle +(0.74,0.18);
+    \fill[NoteColor]  (2.80,0.78) rectangle +(0.74,0.18);
+    \fill[GeometryColor] (3.46,0.78) rectangle +(0.57,0.18);
+    \node[anchor=west, font=\ttfamily\footnotesize, text=MainText] at (0.22,0.38) {#1};
+    \node[anchor=east, font=\footnotesize, text=MainText!78] at (4.03,0.38) {\MakiResolvedTheme};
+  \end{tikzpicture}%
+  \endgroup
+}
 
 \begin{document}
 \mainmatter
 
 \chapter{TikZ Style Gallery}
+
+\section{Theme Presets}
+
+这一页同时验证主题色位与 TikZ 预设族是否能一起工作. 文档类本身使用 `theme=amber`, 下方色卡则额外切换并展示所有当前支持的主题, 这样一份测试文档就能覆盖新增主题入口和色位联动.
+
+\begin{center}
+\ThemeCard{default}\hspace{0.6em}
+\ThemeCard{ocean}\hspace{0.6em}
+\ThemeCard{forest}
+
+\medskip
+
+\ThemeCard{graphite}\hspace{0.6em}
+\ThemeCard{amber}\hspace{0.6em}
+\ThemeCard{berry}
+
+\medskip
+
+\ThemeCard{sandstone}
+\end{center}
 
 \section{Deep Learning}
 
@@ -122,6 +159,93 @@
 \end{scope}
 \end{tikzpicture}
 \captionof{figure}{基本域、边识别与环面的拓扑样式测试}
+\end{center}
+
+\section{Flowcharts and Timelines}
+
+这一组新增样式参考了 tikz.net 上 flowchart 与 timeline 一类图的组织方法: 节点形状、流程箭头、里程碑和时间窗口各自独立命名, 以后画算法流程、课程安排或项目进度时就不需要重新拼装.
+
+\begin{center}
+\begin{tikzpicture}[x=1cm, y=1cm]
+\node[flow terminal] (start) at (0,2.1) {开始};
+\node[flow process] (readme) at (2.8,2.1) {读取题面\\与仓库约束};
+\node[flow decision] (branch) at (5.9,2.1) {需要\\新图形族?};
+\node[flow process] (style) at (8.8,2.1) {整理语义化\\TikZ 样式};
+\node[flow io] (docs) at (8.8,0.2) {更新 README\\与测试文档};
+\node[flow terminal] (done) at (11.7,2.1) {完成};
+\node[flow note, anchor=west] at (9.8,0.2) {预设类目: flow / timeline / probability / graph};
+
+\draw[flow arrow] (start) -- (readme);
+\draw[flow arrow] (readme) -- (branch);
+\draw[flow arrow emph] (branch) -- node[above, maki label] {是} (style);
+\draw[flow arrow] (style) -- (done);
+\draw[flow arrow feedback] (branch) -- ++(0,-1.55) -| node[pos=0.25, left, maki label] {补文档} (docs.west);
+\draw[flow arrow] (docs.north) |- (style.south);
+
+\begin{scope}[yshift=-3.55cm]
+  \draw[timeline axis] (0,0) -- (11.7,0);
+  \foreach \x/\year in {0.9/2024,3.1/2025,5.7/2026,8.2/2027,10.8/2028}{
+    \draw[timeline tick] (\x,-0.15) -- (\x,0.15);
+    \node[maki label, below] at (\x,-0.18) {\year};
+  }
+  \draw[timeline span] (1.15,0.48) -- (5.45,0.48);
+  \node[timeline milestone] (m1) at (2.15,1.1) {模板初版};
+  \node[timeline event] (m2) at (5.7,0) {};
+  \node[timeline milestone] (m3) at (8.2,1.1) {主题扩展};
+  \node[timeline event, fill=LogicBg, draw=LogicColor!80!black] (m4) at (10.8,0) {};
+  \draw[timeline connector] (m1.south) -- (2.15,0.18);
+  \draw[timeline connector] (m3.south) -- (8.2,0.18);
+  \node[maki label, above=2pt of m2] {wrapfig};
+  \node[maki label, above=2pt of m4] {release};
+\end{scope}
+\end{tikzpicture}
+\captionof{figure}{流程图与时间轴预设样式测试}
+\end{center}
+
+\section{Probability and Graph Structures}
+
+最后一组新增样式面向概率论与图论讲义. 参考了 tikz.net 的 Venn/集合图和 graph-isomorphism 一类节点边图, 把样本空间、事件区域、条件区域、顶点和特殊边都抽成可复用样式.
+
+\begin{center}
+\begin{tikzpicture}[x=1cm, y=1cm]
+\begin{scope}
+  \draw[prob universe] (0,0) rectangle (5.5,4.2);
+  \node[maki label, above left] at (0,4.2) {$\Omega$};
+  \filldraw[prob event] (1.45,2.15) ellipse (1.1 and 1.5);
+  \filldraw[prob event alt] (3.9,2.75) ellipse (0.82 and 0.72);
+  \filldraw[prob event alt] (4.0,1.15) ellipse (0.95 and 0.72);
+  \draw[prob condition] (2.75,0) -- (2.75,4.2);
+  \foreach \x/\y in {0.95/2.95,1.2/2.3,1.55/1.8,1.8/2.55,1.45/1.2,3.6/2.95,4.15/2.6,3.75/1.15,4.25/0.95,4.55/1.3}{
+    \node[prob outcome] at (\x,\y) {};
+  }
+  \node[prob label] at (1.45,3.7) {$A$};
+  \node[prob label] at (4.15,3.45) {$B$};
+  \node[prob label] at (4.15,1.85) {$C$};
+  \node[prob label, anchor=west] at (2.92,3.95) {$A^c$};
+\end{scope}
+
+\begin{scope}[xshift=7.2cm]
+  \node[graph node accent] (v1) at (0,1.9) {};
+  \node[graph node] (v2) at (1.8,3.0) {};
+  \node[graph node] (v3) at (3.8,2.6) {};
+  \node[graph node muted] (v4) at (3.9,0.9) {};
+  \node[graph node] (v5) at (1.7,0.1) {};
+  \node[graph node] (v6) at (0.1,0.7) {};
+  \foreach \u/\v/\label in {
+    v1/v2/2, v2/v3/1, v3/v4/4, v4/v5/3, v5/v6/2, v6/v1/1, v1/v5/5, v2/v5/2
+  }{
+    \draw[graph edge] (\u) -- (\v) node[midway, graph label, fill=white] {\label};
+  }
+  \draw[graph edge strong] (v1) -- (v3);
+  \draw[graph edge cut] (v2) -- (v4);
+  \draw[graph walk] (v6) to[bend left=12] (v3);
+  \foreach \name/\text in {v1/s, v2/a, v3/b, v4/t, v5/c, v6/d}{
+    \node[maki label] at (\name) {\text};
+  }
+  \node[flow note, anchor=west] at (4.55,2.9) {accent edge = shortest path\\dashed edge = cut candidate};
+\end{scope}
+\end{tikzpicture}
+\captionof{figure}{概率/集合图与图论节点边样式测试}
 \end{center}
 
 \end{document}

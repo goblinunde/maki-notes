@@ -76,7 +76,7 @@ xelatex -interaction=nonstopmode -file-line-error
 模板现在支持两组类选项：
 
 - `fontpreset=common|auto|windows|macos|linux`
-- `theme=default|ocean|forest|graphite`
+- `theme=default|ocean|forest|graphite|amber|berry|sandstone`
 
 默认值是：
 
@@ -111,6 +111,9 @@ xelatex -interaction=nonstopmode -file-line-error
 - `ocean`：偏蓝青，更轻快
 - `forest`：偏绿灰，更沉稳
 - `graphite`：偏墨灰与铜棕，更正式
+- `amber`：偏琥珀与蓝灰，适合讲义封面和流程图
+- `berry`：偏莓红与靛灰，层次更强但仍保持克制
+- `sandstone`：偏砂岩与石板灰，更接近纸面笔记气质
 
 主题切换不会改变公开接口，只会改写现有的语义色位，例如 `LogicColor`、`DefColor`、`ExColor`、`NoteColor` 等。因此现有环境、TikZ 样式和页边批注会一起换色，但代码写法不需要变。
 
@@ -118,6 +121,25 @@ xelatex -interaction=nonstopmode -file-line-error
 
 - 如果你选中了某个平台预设，但本机缺少对应字体，模板会自动回退到 `common`
 - 如果你显式写了不支持的值，例如 `fontpreset=desktop` 或 `theme=sunset`，模板会抛出清晰错误并指出合法取值
+
+## TikZ 预设族
+
+模板里的 TikZ 样式不是零散颜色片段，而是按语义整理好的预设族。默认主题切换后，这些样式会自动跟随新的色位，不需要额外改图代码。
+
+当前内置的预设主要包括：
+
+- 神经网络与深度学习：`nn input`、`nn hidden`、`nn output`、`nn tensor`、`nn op`、`nn skip`
+- 数学与几何：`math axis`、`math curve`、`math tangent`、`math vector`、`geom point`、`geom angle mark`
+- 拓扑与流形：`topo patch`、`topo identify`、`topo geodesic`、`diag object`、`manifold latent`
+- 流程图：`flow terminal`、`flow process`、`flow decision`、`flow io`、`flow arrow`
+- 时间轴：`timeline axis`、`timeline event`、`timeline milestone`、`timeline span`
+- 概率/集合图：`prob universe`、`prob event`、`prob event alt`、`prob condition`、`prob outcome`
+- 图论/网络图：`graph node`、`graph node accent`、`graph edge`、`graph edge cut`、`graph walk`
+
+如果你想看完整可编译的组合示例，可以直接参考：
+
+- 样式测试页：[`tests/test-tikz-styles.tex`](./tests/test-tikz-styles.tex)
+- 模板页：[`tikz-template-pages.tex`](./tikz-template-pages.tex)
 
 ## 常用命令
 

@@ -351,11 +351,71 @@
 	\definecolor{MainText}{RGB}{28, 29, 32}%
 }
 
+\newcommand{\makiapplythemeamber}{%
+	\renewcommand{\MakiResolvedTheme}{amber}%
+	\definecolor{LogicColor}{RGB}{184, 92, 48}%
+	\definecolor{LogicBg}{RGB}{252, 243, 236}%
+	\definecolor{DefColor}{RGB}{170, 123, 52}%
+	\definecolor{DefBg}{RGB}{251, 247, 238}%
+	\definecolor{ExColor}{RGB}{53, 110, 148}%
+	\definecolor{ExBg}{RGB}{238, 246, 252}%
+	\definecolor{NoteColor}{RGB}{76, 128, 103}%
+	\definecolor{NNInputColor}{RGB}{93, 144, 110}%
+	\definecolor{NNHiddenColor}{RGB}{78, 112, 156}%
+	\definecolor{NNOutputColor}{RGB}{188, 103, 65}%
+	\definecolor{NNTensorColor}{RGB}{201, 155, 69}%
+	\definecolor{GeometryColor}{RGB}{56, 116, 168}%
+	\definecolor{GeometryBg}{RGB}{237, 245, 252}%
+	\definecolor{TopologyColor}{RGB}{73, 122, 104}%
+	\definecolor{TopologyBg}{RGB}{239, 247, 243}%
+	\definecolor{MainText}{RGB}{30, 26, 22}%
+}
+
+\newcommand{\makiapplythemeberry}{%
+	\renewcommand{\MakiResolvedTheme}{berry}%
+	\definecolor{LogicColor}{RGB}{150, 75, 98}%
+	\definecolor{LogicBg}{RGB}{250, 241, 245}%
+	\definecolor{DefColor}{RGB}{181, 120, 73}%
+	\definecolor{DefBg}{RGB}{249, 244, 239}%
+	\definecolor{ExColor}{RGB}{74, 98, 142}%
+	\definecolor{ExBg}{RGB}{239, 243, 251}%
+	\definecolor{NoteColor}{RGB}{72, 124, 118}%
+	\definecolor{NNInputColor}{RGB}{90, 140, 127}%
+	\definecolor{NNHiddenColor}{RGB}{92, 104, 146}%
+	\definecolor{NNOutputColor}{RGB}{171, 91, 101}%
+	\definecolor{NNTensorColor}{RGB}{188, 145, 87}%
+	\definecolor{GeometryColor}{RGB}{70, 112, 156}%
+	\definecolor{GeometryBg}{RGB}{237, 243, 251}%
+	\definecolor{TopologyColor}{RGB}{73, 121, 123}%
+	\definecolor{TopologyBg}{RGB}{239, 246, 246}%
+	\definecolor{MainText}{RGB}{30, 26, 32}%
+}
+
+\newcommand{\makiapplythemesandstone}{%
+	\renewcommand{\MakiResolvedTheme}{sandstone}%
+	\definecolor{LogicColor}{RGB}{162, 104, 78}%
+	\definecolor{LogicBg}{RGB}{249, 243, 238}%
+	\definecolor{DefColor}{RGB}{176, 132, 79}%
+	\definecolor{DefBg}{RGB}{249, 245, 237}%
+	\definecolor{ExColor}{RGB}{84, 106, 121}%
+	\definecolor{ExBg}{RGB}{239, 243, 245}%
+	\definecolor{NoteColor}{RGB}{87, 123, 104}%
+	\definecolor{NNInputColor}{RGB}{102, 139, 112}%
+	\definecolor{NNHiddenColor}{RGB}{95, 113, 129}%
+	\definecolor{NNOutputColor}{RGB}{173, 106, 79}%
+	\definecolor{NNTensorColor}{RGB}{186, 151, 95}%
+	\definecolor{GeometryColor}{RGB}{86, 110, 136}%
+	\definecolor{GeometryBg}{RGB}{238, 243, 248}%
+	\definecolor{TopologyColor}{RGB}{88, 121, 110}%
+	\definecolor{TopologyBg}{RGB}{240, 245, 243}%
+	\definecolor{MainText}{RGB}{32, 29, 26}%
+}
+
 \newcommand{\makiapplytheme}{%
 	\ifcsname makiapplytheme\MakiTheme\endcsname
 		\csname makiapplytheme\MakiTheme\endcsname
 	\else
-		\PackageError{maki-notes}{Unsupported theme `\MakiTheme'}{Valid values are default, ocean, forest, graphite. Falling back to `default'.}%
+		\PackageError{maki-notes}{Unsupported theme `\MakiTheme'}{Valid values are default, ocean, forest, graphite, amber, berry, sandstone. Falling back to `default'.}%
 		\makiapplythemedefault
 	\fi
 }
@@ -706,9 +766,186 @@
 			fill=NNTensorColor!15,
 			thick
 		},
-		nn residual bracket/.style={
+	nn residual bracket/.style={
 			very thick,
 			draw=LogicColor!80!black
+	},
+	flow node/.style={
+		rounded corners=4pt,
+		draw=ExColor!75!black,
+		fill=ExBg,
+		thick,
+		minimum width=24mm,
+		minimum height=9mm,
+		align=center,
+		inner sep=4pt
+	},
+	flow terminal/.style={
+		flow node,
+		rounded corners=11pt,
+		draw=LogicColor!80!black,
+		fill=LogicBg
+	},
+	flow process/.style={
+		flow node
+	},
+	flow decision/.style={
+		diamond,
+		aspect=1.7,
+		draw=DefColor!82!black,
+		fill=DefBg,
+		thick,
+		align=center,
+		inner sep=1.8pt,
+		minimum width=18mm
+	},
+	flow io/.style={
+		trapezium,
+		trapezium left angle=75,
+		trapezium right angle=105,
+		draw=NoteColor!78!black,
+		fill=NoteColor!12,
+		thick,
+		minimum width=23mm,
+		minimum height=9mm,
+		align=center
+	},
+	flow arrow/.style={
+		-Latex,
+		thick,
+		draw=ExColor!85!black,
+		shorten <=1pt,
+		shorten >=1pt
+	},
+	flow arrow emph/.style={
+		flow arrow,
+		draw=LogicColor!85!black
+	},
+	flow arrow feedback/.style={
+		-Latex,
+		semithick,
+		densely dashed,
+		draw=DefColor!85!black,
+		shorten <=1pt,
+		shorten >=1pt
+	},
+	flow note/.style={
+		maki annotation,
+		draw=MainText!12,
+		fill=white,
+		inner sep=4pt,
+		align=left
+	},
+	timeline axis/.style={
+		-Latex,
+		very thick,
+		draw=MainText!85
+	},
+	timeline tick/.style={
+		semithick,
+		draw=MainText!60
+	},
+	timeline event/.style={
+		circle,
+		draw=ExColor!85!black,
+		fill=ExBg,
+		thick,
+		minimum size=7.5mm,
+		inner sep=0pt
+	},
+	timeline milestone/.style={
+		rounded corners=3pt,
+		draw=LogicColor!82!black,
+		fill=LogicBg,
+		thick,
+		minimum width=19mm,
+		minimum height=8mm,
+		align=center
+	},
+	timeline span/.style={
+		line width=3pt,
+		draw=NoteColor!72!black
+	},
+	timeline connector/.style={
+		-Latex,
+		semithick,
+		draw=DefColor!85!black
+	},
+	prob universe/.style={
+		draw=MainText!82,
+		fill=white,
+		thick,
+		rounded corners=2pt
+	},
+	prob event/.style={
+		draw=ExColor!88!black,
+		fill=ExBg,
+		fill opacity=0.88,
+		text opacity=1,
+		line width=1pt
+	},
+	prob event alt/.style={
+		draw=NoteColor!82!black,
+		fill=TopologyBg,
+		fill opacity=0.92,
+		text opacity=1,
+		line width=1pt
+	},
+	prob condition/.style={
+		very thick,
+		dash pattern=on 5pt off 2pt on 1.2pt off 2pt,
+		draw=LogicColor!84!black
+	},
+	prob outcome/.style={
+		circle,
+		fill=LogicColor!88!black,
+		inner sep=1.25pt
+	},
+	prob label/.style={
+		maki annotation,
+		fill=white,
+		inner sep=2pt
+	},
+	graph node/.style={
+		circle,
+		draw=GeometryColor!86!black,
+		fill=GeometryBg,
+		thick,
+		minimum size=8mm,
+		inner sep=0pt
+	},
+	graph node accent/.style={
+		graph node,
+		draw=LogicColor!85!black,
+		fill=LogicBg
+	},
+	graph node muted/.style={
+		graph node,
+		draw=MainText!40,
+		fill=black!4
+	},
+	graph edge/.style={
+		line width=0.95pt,
+		draw=MainText!72
+	},
+	graph edge strong/.style={
+		line width=1.15pt,
+		draw=LogicColor!85!black
+	},
+	graph edge cut/.style={
+		line width=1pt,
+		densely dashed,
+		draw=DefColor!85!black
+	},
+	graph walk/.style={
+		-Latex,
+		line width=1pt,
+		draw=NoteColor!85!black
+	},
+	graph label/.style={
+		maki label,
+		fill=white,
+		inner sep=1pt
 	}
 }
 
