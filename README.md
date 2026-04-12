@@ -7,6 +7,7 @@
 - 基于 `ctexbook` 的中文讲义排版入口
 - 内置封面、章节标题、页眉页脚与数学环境样式
 - 提供定义、定理、例题、真题、注释等讲义常用盒子环境
+- 提供左右图文绕排、页边侧题注与无边框页边批注
 - 集成 `TikZ`、`PGFPlots`、`tikz-3dplot` 等绘图能力
 - 自带示例文档和基础测试文档，便于二次开发和回归验证
 
@@ -65,6 +66,33 @@ make clean
 - `make test`：编译烟雾文档和 `tests/` 下的基础测试文档
 - `make clean`：清理中间文件
 
+## 图文绕排与页边批注
+
+新版模板支持把图像贴在正文左侧或右侧自动绕排，并把图题或补充说明放到页面外侧边栏。相关接口已经整理到单独文档：
+
+- 详细说明：[`docs/wrapfig-margin-notes.md`](./docs/wrapfig-margin-notes.md)
+- 示例展示：[`example.tex`](./example.tex)
+- 整合测试：[`tests/test-wrap-layout.tex`](./tests/test-wrap-layout.tex)
+
+常用接口如下：
+
+```tex
+\begin{rightfiguretext}{0.36\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/demo.pdf}
+  \sidecaption{把图题放到页边。}
+\end{rightfiguretext}
+
+\sidenote{这里可以放一条无边框页边批注。}
+```
+
+还可以配合使用：
+
+- `leftfiguretext` / `rightfiguretext`：左右图文绕排
+- `wrapcaption`：图下题注
+- `sidecaption` / `sidecaptionof`：页边题注
+- `sidenote` / `marginremark`：页边批注
+
 ## 仓库结构
 
 ```text
@@ -73,6 +101,7 @@ make clean
 ├── maki-notes.sty
 ├── latexmkrc
 ├── Makefile
+├── docs/
 ├── document2.tex
 ├── example.tex
 ├── tikz-template-pages.tex
@@ -86,8 +115,9 @@ make clean
 - `maki-notes.sty`：样式主体，集中管理字体、颜色、环境和 TikZ 样式
 - `document2.tex`：较完整的讲义模板示例
 - `example.tex`：更适合作为二次开发起点的示例文档
+- `docs/wrapfig-margin-notes.md`：图文绕排与页边批注用法说明
 - `tikz-template-pages.tex`：可直接复用的图形模板页
-- `tests/`：用于验证模板基础能力的测试文档
+- `tests/`：用于验证模板基础能力的测试文档，其中 `tests/test-wrap-layout.tex` 集中覆盖新版绕排与页边接口
 
 ## GitHub Release 流程
 
@@ -138,4 +168,5 @@ workflow 会执行以下动作：
 
 - 修改模板能力时，先更新 [`maki-notes.sty`](./maki-notes.sty) 或 [`maki-notes.cls`](./maki-notes.cls)，再运行 `make test`
 - 新增展示内容时，优先放到 `example.tex` 或 `tikz-template-pages.tex`
+- 调整图文绕排与页边批注时，优先同步更新 [`docs/wrapfig-margin-notes.md`](./docs/wrapfig-margin-notes.md) 和 [`tests/test-wrap-layout.tex`](./tests/test-wrap-layout.tex)
 - 发布新版本时，只需要推送新的 tag；普通提交不会触发 release workflow

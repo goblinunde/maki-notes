@@ -1,0 +1,71 @@
+\documentclass[a4paper,12pt,oneside]{maki-notes}
+
+\renewcommand{\LectureNotesTitle}{Wrap Layout Test}
+\renewcommand{\AuthorInfo}{Test Runner}
+
+\begin{document}
+\mainmatter
+
+\chapter{Wrap Figures And Margin Notes}
+
+这一份测试文档集中覆盖新版图文绕排、图下题注、页边题注与页边批注接口，避免把同一类版式能力拆成过多零散测试。
+
+\section{Right Figure Left Text}
+
+\begin{figuretextright}[15]{0.36\textwidth}
+  \centering
+  \begin{tikzpicture}[x=1cm,y=1cm]
+    \draw[rounded corners=6pt, thick, draw=ExColor] (0,0) rectangle (3.1,4.0);
+    \draw[rounded corners=6pt, thick, draw=LogicColor] (0.45,1.1) ellipse (0.85 and 1.35);
+    \draw[rounded corners=6pt, thick, draw=ExColor!70!black] (2.15,2.95) ellipse (0.55 and 0.45);
+    \draw[rounded corners=6pt, thick, draw=ExColor!70!black] (2.25,0.95) ellipse (0.75 and 0.65);
+    \foreach \x/\y in {0.65/2.95,1.1/2.65,0.8/2.15,1.2/1.8,0.75/1.4,2.0/3.05,2.35/2.8,1.95/1.1,2.25/0.95,2.55/0.75}{
+      \fill[DefColor] (\x,\y) circle (1.1pt);
+    }
+  \end{tikzpicture}
+  \sidecaption{右图左文时, 图题可以直接进入页边区域。}
+\end{figuretextright}
+这一段正文用来验证右图左文环境是否可以正常绕排。它需要覆盖连续文本、数学符号与普通叙述混排的情形。例如, 当条件概率模型从 $\Omega$ 缩减到事件 $A$ 所诱导的新样本空间时, 读者往往需要同时参考图示与旁注说明, 因而图文绕排必须稳定。
+
+\sidenote{这里是一条页边批注, 用于强调图示中的阴影区域已经被条件事件裁剪。}
+
+继续补充一段正文, 让绕排区域跨过多个句子, 以便观察页边注释、侧题注与主段落之间是否发生不自然的重叠。
+
+\clearpage
+
+\section{Left Figure Right Text}
+
+\begin{figuretextleft}[14]{0.34\textwidth}
+  \centering
+  \begin{tikzpicture}[x=1cm,y=1cm]
+    \draw[thick, draw=GeometryColor] (0,0) rectangle (2.8,3.6);
+    \draw[thick, draw=LogicColor] (0.4,0.4) -- (2.3,3.0);
+    \draw[thick, draw=ExColor] (0.4,3.0) -- (2.3,0.4);
+    \fill[LogicColor] (1.35,1.7) circle (1.4pt);
+  \end{tikzpicture}
+  \wrapcaption{左图右文时, 也应支持传统的图下题注。}
+\end{figuretextleft}
+这一段正文验证左图右文环境。除了普通叙述外, 这里还补一条带标题的页边说明, 用来检查页边题注与页边批注是否共享统一视觉风格。
+
+\marginremark[提示]{页边批注不使用完整方框, 只保留细色线、小号字和少量留白。}
+
+最后再补一段短文, 确保图下题注与页边批注能够在同一页上共存。
+
+\section{Margin Caption Helper}
+
+\begin{center}
+\begin{tabular}{cc}
+\toprule
+对象 & 数量 \\
+\midrule
+条件事件 & 1 \\
+互斥区域 & 2 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\sidecaptionof{table}{侧题注辅助命令也可以用于表格等非 figure 计数器。}
+
+这一小节只保留一个极短示例，用来确认 \texttt{\string\sidecaptionof} 能与已有页边样式共用同一套视觉语言。
+
+\end{document}

@@ -1,7 +1,15 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{maki-notes}[2026/04/09 Maki lecture notes style]
 
-\RequirePackage[a4paper, left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm]{geometry}
+\RequirePackage[
+	a4paper,
+	left=2.5cm,
+	right=2.5cm,
+	top=2.5cm,
+	bottom=2.5cm,
+	marginparwidth=20mm,
+	marginparsep=4mm
+]{geometry}
 \RequirePackage{fancyhdr}
 \RequirePackage{amsmath, amssymb, amsthm, mathtools}
 \RequirePackage{mathpazo}
@@ -36,6 +44,9 @@
 \pgfplotsset{compat=1.18}
 \RequirePackage{capt-of}
 \RequirePackage{graphicx,caption,subcaption}
+\RequirePackage{wrapfig}
+\RequirePackage{marginnote}
+\RequirePackage{ifoddpage}
 \renewcommand{\thesubfigure}{\Alph{subfigure}}
 \RequirePackage{tikz-3dplot}
 \tdplotsetmaincoords{70}{110}
@@ -136,6 +147,33 @@ BoldFont = FandolSong-Bold.otf
 \definecolor{TopologyBg}{RGB}{238, 249, 246}
 \definecolor{MainText}{RGB}{20, 20, 20}
 \color{MainText}
+
+\captionsetup[figure]{
+	font={small,stretch=1.08},
+	labelfont={bf,color=LogicColor},
+	textfont={small},
+	justification=raggedright,
+	singlelinecheck=false,
+	skip=4pt
+}
+\captionsetup[table]{
+	font={small,stretch=1.08},
+	labelfont={bf,color=LogicColor},
+	textfont={small},
+	justification=raggedright,
+	singlelinecheck=false,
+	skip=4pt
+}
+
+\newlength{\MakiMarginRuleWidth}
+\newlength{\MakiMarginNoteGap}
+\newlength{\MakiWrapColumnSep}
+\newlength{\MakiWrapTextSep}
+\setlength{\MakiMarginRuleWidth}{0.8pt}
+\setlength{\MakiMarginNoteGap}{0.55em}
+\setlength{\MakiWrapColumnSep}{1.2em}
+\setlength{\MakiWrapTextSep}{0.8em}
+\setlength{\marginparpush}{0.85em}
 
 \tikzset{
 	>=Latex,
@@ -452,8 +490,110 @@ BoldFont = FandolSong-Bold.otf
 		nn residual bracket/.style={
 			very thick,
 			draw=LogicColor!80!black
-		}
 	}
+}
+
+\makeatletter
+
+\newcommand{\maki@marginnoteformatright}[1]{%
+	\begin{tabular}{@{}p{\MakiMarginRuleWidth}@{\hspace{\MakiMarginNoteGap}}>{\raggedright\arraybackslash}p{\dimexpr\marginparwidth-\MakiMarginRuleWidth-\MakiMarginNoteGap\relax}@{}}%
+		{\color{LogicColor}\vrule width \MakiMarginRuleWidth} & #1
+	\end{tabular}%
+}
+
+\newcommand{\maki@marginnoteformatleft}[1]{%
+	\begin{tabular}{@{}>{\raggedleft\arraybackslash}p{\dimexpr\marginparwidth-\MakiMarginRuleWidth-\MakiMarginNoteGap\relax}@{\hspace{\MakiMarginNoteGap}}p{\MakiMarginRuleWidth}@{}}%
+		#1 & {\color{LogicColor}\vrule width \MakiMarginRuleWidth}
+	\end{tabular}%
+}
+
+\newcommand{\maki@marginnotebody}[2]{%
+	{\footnotesize\linespread{1.12}\selectfont\color{MainText!85}%
+	\ifstrempty{#1}{}{%
+		{\color{LogicColor}\heavykaishu #1}\par\vspace{0.18em}%
+	}%
+	#2}%
+}
+
+\newcommand{\maki@outernote}[2]{%
+	\marginnote{%
+		\checkoddpage
+		\if@twoside
+			\ifoddpage
+				\maki@marginnoteformatright{\maki@marginnotebody{#1}{#2}}%
+			\else
+				\maki@marginnoteformatleft{\maki@marginnotebody{#1}{#2}}%
+			\fi
+		\else
+			\maki@marginnoteformatright{\maki@marginnotebody{#1}{#2}}%
+		\fi
+	}%
+}
+
+\newcommand{\maki@wrapfigurestyle}{%
+	\captionsetup{type=figure}%
+	\setlength{\columnsep}{\MakiWrapColumnSep}%
+	\setlength{\intextsep}{\MakiWrapTextSep}%
+}
+
+\NewDocumentEnvironment{leftfiguretext}{o m +b}{%
+	\IfNoValueTF{#1}
+		{\begin{wrapfigure}{l}{#2}}
+		{\begin{wrapfigure}[#1]{l}{#2}}%
+	\maki@wrapfigurestyle
+	#3
+}{%
+	\end{wrapfigure}
+}
+
+\NewDocumentEnvironment{rightfiguretext}{o m +b}{%
+	\IfNoValueTF{#1}
+		{\begin{wrapfigure}{r}{#2}}
+		{\begin{wrapfigure}[#1]{r}{#2}}%
+	\maki@wrapfigurestyle
+	#3
+}{%
+	\end{wrapfigure}
+}
+
+\NewDocumentEnvironment{figuretextleft}{o m +b}{%
+	\IfNoValueTF{#1}
+		{\begin{leftfiguretext}{#2}}
+		{\begin{leftfiguretext}[#1]{#2}}%
+	#3
+	\end{leftfiguretext}
+}{}
+
+\NewDocumentEnvironment{figuretextright}{o m +b}{%
+	\IfNoValueTF{#1}
+		{\begin{rightfiguretext}{#2}}
+		{\begin{rightfiguretext}[#1]{#2}}%
+	#3
+	\end{rightfiguretext}
+}{}
+
+\NewDocumentCommand{\wrapcaption}{m}{\caption{#1}}
+
+\NewDocumentCommand{\sidenote}{m}{%
+	\maki@outernote{}{#1}%
+}
+
+\NewDocumentCommand{\marginremark}{o m}{%
+	\IfNoValueTF{#1}
+		{\maki@outernote{}{#2}}
+		{\maki@outernote{#1}{#2}}%
+}
+
+\NewDocumentCommand{\sidecaptionof}{m m}{%
+	\refstepcounter{#1}%
+	\marginremark[\csname fnum@#1\endcsname]{#2}%
+}
+
+\NewDocumentCommand{\sidecaption}{m}{%
+	\sidecaptionof{figure}{#1}%
+}
+
+\makeatother
 
 \newcommand{\fillin}[1][3cm]{\,\underline{\hspace{#1}}\,}
 \newcommand{\selectbracket}{\unskip\nolinebreak\quad \raisebox{0.7pt}[0pt][0pt]{\mbox{$(\qquad)$}}\par}

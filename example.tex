@@ -201,6 +201,47 @@ f'(\xi)=2.
 \captionof{table}{三周讲义组织示例}
 \end{center}
 
+\section{图文绕排与页边批注}
+
+讲义在讲解图示时, 常常希望图形不要强行独占一整行, 而是与正文形成更紧密的阅读节奏. 为此, 模板新增了左右两种绕排环境, 并支持把图题直接放到页边.
+
+\begin{rightfiguretext}{0.36\textwidth}
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm]
+\draw[rounded corners=6pt, thick, draw=ExColor] (0,0) rectangle (3.15,4.0);
+\draw[rounded corners=10pt, thick, draw=LogicColor] (0.55,1.05) ellipse (0.85 and 1.35);
+\draw[rounded corners=10pt, thick, draw=ExColor!70!black] (2.25,2.95) ellipse (0.55 and 0.45);
+\draw[rounded corners=10pt, thick, draw=ExColor!70!black] (2.3,0.95) ellipse (0.72 and 0.62);
+\foreach \x/\y in {0.7/2.95,1.05/2.65,0.8/2.15,1.18/1.8,0.72/1.42,2.0/3.05,2.32/2.82,1.95/1.12,2.28/0.94,2.58/0.76}{
+  \fill[DefColor] (\x,\y) circle (1.15pt);
+}
+\end{tikzpicture}
+\sidecaption{右图左文示例: 图题可以直接进入页边, 适合放提示性较强的说明文字。}
+\end{rightfiguretext}
+当图像本身承载了主要信息时, 让正文绕排到其左侧会比“图在上, 文在下”的传统结构更紧凑. 这一版式特别适合条件概率、集合关系、几何构型与网络结构图的讲解. 读者在扫视图形的同时, 可以直接沿着左侧段落理解上下文, 不必频繁上下跳转.
+
+\sidenote{页边批注适合放简短提示, 例如“这里只看事件 $A$ 已发生后的样本空间”。}
+
+如果图题本身偏长, 与其挤在图下, 不如移到页边. 这样既保留了主图的呼吸感, 也让正文和图示之间的层次更清楚.
+
+\clearpage
+
+\begin{leftfiguretext}{0.34\textwidth}
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm]
+\draw[thick, draw=GeometryColor] (0,0) rectangle (2.8,3.6);
+\draw[thick, draw=LogicColor] (0.4,0.45) -- (2.35,3.0);
+\draw[thick, draw=ExColor] (0.4,3.0) -- (2.35,0.45);
+\fill[LogicColor] (1.38,1.72) circle (1.5pt);
+\end{tikzpicture}
+\wrapcaption{左图右文示例: 若读者更习惯传统图题位置, 仍可直接使用图下题注。}
+\end{leftfiguretext}
+左图右文环境更适合在新一小节的起始处使用. 图像先进入读者视野, 随后的正文从右侧展开, 会形成很自然的节奏. 与此同时, 页边仍然可以保留附加说明, 用来放“不要混淆”“这里只需观察交点”等类型的旁支信息.
+
+\marginremark[提示]{页边批注刻意不使用完整方框, 只保留一条细色线和较小字号, 以避免抢夺正文注意力。}
+
+这样一来, 主结论留在正文, 图题与补充解释则分别落在图下或页边, 版式层次会比普通插图更清楚.
+
 \chapter{积分与建模表达}
 
 \section{从面积到累计量}
