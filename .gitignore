@@ -1,0 +1,43 @@
+# LaTeX/XeLaTeX intermediate files
+*.aux
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.glg
+*.glo
+*.gls
+*.idx
+*.ilg
+*.ind
+*.ist
+*.lof
+*.log
+*.lot
+*.nav
+*.out
+*.run.xml
+*.snm
+*.synctex.gz
+*.toc
+*.vrb
+*.xdv
+
+# Bibliography helpers
+*.bbl
+
+# latexmk temp directories/files
+_minted-*/
+texput.log
+
+# Generated PDFs for this project
+/document.pdf
+/document2.pdf
+/example.pdf
+/main-dist.pdf
+/smoke-packaging.pdf
+/test-basic.pdf
+/test-environments.pdf
+/test-graphics.pdf
+/test-tikz-styles.pdf
+/tikz-template-pages.pdf

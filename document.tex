@@ -1,0 +1,392 @@
+\documentclass[UTF8,a4paper,12pt]{ctexart}
+
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+
+\geometry{margin=1in}
+\hypersetup{colorlinks=true,linkcolor=black,urlcolor=blue,citecolor=black}
+\setlist[itemize]{leftmargin=2em}
+\setlist[enumerate]{leftmargin=2.2em}
+
+\title{不定积分的“双元法”整理}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+\section{双元法核心思想}
+
+双元法的本质可以概括为：
+
+\begin{quote}
+  构造两个变量 $x,y$，让它们满足某种平方关系，从而把积分化为便于处理的“凑微分”形式。
+\end{quote}
+
+常见关系为
+\[
+  x^2+y^2=\text{常数},\qquad x^2-y^2=\text{常数}.
+\]
+
+对应的微分关系分别为
+\[
+  xdx+ydy=0,\qquad xdx-ydy=0.
+\]
+
+双元法的作用主要体现在以下几点：
+\begin{itemize}
+  \item 将复杂根式、三角形式或对称结构转化为标准积分；
+  \item 常将原式化为 $\int \frac{dx}{y}$ 或 $\int y\,dx$ 的形式；
+  \item 本质上仍然属于“换元 + 凑微分”的方法。
+\end{itemize}
+
+\section{双元法三大基本公式}
+
+设 $x,y$ 满足以下两类关系之一：
+\[
+  xdx+ydy=0 \quad \text{（对应平方和）}
+\]
+或
+\[
+  xdx-ydy=0 \quad \text{（对应平方差）}.
+\]
+
+\subsection{公式一：$\int \frac{dx}{y}$}
+
+\[
+  \int \frac{dx}{y}=
+  \begin{cases}
+    \arctan\dfrac{x}{y}+C, & xdx+ydy=0,\\[1em]
+    \ln|x+y|+C, & xdx-ydy=0.
+  \end{cases}
+\]
+
+这是双元法中最核心的入口公式。
+
+\subsection{公式二：$\int \frac{dx}{y^3}$}
+
+\[
+  \int \frac{dx}{y^3}=\frac{1}{x^2\pm y^2}\cdot \frac{x}{y} + C.
+\]
+
+该公式常用于处理更高次的根式积分。
+
+\subsection{公式三：$\int y\,dx$}
+
+\[
+  \int y\,dx=\frac{1}{2}xy+\frac{y^2\pm x^2}{2}\int \frac{dx}{y}.
+\]
+
+这个公式的本质可以看作分部积分与双元关系的结合。
+
+\section{双元法的标准计算步骤}
+
+解题时通常按如下步骤进行。
+
+\subsection{Step 1：观察结构并构造双元}
+
+常见识别方式如下：
+
+\begin{center}
+  \begin{tabular}{cc}
+    \toprule
+    类型 & 构造 \\
+    \midrule
+    $\sqrt{a^2-x^2}$ & $x^2+y^2=a^2$ \\
+    $\sqrt{x^2+a^2}$ & $x^2-y^2=-a^2$ \\
+    $\sqrt{x^2-a^2}$ & $x^2-y^2=a^2$ \\
+    \bottomrule
+  \end{tabular}
+\end{center}
+
+核心思想是：让根号中的表达式自然成为 $y$，从而消去根式。
+
+\subsection{Step 2：写出微分关系}
+
+例如由
+\[
+  x^2+y^2=a^2
+\]
+可得
+\[
+  xdx+ydy=0.
+\]
+
+这是整个方法中的关键桥梁。
+
+\subsection{Step 3：把原积分改写为标准形式}
+
+尽量把原式改写为下列两种常见类型之一：
+\[
+  \int \frac{dx}{y},\qquad \int y\,dx.
+\]
+
+这一步体现了“双元法 = 凑微分”的核心。
+
+\subsection{Step 4：套用基本公式}
+
+根据前述三大公式直接计算。
+
+\subsection{Step 5：回代}
+
+最后把辅助变量 $y$ 用原变量表示出来，得到最终结果。
+
+\section{经典例题}
+
+考虑积分
+\[
+  I=\int \frac{dx}{\sqrt{a^2-x^2}}.
+\]
+
+\subsection*{第一步：构造双元}
+设
+\[
+  y=\sqrt{a^2-x^2},
+\]
+则有
+\[
+  x^2+y^2=a^2.
+\]
+
+\subsection*{第二步：写出微分关系}
+由上式得
+\[
+  xdx+ydy=0.
+\]
+
+\subsection*{第三步：改写原积分}
+于是
+\[
+  I=\int \frac{dx}{y}.
+\]
+
+\subsection*{第四步：套用公式一}
+因为此时满足 $xdx+ydy=0$，故
+\[
+  I=\arctan\frac{x}{y}+C.
+\]
+
+\subsection*{第五步：回代}
+代回 $y=\sqrt{a^2-x^2}$，得
+\[
+  I=\arctan\frac{x}{\sqrt{a^2-x^2}}+C.
+\]
+
+\section{常见适用题型}
+
+双元法尤其适合以下类型的问题。
+
+\subsection{根式积分}
+\begin{itemize}
+  \item $\sqrt{x^2+a^2}$
+  \item $\sqrt{a^2-x^2}$
+  \item $\sqrt{x^2-a^2}$
+\end{itemize}
+
+\subsection{对称结构}
+\begin{itemize}
+  \item $x+\sqrt{x^2+a}$
+  \item $\dfrac{1}{x+\sqrt{x^2+1}}$
+\end{itemize}
+
+\subsection{三角或复合结构}
+\begin{itemize}
+  \item $\sqrt{\sin x-\sin^2 x}$
+\end{itemize}
+
+\section{考试中需要记住的本质}
+
+一句话总结：
+
+\begin{quote}
+  双元法 = 构造关系 + 凑微分 + 套公式。
+\end{quote}
+
+\section{双元法与换元法的关系}
+
+双元法本质上仍属于换元法，但它有自己的特点：
+\begin{itemize}
+  \item 结构更加对称；
+  \item 操作更加模板化；
+  \item 在部分根式问题中比三角换元更直接。
+\end{itemize}
+
+\section{公式一的推导：$\int \frac{dx}{y}$}
+
+下面分别对两种情形进行推导。
+
+\subsection{情形 A：$xdx+ydy=0$}
+
+目标是证明
+\[
+  \int \frac{dx}{y}=\arctan\frac{x}{y}+C.
+\]
+
+先对 $\dfrac{x}{y}$ 求导：
+\[
+  d\!\left(\frac{x}{y}\right)=\frac{y\,dx-x\,dy}{y^2}.
+\]
+
+由双元关系
+\[
+  xdx+ydy=0
+\]
+得
+\[
+  x\,dx=-y\,dy.
+\]
+
+进而可写为
+\[
+  x\,dy=-\frac{x^2}{y}dx.
+\]
+
+代回导数公式：
+\[
+  d\!\left(\frac{x}{y}\right)=\frac{y\,dx-\left(-\frac{x^2}{y}dx\right)}{y^2}
+  =\frac{y^2+x^2}{y^3}dx.
+\]
+
+若记
+\[
+  x^2+y^2=C,
+\]
+则有
+\[
+  d\!\left(\frac{x}{y}\right)=\frac{C}{y^3}dx.
+\]
+
+再利用
+\[
+  d(\arctan u)=\frac{du}{1+u^2},
+\]
+令 $u=\dfrac{x}{y}$，则
+\[
+  d\!\left(\arctan\frac{x}{y}\right)
+  =\frac{d(x/y)}{1+(x/y)^2}.
+\]
+
+代入前式可得
+\[
+  d\!\left(\arctan\frac{x}{y}\right)
+  =\frac{\frac{C}{y^3}dx}{\frac{x^2+y^2}{y^2}}
+  =\frac{dx}{y}.
+\]
+
+因此
+\[
+  \int \frac{dx}{y}=\arctan\frac{x}{y}+C.
+\]
+
+\subsection{情形 B：$xdx-ydy=0$}
+
+目标是证明
+\[
+  \int \frac{dx}{y}=\ln|x+y|+C.
+\]
+
+直接对 $x+y$ 求导：
+\[
+  d(x+y)=dx+dy.
+\]
+
+由
+\[
+  xdx-ydy=0
+\]
+得
+\[
+  ydy=xdx,
+\]
+所以
+\[
+  dy=\frac{x}{y}dx.
+\]
+
+代入得
+\[
+  d(x+y)=dx+\frac{x}{y}dx=\frac{x+y}{y}dx.
+\]
+
+于是
+\[
+  \frac{dx}{y}=\frac{d(x+y)}{x+y}.
+\]
+
+两边积分即得
+\[
+  \int \frac{dx}{y}=\int \frac{d(x+y)}{x+y}=\ln|x+y|+C.
+\]
+
+\section{公式三的推导：$\int y\,dx$}
+
+目标证明
+\[
+  \int y\,dx=\frac{1}{2}xy+\frac{y^2\pm x^2}{2}\int \frac{dx}{y}.
+\]
+
+\subsection{分部积分思路}
+
+先作分部积分，取
+\[
+  u=y,\qquad dv=dx.
+\]
+则
+\[
+  \int y\,dx=xy-\int x\,dy.
+\]
+
+再利用恒等变形
+\[
+  y\,dx=\frac{1}{2}(y\,dx+x\,dy)+\frac{1}{2}(y\,dx-x\,dy).
+\]
+
+注意到
+\[
+  y\,dx+x\,dy=d(xy).
+\]
+
+另一方面，由双元关系$xdx \pm ydy = 0$ 可以知道,
+$ydy = \mp xdx$
+
+\[
+  y\,dx-x\,dy
+\]
+化为
+\[
+  \left(y^2\pm x^2\right)\frac{dx}{y}.
+\]
+
+于是积分两边得到
+\[
+  \int y\,dx
+  =\frac{1}{2}\int d(xy)+\frac{1}{2}\int \left(y^2\pm x^2\right)\frac{dx}{y}.
+\]
+
+即
+\[
+  \int y\,dx
+  =\frac{1}{2}xy+\frac{y^2\pm x^2}{2}\int \frac{dx}{y}.
+\]
+
+\section{最后总结}
+
+双元法的全部关键都可以归结为以下三步：
+\begin{enumerate}
+  \item 建立双元关系：$xdx\pm ydy=0$；
+  \item 构造合适微分：如 $d(x/y)$、$d(x+y)$、$d(xy)$；
+  \item 把原积分化为标准形式：如 $\dfrac{dx}{y}$ 或 $y\,dx$。
+\end{enumerate}
+
+因此，双元法并不是“背公式”的技巧，而是通过变量关系把结构锁定，再制造出可积形式的方法。
+
+\end{document}

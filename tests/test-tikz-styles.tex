@@ -1,0 +1,127 @@
+\documentclass[a4paper,12pt,oneside]{maki-notes}
+
+\renewcommand{\LectureNotesTitle}{TikZ Style Gallery}
+\renewcommand{\AuthorInfo}{Test Runner}
+
+\begin{document}
+\mainmatter
+
+\chapter{TikZ Style Gallery}
+
+\section{Deep Learning}
+
+这一页用于验证神经网络相关样式是否能在讲义中直接复用. 布局思路参考了 tikz.net 的 \texttt{neural\_networks} 页面: 节点样式按输入层、隐藏层、输出层分色, 连线、跳连与张量块则拆成语义化样式, 方便在不同网络结构中复用.
+
+\begin{center}
+\begin{tikzpicture}[x=1.45cm, y=1.0cm]
+\foreach \name/\y/\label in {I1/1.6/$x_1$, I2/0.55/$x_2$, I3/-0.55/$x_3$, I4/-1.6/$x_4$}
+  \node[nn input] (\name) at (0,\y) {\label};
+
+\foreach \name/\y in {H11/2.1, H12/0.7, H13/-0.7, H14/-2.1}
+  \node[nn hidden] (\name) at (1.9,\y) {};
+\foreach \name/\y in {H21/1.6, H22/0.4, H23/-0.8, H24/-2.0}
+  \node[nn hidden] (\name) at (3.8,\y) {};
+
+\node[nn output] (O1) at (5.8,0.9) {$\hat y_1$};
+\node[nn output] (O2) at (5.8,-0.9) {$\hat y_2$};
+
+\foreach \i in {1,2,3,4}{
+  \foreach \j in {1,2,3,4}{
+    \draw[nn connect] (I\i) -- (H1\j);
+    \draw[nn connect] (H1\i) -- (H2\j);
+  }
+}
+\foreach \j in {1,2,3,4}{
+  \draw[nn connect strong] (H2\j) -- (O1);
+  \draw[nn connect strong] (H2\j) -- (O2);
+}
+
+\node[nn tensor] (E) at (-1.5,0) {embed};
+\draw[nn attention] (E.east) -- (I2.west);
+\draw[nn attention] (E.east) -- (I3.west);
+
+\node[nn conv] (C1) at (2.85,3.25) {Conv\\$3\times 3$};
+\draw[nn skip] (H12.north) to[out=90, in=180] (C1.west);
+\draw[nn skip] (C1.east) to[out=0, in=90] (H22.north);
+
+\node[nn sum] (S) at (4.8,0) {$+$};
+\draw[nn connect strong] (H22.east) -- (S.west);
+\draw[nn skip] (I2.east) to[out=0, in=180] (S.west);
+\draw[nn connect strong] (S.east) -- ($(O1)!0.5!(O2)$);
+
+\node[nn block, fit=(H11)(H14), label={[maki label]above:Feature extractor}] {};
+\node[nn block, fit=(H21)(H24), label={[maki label]above:Task head}] {};
+\node[maki annotation] at ($(O1)!0.5!(O2)+(1.6,0)$) {classification\\scores};
+\end{tikzpicture}
+\captionof{figure}{多层感知机与跳连的样式测试}
+\end{center}
+
+\section{Mathematics and Geometry}
+
+这一部分参考了 tikz.net 上 \texttt{osculating-circle} 与 \texttt{vector-field} 一类图的组织方式: 曲线、采样点、切线、法线、向量场箭头分别归为不同语义样式, 这样写分析几何、微分几何或数学习题讲义时不用每次手写绘图参数.
+
+\begin{center}
+\begin{tikzpicture}[scale=0.95]
+\draw[math axis] (-0.5,0) -- (6.8,0) node[right] {$x$};
+\draw[math axis] (0,-1.0) -- (0,4.8) node[above] {$y$};
+\draw[maki guide] (0,0) grid[xstep=1, ystep=1] (6,4);
+
+\fill[math region] plot[smooth, domain=0.6:5.0, samples=100]
+  (\x,{0.15*(\x-1.1)*(\x-3.7)*(\x-5.4)+2.7}) -- (5.0,0) -- (0.6,0) -- cycle;
+\draw[math curve] plot[smooth, domain=0.6:5.6, samples=120]
+  (\x,{0.15*(\x-1.1)*(\x-3.7)*(\x-5.4)+2.7});
+
+\coordinate (P) at (3.1,{0.15*(3.1-1.1)*(3.1-3.7)*(3.1-5.4)+2.7});
+\node[math sample point, label={[maki label]above right:$P$}] at (P) {};
+\draw[math tangent] ($(P)+(-1.4,-0.6)$) -- ($(P)+(1.6,0.68)$) node[pos=0.93, above] {$T_P\gamma$};
+\draw[math normal] ($(P)+(-0.45,1.3)$) -- ($(P)+(0.45,-1.3)$) node[pos=0.1, right] {$N_P\gamma$};
+
+\foreach \x/\y in {0.9/0.55,1.5/1.1,2.2/1.6,2.9/2.05,3.7/2.15,4.6/1.5,5.3/0.9}{
+  \pgfmathsetmacro{\vx}{0.24*(0.6+\y)}
+  \pgfmathsetmacro{\vy}{0.16*(2.6-\x)}
+  \draw[math vector] (\x,\y) -- ++(\vx,\vy);
+}
+
+\node[maki annotation] at (5.35,3.85) {curve\\tangent\\normal\\vector field};
+\end{tikzpicture}
+\captionof{figure}{分析与微分几何风格的样式测试}
+\end{center}
+
+\section{Topology and Geometry}
+
+最后一组样式借用了 tikz.net \texttt{plane-to-torus} 的基本域识别箭头写法. 这里重点不是完全复刻原图, 而是把“边识别”“曲面边界”“基本环路”“地质线/切割线”这些在拓扑与几何讲义中高频出现的视觉元素抽出来.
+
+\begin{center}
+\begin{tikzpicture}[x=1cm, y=1cm]
+\begin{scope}
+  \draw[topo patch] (0,0) rectangle (4.2,4.2);
+  \foreach \k in {0.7,1.4,2.1,2.8,3.5}{
+    \draw[topo mesh] (\k,0) -- (\k,4.2);
+    \draw[topo mesh] (0,\k) -- (4.2,\k);
+  }
+  \draw[topo identify] (0,0) -- (4.2,0);
+  \draw[topo identify] (0,4.2) -- (4.2,4.2);
+  \draw[topo identify reversed] (0,0) -- (0,4.2);
+  \draw[topo identify reversed] (4.2,0) -- (4.2,4.2);
+  \draw[topo geodesic] (0.5,0.8) .. controls (1.2,2.2) and (2.7,2.9) .. (3.8,3.5);
+  \draw[topo cut] (1.0,3.7) .. controls (1.7,2.8) and (2.7,1.4) .. (3.4,0.5);
+  \node[maki annotation] at (2.1,2.1) {fundamental\\domain};
+  \node[maki label] at (2.1,-0.45) {$a$};
+  \node[maki label] at (2.1,4.65) {$a$};
+  \node[maki label] at (-0.35,2.1) {$b^{-1}$};
+  \node[maki label] at (4.55,2.1) {$b^{-1}$};
+\end{scope}
+
+\begin{scope}[xshift=7.4cm]
+  \draw[topo boundary, fill=TopologyBg] (0,0) ellipse (2.15 and 1.35);
+  \draw[topo boundary, fill=white] (0,0) ellipse (0.78 and 0.42);
+  \draw[topo loop] (0,0.72) ellipse (1.75 and 0.42);
+  \draw[topo geodesic] (-1.2,-0.05) .. controls (-0.3,1.15) and (0.95,1.0) .. (1.35,0.08);
+  \draw[topo cut] (0,-1.35) -- (0,1.35);
+  \node[maki annotation] at (0,-2.0) {meridian / longitude\\style sketch};
+\end{scope}
+\end{tikzpicture}
+\captionof{figure}{基本域、边识别与环面的拓扑样式测试}
+\end{center}
+
+\end{document}

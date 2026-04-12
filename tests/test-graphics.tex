@@ -1,0 +1,44 @@
+\documentclass[a4paper,12pt,oneside]{maki-notes}
+
+\renewcommand{\LectureNotesTitle}{Graphics Test}
+\renewcommand{\AuthorInfo}{Test Runner}
+
+\begin{document}
+\mainmatter
+
+\chapter{Graphics}
+
+\begin{exercise}
+单选题示例\selectbracket
+\begin{enumerate}
+\item[A.] 选项 A
+\item[B.] 选项 B
+\item[C.] 选项 C
+\item[D.] 选项 D
+\end{enumerate}
+\end{exercise}
+
+\begin{center}
+\begin{tikzpicture}
+\draw[-{Stealth}, thick] (0,0) -- (2,1);
+\draw[color=LogicColor, thick] (0,0) circle (0.5);
+\end{tikzpicture}
+\end{center}
+
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+width=8cm,
+height=5cm,
+axis lines=middle,
+xlabel={$x$},
+ylabel={$y$},
+samples=50,
+domain=-1:2
+]
+\addplot[thick, color=ExColor]{x^2};
+\end{axis}
+\end{tikzpicture}
+\end{center}
+
+\end{document}

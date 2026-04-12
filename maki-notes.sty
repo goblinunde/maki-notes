@@ -1,0 +1,609 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{maki-notes}[2026/04/09 Maki lecture notes style]
+
+\RequirePackage[a4paper, left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm]{geometry}
+\RequirePackage{fancyhdr}
+\RequirePackage{amsmath, amssymb, amsthm, mathtools}
+\RequirePackage{mathpazo}
+\RequirePackage[most]{tcolorbox}
+\RequirePackage{xcolor}
+\RequirePackage{newunicodechar}
+\RequirePackage{etoolbox}
+\RequirePackage{esint}
+\RequirePackage{multirow}
+\RequirePackage{diagbox}
+\RequirePackage{needspace}
+\RequirePackage{tikz}
+\RequirePackage{bm}
+\usetikzlibrary{
+	angles,
+	arrows.meta,
+	backgrounds,
+	calc,
+	decorations.markings,
+	decorations.pathmorphing,
+	decorations.pathreplacing,
+	fit,
+	matrix,
+	patterns,
+	positioning,
+	quotes,
+	shapes.geometric,
+	shapes.misc
+}
+\RequirePackage{makecell}
+\RequirePackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\RequirePackage{capt-of}
+\RequirePackage{graphicx,caption,subcaption}
+\renewcommand{\thesubfigure}{\Alph{subfigure}}
+\RequirePackage{tikz-3dplot}
+\tdplotsetmaincoords{70}{110}
+\RequirePackage{booktabs}
+\usepgfplotslibrary{fillbetween}
+
+\pgfplotsset{
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		anchor=west,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:1)},
+		anchor=south,
+	}
+}
+
+\setlength{\headheight}{26pt}
+
+\newunicodechar{。}{.\ \ignorespaces}
+\newunicodechar{，}{,\ \ignorespaces}
+\newunicodechar{：}{:\ \ignorespaces}
+\newunicodechar{；}{;\ \ignorespaces}
+\newunicodechar{？}{?\ \ignorespaces}
+\newunicodechar{！}{!\ \ignorespaces}
+\newunicodechar{（}{\ (\ignorespaces}
+\newunicodechar{）}{)\ \ignorespaces}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\sep}{\text{ · \ }}
+\renewcommand{\ge}{\geqslant}
+\renewcommand{\geq}{\geqslant}
+\renewcommand{\le}{\leqslant}
+\renewcommand{\leq}{\leqslant}
+
+\AddToHook{env/pmatrix/before}{\linespread{1.2}\selectfont}
+\AddToHook{env/bmatrix/before}{\linespread{1.2}\selectfont}
+\AddToHook{env/vmatrix/before}{\linespread{1.2}\selectfont}
+\AddToHook{env/dcases/before}{\linespread{1.25}\selectfont}
+\AddToHook{env/enumerate/before}{\linespread{1.4}\selectfont}
+\AddToHook{env/enumerate/before}{\vrule width 0em height 0cm depth 0.5cm}
+
+\AddToHook{env/pmatrix/after}{\vrule width 0em height 0cm depth 1.5cm}
+\AddToHook{env/bmatrix/after}{\vrule width 0em height 0em depth 1.5em}
+\AddToHook{env/vmatrix/after}{\vrule width 0em height 0em depth 1.5em}
+\AddToHook{env/dcases/after}{\vrule width 0em height 2em depth 2em}
+
+\let\olddfrac\dfrac
+\renewcommand{\dfrac}[2]{%
+	\olddfrac{#1\vrule width 0pt height 1.15em depth 0em}{#2\vrule width 0pt height 0em depth 0.6em}%
+}
+
+\let\oldlim\lim
+\renewcommand{\lim}{\displaystyle\oldlim}
+\let\oldint\int
+\renewcommand{\int}{\displaystyle{\vrule width 0pt height 0em depth 0em}\oldint}
+\let\oldiint\iint
+\renewcommand{\iint}{\displaystyle{\vrule width 0pt height 0em depth 0em}\oldiint}
+\let\oldiiint\iiint
+\renewcommand{\iiint}{\displaystyle{\vrule width 0pt height 0em depth 0em}\oldiiint}
+\let\oldoint\oint
+\renewcommand{\oint}{\displaystyle{\vrule width 0pt height 1.5em depth 1.5em}\oldoint}
+\let\oldoiint\oiint
+\renewcommand{\oiint}{\displaystyle{\vrule width 0pt height 1.5em depth 1.5em}\oldoiint}
+\let\oldsum\sum
+\renewcommand{\sum}{\displaystyle\oldsum}
+
+\setmainfont{lmroman10-regular.otf}[
+BoldFont = lmroman10-bold.otf,
+ItalicFont = lmroman10-italic.otf,
+BoldItalicFont = lmroman10-bolditalic.otf
+]
+
+\setCJKmainfont{FandolSong-Regular.otf}[
+BoldFont = FandolSong-Bold.otf
+]
+
+\setCJKsansfont{FandolHei-Regular.otf}
+\setCJKmonofont{FandolFang-Regular.otf}
+
+\newCJKfontfamily\kaishu{FandolKai-Regular.otf}
+\newCJKfontfamily\heavykaishu{FandolKai-Regular.otf}[AutoFakeBold = 10]
+
+\definecolor{LogicColor}{RGB}{200, 80, 110}
+\definecolor{LogicBg}{RGB}{255, 240, 245}
+\definecolor{DefColor}{RGB}{210, 105, 30}
+\definecolor{DefBg}{RGB}{255, 250, 240}
+\definecolor{ExColor}{RGB}{70, 130, 180}
+\definecolor{ExBg}{RGB}{240, 248, 255}
+\definecolor{NoteColor}{RGB}{34, 139, 34}
+\definecolor{NNInputColor}{RGB}{67, 145, 98}
+\definecolor{NNHiddenColor}{RGB}{76, 114, 176}
+\definecolor{NNOutputColor}{RGB}{200, 96, 73}
+\definecolor{NNTensorColor}{RGB}{219, 150, 69}
+\definecolor{GeometryColor}{RGB}{43, 110, 163}
+\definecolor{GeometryBg}{RGB}{236, 245, 252}
+\definecolor{TopologyColor}{RGB}{40, 122, 110}
+\definecolor{TopologyBg}{RGB}{238, 249, 246}
+\definecolor{MainText}{RGB}{20, 20, 20}
+\color{MainText}
+
+\tikzset{
+	>=Latex,
+	every picture/.style={
+		line join=round,
+		line cap=round,
+		font=\small
+	},
+	maki label/.style={
+		font=\small,
+		align=center,
+		inner sep=1.5pt,
+		text=MainText
+	},
+	maki annotation/.style={
+		maki label,
+		fill=white,
+		fill opacity=0.92,
+		text opacity=1,
+		rounded corners=2pt
+	},
+	maki guide/.style={
+		thin,
+		dashed,
+		draw=black!35
+	},
+	maki point/.style={
+		circle,
+		fill=MainText,
+		inner sep=1.3pt
+	},
+	maki emphasis/.style={
+		very thick,
+		draw=LogicColor!85!black
+	},
+	nn neuron/.style={
+		circle,
+		draw=NNHiddenColor!70!black,
+		fill=NNHiddenColor!16,
+		thick,
+		minimum size=9mm,
+		inner sep=0pt
+	},
+	nn input/.style={
+		nn neuron,
+		draw=NNInputColor!70!black,
+		fill=NNInputColor!16
+	},
+	nn hidden/.style={
+		nn neuron
+	},
+	nn output/.style={
+		nn neuron,
+		draw=NNOutputColor!75!black,
+		fill=NNOutputColor!18
+	},
+	nn conv/.style={
+		rounded corners=2pt,
+		draw=NNTensorColor!75!black,
+		fill=NNTensorColor!18,
+		thick,
+		minimum width=12mm,
+		minimum height=8mm,
+		align=center
+	},
+	nn tensor/.style={
+		rounded corners=2pt,
+		draw=NNTensorColor!80!black,
+		fill=white,
+		thick,
+		minimum width=11mm,
+		minimum height=7mm,
+		align=center
+	},
+	nn block/.style={
+		rounded corners=4pt,
+		draw=NNHiddenColor!60!black,
+		fill=NNHiddenColor!8,
+		thick,
+		inner sep=6pt
+	},
+	nn sum/.style={
+		circle,
+		draw=LogicColor!75!black,
+		fill=LogicBg,
+		thick,
+		minimum size=7mm,
+		inner sep=0pt
+	},
+	nn connect/.style={
+		-Latex,
+		semithick,
+		draw=NNHiddenColor!75!black,
+		shorten <=1pt,
+		shorten >=1pt
+	},
+	nn connect strong/.style={
+		nn connect,
+		line width=1pt
+	},
+	nn skip/.style={
+		-Latex,
+		semithick,
+		draw=LogicColor!85!black,
+		densely dashed,
+		shorten <=1pt,
+		shorten >=1pt
+	},
+	nn attention/.style={
+		-Latex,
+		semithick,
+		draw=NNTensorColor!85!black,
+		dotted,
+		shorten <=1pt,
+		shorten >=1pt
+	},
+	math axis/.style={
+		-Latex,
+		semithick,
+		draw=MainText
+	},
+	math vector/.style={
+		-Latex,
+		thick,
+		draw=GeometryColor!85!black
+	},
+	math curve/.style={
+		very thick,
+		draw=GeometryColor!90!black
+	},
+	math tangent/.style={
+		very thick,
+		densely dashed,
+		draw=LogicColor!85!black
+	},
+	math normal/.style={
+		very thick,
+		dash pattern=on 4pt off 2pt on 1.2pt off 2pt,
+		draw=NoteColor!85!black
+	},
+	math secant/.style={
+		thick,
+		densely dashed,
+		draw=DefColor!85!black
+	},
+	math sample point/.style={
+		circle,
+		fill=GeometryColor!90!black,
+		inner sep=1.35pt
+	},
+	math region/.style={
+		draw=GeometryColor!70!black,
+		fill=GeometryBg,
+		fill opacity=0.8
+	},
+	geom point/.style={
+		maki point
+	},
+	geom highlighted point/.style={
+		maki point,
+		fill=LogicColor!90!black
+	},
+	geom segment/.style={
+		very thick,
+		draw=GeometryColor!90!black
+	},
+	geom helper/.style={
+		maki guide
+	},
+	geom locus/.style={
+		very thick,
+		draw=NoteColor!80!black
+	},
+	geom arc/.style={
+		thick,
+		draw=DefColor!85!black
+	},
+	geom angle mark/.style={
+		draw=DefColor!85!black,
+		thick
+	},
+	topo patch/.style={
+		draw=TopologyColor!75!black,
+		fill=TopologyBg,
+		thick,
+		rounded corners=2pt
+	},
+	topo mesh/.style={
+		draw=TopologyColor!35,
+		thin
+	},
+	topo boundary/.style={
+		very thick,
+		draw=TopologyColor!80!black
+	},
+	topo geodesic/.style={
+		very thick,
+		densely dashed,
+		draw=GeometryColor!85!black
+	},
+	topo loop/.style={
+		very thick,
+		draw=LogicColor!85!black
+	},
+	topo cut/.style={
+		very thick,
+		dash pattern=on 6pt off 2pt on 1.4pt off 2pt,
+		draw=DefColor!85!black
+	},
+	topo identify/.style={
+		topo boundary,
+		postaction={decorate},
+		decoration={
+			markings,
+			mark=at position 0.3 with {\arrow{Latex[length=4pt,width=4pt]}},
+			mark=at position 0.7 with {\arrow{Latex[length=4pt,width=4pt]}}
+		}
+	},
+		topo identify reversed/.style={
+			topo boundary,
+			postaction={decorate},
+			decoration={
+				markings,
+				mark=at position 0.3 with {\arrowreversed{Latex[length=4pt,width=4pt]}},
+				mark=at position 0.7 with {\arrowreversed{Latex[length=4pt,width=4pt]}}
+			}
+		},
+		diag object/.style={
+			rounded corners=2pt,
+			draw=GeometryColor!75!black,
+			fill=GeometryBg,
+			thick,
+			inner sep=3pt,
+			align=center
+		},
+		diag morphism/.style={
+			-Latex,
+			semithick,
+			draw=GeometryColor!85!black
+		},
+		diag morphism dashed/.style={
+			diag morphism,
+			densely dashed
+		},
+		diag morphism emph/.style={
+			-Latex,
+			thick,
+			draw=LogicColor!85!black
+		},
+		manifold axis/.style={
+			-Latex,
+			semithick,
+			draw=MainText
+		},
+		manifold cloud/.style={
+			draw=TopologyColor!80!black,
+			fill=TopologyBg,
+			fill opacity=0.9,
+			thick
+		},
+		manifold sheet/.style={
+			draw=NoteColor!75!black,
+			fill=NoteColor!12,
+			thick
+		},
+		manifold latent/.style={
+			rounded corners=2pt,
+			draw=NNHiddenColor!75!black,
+			fill=NNHiddenColor!12,
+			thick
+		},
+		manifold forward/.style={
+			-Latex,
+			thick,
+			draw=LogicColor!85!black
+		},
+		manifold backward/.style={
+			-Latex,
+			thick,
+			draw=ExColor!85!black
+		},
+		nn token/.style={
+			nn tensor,
+			minimum width=13mm,
+			minimum height=8mm,
+			fill=NNInputColor!12,
+			draw=NNInputColor!75!black
+		},
+		nn op/.style={
+			rounded corners=3pt,
+			draw=NNHiddenColor!75!black,
+			fill=NNHiddenColor!14,
+			thick,
+			minimum width=17mm,
+			minimum height=8mm,
+			align=center
+		},
+		nn op warm/.style={
+			nn op,
+			draw=NNTensorColor!85!black,
+			fill=NNTensorColor!16
+		},
+		nn op accent/.style={
+			nn op,
+			draw=LogicColor!80!black,
+			fill=LogicBg
+		},
+		nn feature map/.style={
+			rounded corners=1pt,
+			draw=NNTensorColor!80!black,
+			fill=NNTensorColor!15,
+			thick
+		},
+		nn residual bracket/.style={
+			very thick,
+			draw=LogicColor!80!black
+		}
+	}
+
+\newcommand{\fillin}[1][3cm]{\,\underline{\hspace{#1}}\,}
+\newcommand{\selectbracket}{\unskip\nolinebreak\quad \raisebox{0.7pt}[0pt][0pt]{\mbox{$(\qquad)$}}\par}
+
+\ctexset{
+	chapter = {
+		format = \centering,
+		nameformat = \fontsize{40pt}{50pt}\selectfont\heavykaishu\color{LogicColor},
+		titleformat = \fontsize{40pt}{50pt}\selectfont\heavykaishu\color{LogicColor},
+		aftername = \hspace{1.8em},
+		beforeskip = 10pt,
+		afterskip = 55pt,
+	},
+	section = {
+		format = \centering\LARGE\bfseries\color{MainText},
+		beforeskip = 24pt,
+		afterskip = 27pt,
+	}
+}
+
+\tcbset{
+	commonbox/.style={
+		enhanced,
+		fonttitle=\bfseries\large,
+		attach boxed title to top left={xshift=5mm, yshift*=-\tcboxedtitleheight/2},
+		boxed title style={
+			frame hidden,
+			opacityback=1,
+			rounded corners,
+			arc=4pt,
+			top=1mm, bottom=1mm, left=2mm, right=2mm
+		},
+		boxrule=0pt, frame hidden,
+		sharp corners=downhill, rounded corners, arc=10pt,
+		drop fuzzy shadow=black!15!white,
+		left=8mm, right=5mm, top=3mm, bottom=5mm,
+		middle=1em,
+		before skip=1.7em, after skip=1.2em,
+		fontupper=\linespread{1.7}\selectfont
+	}
+}
+
+\newtcolorbox{thmBox}[3][]{%
+	commonbox,
+	colback=LogicBg,
+	colbacktitle=LogicColor,
+	before title={\refstepcounter{theorem}},
+	title={#2 \thetheorem\ifstrempty{#3}{}{（#3）}},
+	#1
+}
+
+\newcounter{theorem}[chapter]
+\renewcommand{\thetheorem}{\thechapter.\arabic{theorem}}
+
+\newenvironment{theorem}[1][]{\begin{thmBox}{定理}{#1}}{\end{thmBox}}
+\newenvironment{lemma}[1][]{\begin{thmBox}{引理}{#1}}{\end{thmBox}}
+\newenvironment{proposition}[1][]{\begin{thmBox}{命题}{#1}}{\end{thmBox}}
+\newenvironment{corollary}[1][]{\begin{thmBox}{推论}{#1}}{\end{thmBox}}
+\newenvironment{property}[1][]{\begin{thmBox}{性质}{#1}}{\end{thmBox}}
+
+\newtcolorbox{defBox}[3][]{%
+	commonbox,
+	colback=DefBg,
+	colbacktitle=DefColor,
+	before title={\refstepcounter{theorem}},
+	title={#2 \thetheorem\ifstrempty{#3}{}{（#3）}},
+	#1
+}
+
+\newcounter{definition}[chapter]
+\renewcommand{\thedefinition}{\thechapter.\arabic{definition}}
+
+\newenvironment{definition}[1][]{\begin{defBox}{定义}{#1}}{\end{defBox}}
+\newenvironment{axiom}[1][]{\begin{defBox}{公理}{#1}}{\end{defBox}}
+
+\newtcolorbox{exBox}[3][]{%
+	commonbox,
+	colback=ExBg,
+	colbacktitle=ExColor,
+	before title={\refstepcounter{theorem}},
+	title={#2 \thetheorem\ifstrempty{#3}{}{（#3）}},
+	#1
+}
+
+\newtcolorbox{longexBox}[3][]{%
+	breakable,
+	commonbox,
+	colback=ExBg,
+	colbacktitle=ExColor,
+	before title={\refstepcounter{theorem}},
+	title={#2 \thetheorem\ifstrempty{#3}{}{（#3）}},
+	#1
+}
+
+\newcounter{example}[chapter]
+\renewcommand{\theexample}{\thechapter.\arabic{example}}
+
+\newenvironment{example}[1][]{\begin{exBox}{例题}{#1}}{\end{exBox}}
+\newenvironment{longexample}[1][]{\begin{longexBox}{例题}{#1}}{\end{longexBox}}
+\newenvironment{exercise}[1][]{\begin{exBox}{练习}{#1}}{\end{exBox}}
+
+\newtcolorbox{realexamBox}[2][]{%
+	commonbox,
+	colback=ExBg,
+	colbacktitle=ExColor,
+	title={真题\ \ifstrempty{#2}{}{（#2）}},
+	#1
+}
+
+\newtcolorbox{longrealexamBox}[2][]{%
+	breakable,
+	commonbox,
+	colback=ExBg,
+	colbacktitle=ExColor,
+	title={真题\ \ifstrempty{#2}{}{（#2）}},
+	#1
+}
+
+\newenvironment{realexam}[1][]{\begin{realexamBox}{#1}}{\end{realexamBox}}
+\newenvironment{longrealexam}[1][]{\begin{longrealexamBox}{#1}}{\end{longrealexamBox}}
+
+\newenvironment{note}{%
+	\par\vspace{0.5em}\noindent
+	\textbf{\color{NoteColor} 注：}%
+}{%
+	\par\vspace{0.5em}%
+}
+
+\renewenvironment{proof}{%
+	\par\vspace{0.5em}\noindent
+	\textbf{\color{LogicColor} 证明：}%
+}{%
+	\hfill \textcolor{LogicColor}{\rule{0.6em}{0.6em}} \par
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small \kaishu \LectureNotesTitle}
+\fancyhead[R]{\small \kaishu \AuthorInfo}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{LogicColor}\leaders\hrule height \headrulewidth\hfill}}
+
+\fancypagestyle{plain}{
+	\fancyhf{}
+	\fancyhead[L]{\small \kaishu \LectureNotesTitle}
+	\fancyhead[R]{\small \kaishu \AuthorInfo}
+	\fancyfoot[C]{\thepage}
+	\renewcommand{\headrulewidth}{0.5pt}
+	\renewcommand{\headrule}{\hbox to\headwidth{\color{LogicColor}\leaders\hrule height \headrulewidth\hfill}}
+}
+
+\numberwithin{equation}{chapter}

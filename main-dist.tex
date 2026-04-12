@@ -1,0 +1,761 @@
+\documentclass[a4paper,12pt,oneside,fontset=none]{ctexbook}
+
+
+
+% ========================================
+%  ↓↓↓ 讲义信息设置（修改讲义时只需改这里） ↓↓↓
+% ========================================
+
+\newcommand{\LectureNotesTitle}{Maki梦幻数学讲义LaTeX模板}
+\newcommand{\AuthorInfo}{B站@Maki的完美算术教室}
+
+\newcommand{\MakeTitlePage}{%
+	\begin{titlepage}
+		\centering
+		\vspace*{5cm}
+		
+		{\fontsize{48pt}{60pt}\selectfont\heavykaishu \color{LogicColor} Maki梦幻数学讲义LaTeX模板\par}
+		
+		\vfill
+		
+		{\LARGE \kaishu 
+			Maki 的完美算术教室
+			\\[0.8em]
+			\Large
+			B 站\ \ \ 知名 Up 主
+			\\
+		}
+		
+		\vspace{2.3cm}
+		
+		{\Large \kaishu
+			学\ 海\ 悠\ 悠\quad 研\ 途\ 漫\ 漫
+			\\[0.3em]
+			{\Large 以此薄卷赠诸生共勉}
+			\\[2.5em]
+			
+			二\ 〇\ 二\ 六\ 年\ 三\ 月 
+		}
+		
+		\vspace{2cm}
+	\end{titlepage}%
+}
+
+
+% ========================================
+%  ↑↑↑ 讲义信息设置（修改讲义时只需改这里） ↑↑↑
+% ========================================
+
+
+
+
+
+
+
+
+
+
+
+
+% ======================================
+%  ↓↓↓ 模板核心设置（可根据实际需求修改） ↓↓↓
+% ======================================
+
+
+\usepackage[a4paper, left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm]{geometry}
+\usepackage{fancyhdr}
+\usepackage{amsmath, amssymb, amsthm, mathtools}
+\usepackage{mathpazo}
+\usepackage[most]{tcolorbox}
+\usepackage{xcolor}
+\usepackage{newunicodechar}
+\usepackage{etoolbox}
+
+\usepackage{esint}
+\usepackage{multirow}
+\usepackage{diagbox}
+\usepackage{needspace}
+\usepackage{tikz}
+\usepackage{bm}
+\usetikzlibrary{arrows.meta}
+\usepackage{makecell}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{capt-of}
+\usepackage{graphicx,caption,subcaption}
+\renewcommand{\thesubfigure}{\Alph{subfigure}}
+\usepackage{tikz-3dplot}
+\tdplotsetmaincoords{70}{110}
+\usepackage{booktabs}
+\usetikzlibrary{patterns}
+\usepgfplotslibrary{fillbetween}
+
+
+\pgfplotsset{
+	% 让x轴标签出现在箭头最右侧
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		anchor=west,
+	},
+	% 让y轴标签出现在箭头最上方
+	every axis y label/.style={
+		at={(ticklabel* cs:1)},
+		anchor=south,
+	}
+}
+
+
+\setlength{\headheight}{26pt}
+
+\newunicodechar{。}{.\ \ignorespaces}
+\newunicodechar{，}{,\ \ignorespaces}
+\newunicodechar{：}{:\ \ignorespaces}
+\newunicodechar{；}{;\ \ignorespaces}
+\newunicodechar{？}{?\ \ignorespaces}
+\newunicodechar{！}{!\ \ignorespaces}
+\newunicodechar{（}{\ (\ignorespaces}
+\newunicodechar{）}{)\ \ignorespaces}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\sep}{\text{ · \ }}
+\renewcommand{\ge}{\geqslant}
+\renewcommand{\geq}{\geqslant}
+\renewcommand{\le}{\leqslant}
+\renewcommand{\leq}{\leqslant}
+
+
+\AddToHook{env/pmatrix/before}{\linespread{1.2}\selectfont}
+\AddToHook{env/bmatrix/before}{\linespread{1.2}\selectfont}
+\AddToHook{env/vmatrix/before}{\linespread{1.2}\selectfont}
+\AddToHook{env/dcases/before}{\linespread{1.25}\selectfont}
+\AddToHook{env/enumerate/before}{\linespread{1.4}\selectfont}
+\AddToHook{env/enumerate/before}
+{\vrule width 0em height 0cm depth 0.5cm}
+
+\AddToHook{env/pmatrix/after}
+{\vrule width 0em height 0cm depth 1.5cm}
+\AddToHook{env/bmatrix/after}
+{\vrule width 0em height 0em depth 1.5em}
+\AddToHook{env/vmatrix/after}
+{\vrule width 0em height 0em depth 1.5em}
+\AddToHook{env/dcases/after}
+{\vrule width 0em height 2em depth 2em}
+
+
+\let\olddfrac\dfrac
+\renewcommand{\dfrac}[2]{
+	\olddfrac{#1\vrule width 0pt height 1.15em depth 0em}{#2\vrule width 0pt height 0em depth 0.6em}
+}
+
+\let\oldlim\lim
+\renewcommand{\lim}{\displaystyle\oldlim}
+\let\oldint\int
+\renewcommand{\int}{\displaystyle{\vrule width 0pt height 0em depth 0em}\oldint}
+\let\oldiint\iint
+\renewcommand{\iint}{\displaystyle{\vrule width 0pt height 0em depth 0em}\oldiint}
+\let\oldiiint\iiint
+\renewcommand{\iiint}{\displaystyle{\vrule width 0pt height 0em depth 0em}\oldiiint}
+\let\oldoint\oint
+\renewcommand{\oint}{\displaystyle{\vrule width 0pt height 1.5em depth 1.5em}\oldoint}
+\let\oldoiint\oiint
+\renewcommand{\oiint}{\displaystyle{\vrule width 0pt height 1.5em depth 1.5em}\oldoiint}
+\let\oldsum\sum
+\renewcommand{\sum}{\displaystyle\oldsum}
+
+
+\setmainfont{lmroman10-regular.otf}[
+BoldFont = lmroman10-bold.otf,
+ItalicFont = lmroman10-italic.otf,
+BoldItalicFont = lmroman10-bolditalic.otf
+]
+
+\setCJKmainfont{FandolSong-Regular.otf}[
+BoldFont = FandolSong-Bold.otf
+]
+
+\setCJKsansfont{FandolHei-Regular.otf}
+\setCJKmonofont{FandolFang-Regular.otf}
+
+\newCJKfontfamily\kaishu{FandolKai-Regular.otf}
+\newCJKfontfamily\heavykaishu{FandolKai-Regular.otf}[AutoFakeBold = 10]
+
+\definecolor{LogicColor}{RGB}{200, 80, 110}
+\definecolor{LogicBg}{RGB}{255, 240, 245}
+\definecolor{DefColor}{RGB}{210, 105, 30}
+\definecolor{DefBg}{RGB}{255, 250, 240}
+\definecolor{ExColor}{RGB}{70, 130, 180}
+\definecolor{ExBg}{RGB}{240, 248, 255}
+\definecolor{NoteColor}{RGB}{34, 139, 34}
+\definecolor{MainText}{RGB}{20, 20, 20}
+\color{MainText}
+
+% --- 新增题型辅助命令 ---
+\newcommand{\fillin}[1][3cm]{\,\underline{\hspace{#1}}\,}
+\newcommand{\selectbracket}{\unskip\nolinebreak\quad \raisebox{0.7pt}[0pt][0pt]{\mbox{$(\qquad)$}}\par}
+% -----------------------
+
+\ctexset{
+	chapter = {
+		format = \centering,
+		nameformat = \fontsize{40pt}{50pt}\selectfont\heavykaishu\color{LogicColor},
+		titleformat = \fontsize{40pt}{50pt}\selectfont\heavykaishu\color{LogicColor},
+		aftername = \hspace{1.8em},
+		beforeskip = 10pt,
+		afterskip = 55pt,
+	},
+	section = {
+		format = \centering\LARGE\bfseries\color{MainText},
+		beforeskip = 24pt,
+		afterskip = 27pt,
+	}
+}
+
+\tcbset{
+	commonbox/.style={
+		enhanced,
+		fonttitle=\bfseries\large,
+		attach boxed title to top left={xshift=5mm, yshift*=-\tcboxedtitleheight/2},
+		boxed title style={
+			frame hidden,
+			opacityback=1,
+			rounded corners,
+			arc=4pt,
+			top=1mm, bottom=1mm, left=2mm, right=2mm
+		},
+		boxrule=0pt, frame hidden,
+		sharp corners=downhill, rounded corners, arc=10pt,
+		drop fuzzy shadow=black!15!white,
+		left=8mm, right=5mm, top=3mm, bottom=5mm,
+		middle=1em,
+		before skip=1.7em, after skip=1.2em,
+		fontupper=\linespread{1.7}\selectfont
+	}
+}
+
+\newtcolorbox{thmBox}[3][]{
+	commonbox,
+	colback=LogicBg,
+	colbacktitle=LogicColor,
+	before title={\refstepcounter{theorem}}, 
+	title={#2 \thetheorem\ifstrempty{#3}{}{（#3）}},
+	#1
+}
+
+
+\newcounter{theorem}[chapter]
+\renewcommand{\thetheorem}{\thechapter.\arabic{theorem}}
+
+\newenvironment{theorem}[1][]{\begin{thmBox}{定理}{#1}}{\end{thmBox}}
+\newenvironment{lemma}[1][]{\begin{thmBox}{引理}{#1}}{\end{thmBox}}
+\newenvironment{proposition}[1][]{\begin{thmBox}{命题}{#1}}{\end{thmBox}}
+\newenvironment{corollary}[1][]{\begin{thmBox}{推论}{#1}}{\end{thmBox}}
+\newenvironment{property}[1][]{\begin{thmBox}{性质}{#1}}{\end{thmBox}}
+
+\newtcolorbox{defBox}[3][]{
+	commonbox, colback=DefBg, colbacktitle=DefColor,
+	before title={\refstepcounter{theorem}},
+	title={#2 \thetheorem\ifstrempty{#3}{}{（#3）}},
+	#1
+}
+
+\newcounter{definition}[chapter]
+\renewcommand{\thedefinition}{\thechapter.\arabic{definition}}
+
+\newenvironment{definition}[1][]{\begin{defBox}{定义}{#1}}{\end{defBox}}
+\newenvironment{axiom}[1][]{\begin{defBox}{公理}{#1}}{\end{defBox}}
+
+\newtcolorbox{exBox}[3][]{
+	commonbox, colback=ExBg, colbacktitle=ExColor,
+	before title={\refstepcounter{theorem}},
+	title={#2 \thetheorem\ifstrempty{#3}{}{（#3）}}, #1
+}
+
+\newtcolorbox{longexBox}[3][]{
+	breakable, commonbox, colback=ExBg, colbacktitle=ExColor,
+	before title={\refstepcounter{theorem}},
+	title={#2 \thetheorem\ifstrempty{#3}{}{（#3）}}, #1
+}
+
+\newcounter{example}[chapter]
+\renewcommand{\theexample}{\thechapter.\arabic{example}}
+
+\newenvironment{example}[1][]{\begin{exBox}{例题}{#1}}{\end{exBox}}
+
+\newenvironment{longexample}[1][]{\begin{longexBox}{例题}{#1}}{\end{longexBox}}
+
+
+\newenvironment{exercise}[1][]{\begin{exBox}{练习}{#1}}{\end{exBox}}
+
+\newtcolorbox{realexamBox}[2][]{
+	commonbox, colback=ExBg, colbacktitle=ExColor,
+	title={真题\ \ifstrempty{#2}{}{（#2）}}, #1
+}
+
+\newtcolorbox{longrealexamBox}[2][]{
+	breakable, commonbox, colback=ExBg, colbacktitle=ExColor,
+	title={真题\ \ifstrempty{#2}{}{（#2）}}, #1
+}
+
+\newenvironment{realexam}[1][]
+{%\clearpage
+	\begin{realexamBox}{#1}}{\end{realexamBox}
+	%\clearpage
+}
+
+\newenvironment{longrealexam}[1][]
+{%\clearpage
+	\begin{longrealexamBox}{#1}}{\end{longrealexamBox}
+	%\clearpage
+}
+
+
+
+\newenvironment{note}{
+	\par\vspace{0.5em}\noindent
+	\textbf{\color{NoteColor} 注：}
+}{
+	\par\vspace{0.5em}
+}
+
+\renewenvironment{proof}{
+	\par\vspace{0.5em}\noindent
+	\textbf{\color{LogicColor} 证明：}
+}{
+	\hfill \textcolor{LogicColor}{\rule{0.6em}{0.6em}} \par
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small \kaishu \LectureNotesTitle}
+\fancyhead[R]{\small \kaishu \AuthorInfo}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{LogicColor}\leaders\hrule height \headrulewidth\hfill}}
+
+\fancypagestyle{plain}{
+	\fancyhf{}
+	\fancyhead[L]{\small \kaishu \LectureNotesTitle}
+	\fancyhead[R]{\small \kaishu \AuthorInfo}
+	\fancyfoot[C]{\thepage}
+	\renewcommand{\headrulewidth}{0.5pt}
+	\renewcommand{\headrule}{\hbox to\headwidth{\color{LogicColor}\leaders\hrule height \headrulewidth\hfill}}
+}
+
+\numberwithin{equation}{chapter}
+
+
+% ======================================
+%  ↑↑↑ 模板核心设置（可根据实际需求修改） ↑↑↑
+% ======================================
+
+
+
+
+
+
+
+\begin{document}
+	
+	\frontmatter
+	
+	% 显示标签页（可选，但建议添加，可以在代码最上方约第12行的地方开始修改设置）
+	\MakeTitlePage
+	
+	
+	% ====================
+	%  ↓↓↓ 前言（可选） ↓↓↓
+	% ====================
+	
+	\chapter*{前言}
+	此模板系编者 Maki 为数学讲义设计之 \LaTeX\ 排版方案。经反复调试，现已基本定型，特以本文档集中展示其版式与功能，以便同好取用参考。
+	
+	模板以 \texttt{ctexbook} 文档类为基础，采用 XeLaTeX 编译，正文使用 Latin Modern Roman 与 Fandol 系列字体，章节标题以楷书排印。数学环境方面，定义、定理、例题、真题等均以 \texttt{tcolorbox} 实现彩色盒子排版，配色各异、层次分明；另设填空、选择等题型辅助命令，可直接用于试卷与讲义编排。讲义图片均以 TikZ 及 \texttt{pgfplots} 绘制，力求清晰可控。
+	
+	本模板由 B 站账号「Maki 的完美算术教室」免费公开，允许商用；如若据此编写材料或二次开发，无需注明出处，可自由使用或二次开发。模板仍在持续迭代，若有建议或发现问题，欢迎来信告知（maki@maki-math.com）。
+	
+	\vspace{3cm}
+	
+	\hfill
+	\begin{minipage}{5cm}
+		\centering
+		Maki \\
+		二〇二六年三月\\
+		于多伦多
+	\end{minipage}
+	
+	% ====================
+	%  ↑↑↑ 前言（可选） ↑↑↑
+	% ====================
+	
+	
+	
+	% 目录（可选）
+	\tableofcontents
+	
+	
+	\mainmatter
+	
+	
+	
+	
+	% ===================================
+	%  ↓↓↓ 正文部分（开始你伟大的创作吧） ↓↓↓
+	% ===================================
+	
+	
+	
+	
+	%==========================================================
+	\chapter{极限与连续}
+	%==========================================================
+	
+	\section{函数极限}
+	
+	在讨论函数的性质之前, 我们首先回顾极限的严格定义.
+	
+	\begin{definition}[函数极限的 $\varepsilon$-$\delta$ 定义]
+		设函数 $f(x)$ 在点 $x_0$ 的某去心邻域内有定义. 若存在常数 $A$, 对于任意给定的 $\varepsilon > 0$, 总存在 $\delta > 0$, 使得当 $0 < |x - x_0| < \delta$ 时, 有
+		\[
+		|f(x) - A| < \varepsilon,
+		\]
+		则称 $A$ 为函数 $f(x)$ 当 $x \to x_0$ 时的\textbf{极限}, 记作 $\lim_{x \to x_0} f(x) = A$.
+	\end{definition}
+	
+	\begin{theorem}[极限的唯一性]
+		若 $\lim_{x \to x_0} f(x)$ 存在, 则该极限值唯一.
+	\end{theorem}
+	
+	\begin{proof}
+		假设 $\lim_{x \to x_0} f(x) = A$ 且 $\lim_{x \to x_0} f(x) = B$, 其中 $A \neq B$. 取 $\varepsilon = \dfrac{|A - B|}{2} > 0$, 则存在 $\delta_1, \delta_2 > 0$, 使得
+		\[
+		0 < |x - x_0| < \delta_1 \implies |f(x) - A| < \varepsilon, \qquad
+		0 < |x - x_0| < \delta_2 \implies |f(x) - B| < \varepsilon.
+		\]
+		取 $\delta = \min\{\delta_1, \delta_2\}$, 当 $0 < |x - x_0| < \delta$ 时,
+		\[
+		|A - B| \le |f(x) - A| + |f(x) - B| < 2\varepsilon = |A - B|,
+		\]
+		矛盾, 故 $A = B$.
+	\end{proof}
+	
+	\begin{theorem}[极限的保号性]
+		若 $\lim_{x \to x_0} f(x) = A > 0$, 则存在 $\delta > 0$, 使得当 $0 < |x - x_0| < \delta$ 时, $f(x) > \dfrac{A}{2} > 0$.
+	\end{theorem}
+	
+	\begin{corollary}
+		若 $\lim_{x \to x_0} f(x) = A \neq 0$, 则存在 $x_0$ 的某去心邻域, 在该邻域内 $|f(x)| > \dfrac{|A|}{2}$.
+	\end{corollary}
+	
+	\begin{note}
+		保号性的逆命题\textbf{不成立}: 若在 $x_0$ 的去心邻域内 $f(x) > 0$, 只能推出 $\lim_{x \to x_0} f(x) \ge 0$, 不能保证严格大于零. 例如 $f(x) = x^2$, $x_0 = 0$.
+	\end{note}
+	
+	\begin{example}
+		用 $\varepsilon$-$\delta$ 定义证明 $\lim_{x \to 2} (3x - 1) = 5$.
+	\end{example}
+	
+	\textbf{解.} 对任意 $\varepsilon > 0$, 取 $\delta = \dfrac{\varepsilon}{3}$, 当 $0 < |x - 2| < \delta$ 时,
+	\[
+	|f(x) - 5| = |3x - 1 - 5| = 3|x - 2| < 3\delta = \varepsilon.
+	\]
+	由定义, $\lim_{x \to 2}(3x - 1) = 5$. \hfill $\square$
+	
+	\section{夹逼准则与两个重要极限}
+	
+	\begin{theorem}[夹逼准则]
+		若在 $x_0$ 的某去心邻域内, $g(x) \le f(x) \le h(x)$, 且
+		\[
+		\lim_{x \to x_0} g(x) = \lim_{x \to x_0} h(x) = A,
+		\]
+		则 $\lim_{x \to x_0} f(x) = A$.
+	\end{theorem}
+	
+	\begin{property}[第一个重要极限]
+		$\lim_{x \to 0} \dfrac{\sin x}{x} = 1$.
+	\end{property}
+	
+	\begin{property}[第二个重要极限]
+		$\lim_{x \to \infty}\left(1 + \dfrac{1}{x}\right)^{x} = e$.
+	\end{property}
+	
+	\begin{example}
+		求极限 $\lim_{x \to 0} \dfrac{\tan x - \sin x}{x^3}$.
+	\end{example}
+	
+	\textbf{解.}
+	\begin{align*}
+		\lim_{x \to 0} \dfrac{\tan x - \sin x}{x^3}
+		&= \lim_{x \to 0} \dfrac{\sin x\left(\dfrac{1}{\cos x} - 1\right)}{x^3} \\[6pt]
+		&= \lim_{x \to 0} \dfrac{\sin x}{x} \cdot \dfrac{1 - \cos x}{x^2 \cos x} \\[6pt]
+		&= 1 \cdot \dfrac{1}{2} \cdot 1 = \dfrac{1}{2}.
+	\end{align*}
+	
+	%==========================================================
+	\chapter{一元函数微分学}
+	%==========================================================
+	
+	\section{导数与微分}
+	
+	\begin{definition}[导数]
+		设函数 $y = f(x)$ 在点 $x_0$ 的某邻域内有定义, 若极限
+		\[
+		\lim_{\Delta x \to 0} \dfrac{f(x_0 + \Delta x) - f(x_0)}{\Delta x}
+		\]
+		存在, 则称 $f(x)$ 在点 $x_0$ 处\textbf{可导}, 并称此极限值为 $f(x)$ 在 $x_0$ 处的导数, 记作 $f'(x_0)$.
+	\end{definition}
+	
+	\begin{lemma}[Fermat 引理]
+		若 $f(x)$ 在 $x_0$ 处取得极值, 且 $f'(x_0)$ 存在, 则 $f'(x_0) = 0$.
+	\end{lemma}
+	
+	\begin{theorem}[Rolle 中值定理]
+		设 $f(x)$ 满足:
+		\begin{enumerate}
+			\item 在 $[a, b]$ 上连续;
+			\item 在 $(a, b)$ 内可导;
+			\item $f(a) = f(b)$.
+		\end{enumerate}
+		则至少存在一点 $\xi \in (a, b)$, 使得 $f'(\xi) = 0$.
+	\end{theorem}
+	
+	\begin{theorem}[Lagrange 中值定理]
+		设 $f(x)$ 在 $[a, b]$ 上连续, 在 $(a, b)$ 内可导, 则至少存在一点 $\xi \in (a, b)$, 使得
+		\[
+		f'(\xi) = \dfrac{f(b) - f(a)}{b - a}.
+		\]
+	\end{theorem}
+	
+	\begin{theorem}[Cauchy 中值定理]
+		设 $f(x), g(x)$ 在 $[a, b]$ 上连续, 在 $(a, b)$ 内可导, 且 $g'(x) \neq 0$, 则至少存在一点 $\xi \in (a, b)$, 使得
+		\[
+		\dfrac{f'(\xi)}{g'(\xi)} = \dfrac{f(b) - f(a)}{g(b) - g(a)}.
+		\]
+	\end{theorem}
+	
+	\begin{note}
+		三大中值定理的关系: Rolle 定理是 Lagrange 定理的特例 ($f(a) = f(b)$), Lagrange 定理是 Cauchy 定理的特例 ($g(x) = x$).
+	\end{note}
+	
+	\section{典型例题}
+	
+	\begin{example}
+		设 $f(x)$ 在 $[0, 1]$ 上连续, 在 $(0, 1)$ 内可导, 且 $f(0) = 0$, $f(1) = 1$. 证明: 存在 $\xi \in (0, 1)$, 使得 $f'(\xi) = 2\xi$.
+	\end{example}
+	
+	\textbf{证.} 令 $F(x) = f(x) - x^2$, 则 $F(0) = 0$, $F(1) = 1 - 1 = 0$. 由 Rolle 定理, 存在 $\xi \in (0, 1)$, 使得 $F'(\xi) = f'(\xi) - 2\xi = 0$, 即 $f'(\xi) = 2\xi$. \hfill $\square$
+	
+	\begin{realexam}[2019 数学一]
+		设 $f(x)$ 在 $[0, +\infty)$ 上有连续的导数, $f(0) = 0$, 且对所有 $x \ge 0$ 有 $0 \le f'(x) \le 2f(x)$. 证明: $f(x) \equiv 0$.
+	\end{realexam}
+	
+	\textbf{证.} 设 $g(x) = f(x)e^{-2x}$, 则
+	\[
+	g'(x) = f'(x)e^{-2x} - 2f(x)e^{-2x} = \bigl(f'(x) - 2f(x)\bigr)e^{-2x} \le 0.
+	\]
+	故 $g(x)$ 在 $[0, +\infty)$ 上单调递减. 又因 $g(0) = 0$, 所以 $g(x) \le 0$, 即 $f(x) \le 0$.
+	
+	另一方面, 由 $f'(x) \ge 0$ 且 $f(0) = 0$, 知 $f(x) \ge 0$. 综合得 $f(x) \equiv 0$. \hfill $\square$
+	
+	%==========================================================
+	\chapter{一元函数积分学}
+	%==========================================================
+	
+	\section{不定积分}
+	
+	\begin{definition}[原函数与不定积分]
+		若 $F'(x) = f(x)$, 则称 $F(x)$ 为 $f(x)$ 的一个\textbf{原函数}. $f(x)$ 的全体原函数
+		\[
+		\int f(x)\,\mathrm{d}x = F(x) + C
+		\]
+		称为 $f(x)$ 的\textbf{不定积分}.
+	\end{definition}
+	
+	\begin{axiom}[Newton--Leibniz 公式]
+		若 $f(x)$ 在 $[a, b]$ 上连续, $F(x)$ 是 $f(x)$ 的一个原函数, 则
+		\[
+		\int_a^b f(x)\,\mathrm{d}x = F(b) - F(a).
+		\]
+	\end{axiom}
+	
+	\begin{note}
+		严格来说 Newton--Leibniz 公式是定理而非公理, 这里使用公理环境仅作模板展示用途.
+	\end{note}
+	
+	\section{定积分应用}
+	
+	\begin{proposition}
+		若 $f(x)$ 在 $[a, b]$ 上连续且 $f(x) \ge 0$, 则 $\int_a^b f(x)\,\mathrm{d}x \ge 0$.
+	\end{proposition}
+	
+	\begin{example}
+		计算 $\int_0^{\pi} \dfrac{x\sin x}{1 + \cos^2 x}\,\mathrm{d}x$.
+	\end{example}
+	
+	\textbf{解.} 令 $x = \pi - t$, 则
+	\begin{align*}
+		I &= \int_0^{\pi} \dfrac{x\sin x}{1 + \cos^2 x}\,\mathrm{d}x 
+		= \int_0^{\pi} \dfrac{(\pi - t)\sin t}{1 + \cos^2 t}\,\mathrm{d}t \\[6pt]
+		&= \pi\int_0^{\pi}\dfrac{\sin t}{1 + \cos^2 t}\,\mathrm{d}t - I.
+	\end{align*}
+	故 $2I = \pi\int_0^{\pi}\dfrac{\sin t}{1 + \cos^2 t}\,\mathrm{d}t$. 令 $u = \cos t$, 得
+	\[
+	2I = \pi\int_{-1}^{1}\dfrac{1}{1 + u^2}\,\mathrm{d}u = \pi\bigl[\arctan u\bigr]_{-1}^{1} = \pi\cdot\dfrac{\pi}{2} = \dfrac{\pi^2}{2}.
+	\]
+	因此 $I = \dfrac{\pi^2}{4}$. \hfill $\square$
+	
+	%==========================================================
+	\chapter{向量代数与空间解析几何}
+	%==========================================================
+	
+	\section{向量的基本运算}
+	
+	\begin{definition}[向量的数量积]
+		设 $\boldsymbol{a} = (a_1, a_2, a_3)$, $\boldsymbol{b} = (b_1, b_2, b_3)$, 定义\textbf{数量积}(内积)为
+		\[
+		\boldsymbol{a} \cdot \boldsymbol{b} = a_1 b_1 + a_2 b_2 + a_3 b_3 = |\boldsymbol{a}||\boldsymbol{b}|\cos\theta,
+		\]
+		其中 $\theta$ 为两向量的夹角.
+	\end{definition}
+	
+	\begin{definition}[向量的向量积]
+		$\boldsymbol{a}$ 与 $\boldsymbol{b}$ 的\textbf{向量积}(叉积)定义为
+		\[
+		\boldsymbol{a} \times \boldsymbol{b} = 
+		\begin{vmatrix}
+			\boldsymbol{i} & \boldsymbol{j} & \boldsymbol{k} \\
+			a_1 & a_2 & a_3 \\
+			b_1 & b_2 & b_3
+		\end{vmatrix}.
+		\]
+	\end{definition}
+	
+	\begin{property}
+		$|\boldsymbol{a} \times \boldsymbol{b}| = |\boldsymbol{a}||\boldsymbol{b}|\sin\theta$, 其几何意义为以 $\boldsymbol{a}, \boldsymbol{b}$ 为邻边的平行四边形面积.
+	\end{property}
+	
+	\section{空间平面与直线}
+	
+	\begin{example}
+		求过点 $A(1, -1, 2)$ 且平行于平面 $2x - 3y + z = 5$ 的平面方程.
+	\end{example}
+	
+	\textbf{解.} 所求平面法向量为 $\boldsymbol{n} = (2, -3, 1)$, 故平面方程为
+	\[
+	2(x - 1) - 3(y + 1) + (z - 2) = 0 \implies 2x - 3y + z = 7.
+	\]
+	
+	\begin{realexam}[2015 数学一]
+		求直线 $L: \dfrac{x - 1}{1} = \dfrac{y}{2} = \dfrac{z + 1}{1}$ 绕 $z$ 轴旋转一周所得旋转曲面的方程.
+	\end{realexam}
+	
+	\textbf{解.} 直线 $L$ 的参数方程为 $x = 1 + t$, $y = 2t$, $z = -1 + t$. 设 $M_0(x_0, y_0, z_0)$ 是 $L$ 上任意一点, 则 $M_0$ 绕 $z$ 轴旋转到 $M(x, y, z)$ 时满足
+	\[
+	x^2 + y^2 = x_0^2 + y_0^2, \quad z = z_0.
+	\]
+	由 $z = z_0 = -1 + t$ 得 $t = z + 1$, 故 $x_0 = z + 2$, $y_0 = 2(z+1)$. 代入得
+	\[
+	x^2 + y^2 = (z+2)^2 + 4(z+1)^2 = 5z^2 + 12z + 8.
+	\]
+	
+	%==========================================================
+	\chapter{多元函数微分学}
+	%==========================================================
+	
+	\section{填空与选择题示例}
+	
+	以下展示填空题和选择题的排版效果.
+	
+	\begin{exercise}
+		设 $z = x^2y + e^{xy}$, 则 $\dfrac{\partial^2 z}{\partial x \partial y} = $ \fillin[4cm].
+	\end{exercise}
+	
+	\begin{exercise}
+		设 $f(x,y)$ 在点 $(0,0)$ 处可微, 且 $f(0,0) = 0$, $f_x(0,0) = 1$, $f_y(0,0) = -1$, 则 $f(0.01, -0.02)$ 的近似值为 \fillin.
+	\end{exercise}
+	
+	\begin{exercise}
+		下列关于可微性的叙述, 正确的是\selectbracket
+		\begin{enumerate}
+			\item[A.] 偏导数存在 $\Longrightarrow$ 可微
+			\item[B.] 可微 $\Longrightarrow$ 偏导数连续
+			\item[C.] 可微 $\Longrightarrow$ 连续
+			\item[D.] 连续 $\Longrightarrow$ 可微
+		\end{enumerate}
+	\end{exercise}
+	
+	\section{多元微分的综合应用}
+	
+	\begin{theorem}[隐函数存在定理]
+		设 $F(x, y)$ 在点 $(x_0, y_0)$ 的某邻域内有连续偏导数, 且 $F(x_0, y_0) = 0$, $F_y(x_0, y_0) \neq 0$, 则方程 $F(x,y) = 0$ 在 $(x_0, y_0)$ 附近唯一确定一个隐函数 $y = f(x)$, 且
+		\[
+		\dfrac{\mathrm{d}y}{\mathrm{d}x} = -\dfrac{F_x}{F_y}.
+		\]
+	\end{theorem}
+	
+	\begin{longexample}
+		设 $z = z(x,y)$ 由方程 $F(x+z, y+z) = 0$ 确定, 其中 $F$ 有连续偏导数且 $F_1' + F_2' \neq 0$. 求 $\dfrac{\partial z}{\partial x} + \dfrac{\partial z}{\partial y}$.
+		
+		\tcblower
+		
+		\textbf{解.} 设 $u = x + z$, $v = y + z$, 则 $F(u, v) = 0$. 对 $x$ 求偏导:
+		\[
+		F_1'\left(1 + \dfrac{\partial z}{\partial x}\right) + F_2'\cdot\dfrac{\partial z}{\partial x} = 0
+		\implies \dfrac{\partial z}{\partial x} = -\dfrac{F_1'}{F_1' + F_2'}.
+		\]
+		对 $y$ 求偏导:
+		\[
+		F_1'\cdot\dfrac{\partial z}{\partial y} + F_2'\left(1 + \dfrac{\partial z}{\partial y}\right) = 0
+		\implies \dfrac{\partial z}{\partial y} = -\dfrac{F_2'}{F_1' + F_2'}.
+		\]
+		故
+		\[
+		\dfrac{\partial z}{\partial x} + \dfrac{\partial z}{\partial y} = -\dfrac{F_1' + F_2'}{F_1' + F_2'} = -1.
+		\]
+	\end{longexample}
+	
+	\section{用 TikZ 绘制示意图}
+	
+	下面是一个三维坐标系中的向量示意图.
+	
+	\begin{center}
+		\begin{tikzpicture}[tdplot_main_coords, scale=1.2]
+			% 坐标轴
+			\draw[-{Stealth}, thick] (0,0,0) -- (3.5,0,0) node[anchor=north east]{$x$};
+			\draw[-{Stealth}, thick] (0,0,0) -- (0,3.5,0) node[anchor=north west]{$y$};
+			\draw[-{Stealth}, thick] (0,0,0) -- (0,0,3.5) node[anchor=south]{$z$};
+			% 向量
+			\draw[-{Stealth}, very thick, color=LogicColor] (0,0,0) -- (2,1,2) node[midway, above left]{$\boldsymbol{a}$};
+			\draw[-{Stealth}, very thick, color=ExColor] (0,0,0) -- (1,2.5,0.5) node[midway, below right]{$\boldsymbol{b}$};
+			% 叉积方向
+			\draw[-{Stealth}, very thick, color=NoteColor, dashed] (0,0,0) -- (-1.8, 0.8, 2) node[anchor=south west]{$\boldsymbol{a}\times\boldsymbol{b}$};
+			% 原点标注
+			\node[anchor=north east] at (0,0,0) {$O$};
+		\end{tikzpicture}
+		\captionof{figure}{向量叉积的几何意义}
+	\end{center}
+	
+	下面是一个函数图像.
+	
+	\begin{center}
+		\begin{tikzpicture}
+			\begin{axis}[
+				width=10cm, height=6cm,
+				axis lines=middle,
+				xlabel={$x$}, ylabel={$y$},
+				samples=100, domain=-2:4,
+				ymin=-1.5, ymax=4,
+				xtick={-1,0,...,3}, ytick={-1,0,...,3},
+				grid=major, grid style={dashed, gray!30},
+				legend pos=north west
+				]
+				\addplot[thick, color=LogicColor]{x^2*exp(-x)};
+				\addlegendentry{$y = x^2 e^{-x}$}
+				\addplot[thick, color=ExColor, dashed]{x*exp(-x)*( 2 - x)};
+				\addlegendentry{$y' = x e^{-x}(2-x)$}
+			\end{axis}
+		\end{tikzpicture}
+		\captionof{figure}{函数 $y=x^2 e^{-x}$ 及其导函数}
+	\end{center}
+	
+	
+\end{document}
