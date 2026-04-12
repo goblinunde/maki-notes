@@ -1,4 +1,10 @@
-\documentclass[a4paper,12pt,oneside]{maki-notes}
+\documentclass[
+  a4paper,
+  12pt,
+  oneside,
+  fontpreset=windows,
+  theme=graphite
+]{maki-notes}
 
 \renewcommand{\LectureNotesTitle}{Basic Test}
 \renewcommand{\AuthorInfo}{Test Runner}
@@ -14,4 +20,15 @@
 \mainmatter
 \chapter{Basic}
 This is a basic packaging test.
+
+Resolved font preset: \texttt{\MakiResolvedFontPreset}.\\
+Resolved theme: \texttt{\MakiResolvedTheme}.
+
+\begin{definition}[Preset Smoke Test]
+这一段用于验证类选项能够被 `maki-notes` 正确接收，并且非默认主题不会破坏基础环境。
+\end{definition}
+
+\begin{note}
+这一条注记用于确认主题配色切换后，正文、强调色与盒子环境仍能稳定输出。
+\end{note}
 \end{document}

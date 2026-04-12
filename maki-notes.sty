@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{maki-notes}[2026/04/09 Maki lecture notes style]
+\ProvidesPackage{maki-notes}[2026/04/12 Maki lecture notes style]
 
 \RequirePackage[
 	a4paper,
@@ -114,38 +114,257 @@
 \let\oldsum\sum
 \renewcommand{\sum}{\displaystyle\oldsum}
 
-\setmainfont{lmroman10-regular.otf}[
-BoldFont = lmroman10-bold.otf,
-ItalicFont = lmroman10-italic.otf,
-BoldItalicFont = lmroman10-bolditalic.otf
-]
+\providecommand{\MakiFontPreset}{common}
+\providecommand{\MakiTheme}{default}
+\providecommand{\MakiResolvedFontPreset}{common}
+\providecommand{\MakiResolvedTheme}{default}
+\providecommand{\kaishu}{}
+\providecommand{\heavykaishu}{}
 
-\setCJKmainfont{FandolSong-Regular.otf}[
-BoldFont = FandolSong-Bold.otf
-]
+\newcommand{\makisetlatinfonts}{%
+	\IfFileExists{texgyrepagella-regular.otf}{%
+		\setmainfont{texgyrepagella-regular.otf}[%
+			BoldFont = texgyrepagella-bold.otf,
+			ItalicFont = texgyrepagella-italic.otf,
+			BoldItalicFont = texgyrepagella-bolditalic.otf
+		]%
+	}{%
+		\setmainfont{lmroman10-regular.otf}[%
+			BoldFont = lmroman10-bold.otf,
+			ItalicFont = lmroman10-italic.otf,
+			BoldItalicFont = lmroman10-bolditalic.otf
+		]%
+	}%
+	\IfFileExists{texgyreheros-regular.otf}{%
+		\setsansfont{texgyreheros-regular.otf}[%
+			BoldFont = texgyreheros-bold.otf,
+			ItalicFont = texgyreheros-italic.otf,
+			BoldItalicFont = texgyreheros-bolditalic.otf
+		]%
+	}{}%
+	\IfFileExists{lmmono10-regular.otf}{%
+		\setmonofont{lmmono10-regular.otf}[%
+			BoldFont = lmmonolt10-bold.otf,
+			ItalicFont = lmmono10-italic.otf,
+			BoldItalicFont = lmmonolt10-oblique.otf
+		]%
+	}{}%
+}
 
-\setCJKsansfont{FandolHei-Regular.otf}
-\setCJKmonofont{FandolFang-Regular.otf}
+\newcommand{\makisetcommoncjkfonts}{%
+	\renewcommand{\MakiResolvedFontPreset}{common}%
+	\setCJKmainfont{FandolSong-Regular.otf}[BoldFont = FandolSong-Bold.otf]%
+	\setCJKsansfont{FandolHei-Regular.otf}%
+	\setCJKmonofont{FandolFang-Regular.otf}%
+	\setCJKfamilyfont{makiKai}{FandolKai-Regular.otf}%
+	\setCJKfamilyfont{makiHeavyKai}{FandolKai-Regular.otf}[AutoFakeBold = 10]%
+}
 
-\newCJKfontfamily\kaishu{FandolKai-Regular.otf}
-\newCJKfontfamily\heavykaishu{FandolKai-Regular.otf}[AutoFakeBold = 10]
+\newcommand{\makipickfirstfont}[2]{%
+	\def\MakiPickedFont{}%
+	\begingroup
+	\renewcommand*{\do}[1]{%
+		\ifdefempty{\MakiPickedFont}{%
+			\IfFontExistsTF{##1}{\xdef\MakiPickedFont{##1}}{}%
+		}{}%
+	}%
+	\docsvlist{#1}%
+	\endgroup
+	\ifdefempty{\MakiPickedFont}{%
+		\edef\MakiPickedFont{#2}%
+	}{}%
+}
 
-\definecolor{LogicColor}{RGB}{200, 80, 110}
-\definecolor{LogicBg}{RGB}{255, 240, 245}
-\definecolor{DefColor}{RGB}{210, 105, 30}
-\definecolor{DefBg}{RGB}{255, 250, 240}
-\definecolor{ExColor}{RGB}{70, 130, 180}
-\definecolor{ExBg}{RGB}{240, 248, 255}
-\definecolor{NoteColor}{RGB}{34, 139, 34}
-\definecolor{NNInputColor}{RGB}{67, 145, 98}
-\definecolor{NNHiddenColor}{RGB}{76, 114, 176}
-\definecolor{NNOutputColor}{RGB}{200, 96, 73}
-\definecolor{NNTensorColor}{RGB}{219, 150, 69}
-\definecolor{GeometryColor}{RGB}{43, 110, 163}
-\definecolor{GeometryBg}{RGB}{236, 245, 252}
-\definecolor{TopologyColor}{RGB}{40, 122, 110}
-\definecolor{TopologyBg}{RGB}{238, 249, 246}
-\definecolor{MainText}{RGB}{20, 20, 20}
+\newcommand{\makiapplyfontpresetcommon}{%
+	\makisetcommoncjkfonts
+}
+
+\newcommand{\makiapplyfontpresetwindows}{%
+	\IfFontExistsTF{SimSun}{%
+		\renewcommand{\MakiResolvedFontPreset}{windows}%
+		\setCJKmainfont{SimSun}[AutoFakeBold = 3]%
+		\makipickfirstfont{Microsoft YaHei,SimHei,FandolHei-Regular.otf}{FandolHei-Regular.otf}%
+		\setCJKsansfont{\MakiPickedFont}[AutoFakeBold = 2]%
+		\makipickfirstfont{NSimSun,SimSun,FandolFang-Regular.otf}{FandolFang-Regular.otf}%
+		\setCJKmonofont{\MakiPickedFont}%
+		\makipickfirstfont{KaiTi,FandolKai-Regular.otf}{FandolKai-Regular.otf}%
+		\setCJKfamilyfont{makiKai}{\MakiPickedFont}%
+		\setCJKfamilyfont{makiHeavyKai}{\MakiPickedFont}[AutoFakeBold = 10]%
+	}{%
+		\PackageWarningNoLine{maki-notes}{Font preset `windows' requested but SimSun was not found. Falling back to `common'}%
+		\makisetcommoncjkfonts
+	}%
+}
+
+\newcommand{\makiapplyfontpresetmacos}{%
+	\IfFontExistsTF{Songti SC}{%
+		\renewcommand{\MakiResolvedFontPreset}{macos}%
+		\setCJKmainfont{Songti SC}%
+		\makipickfirstfont{PingFang SC,Heiti SC,STHeiti,FandolHei-Regular.otf}{FandolHei-Regular.otf}%
+		\setCJKsansfont{\MakiPickedFont}%
+		\makipickfirstfont{PingFang SC,SF Pro SC,FandolFang-Regular.otf}{FandolFang-Regular.otf}%
+		\setCJKmonofont{\MakiPickedFont}%
+		\makipickfirstfont{Kaiti SC,STKaiti,FandolKai-Regular.otf}{FandolKai-Regular.otf}%
+		\setCJKfamilyfont{makiKai}{\MakiPickedFont}%
+		\setCJKfamilyfont{makiHeavyKai}{\MakiPickedFont}[AutoFakeBold = 10]%
+	}{%
+		\PackageWarningNoLine{maki-notes}{Font preset `macos' requested but Songti SC was not found. Falling back to `common'}%
+		\makisetcommoncjkfonts
+	}%
+}
+
+\newcommand{\makiapplyfontpresetlinux}{%
+	\IfFontExistsTF{Noto Serif CJK SC}{%
+		\renewcommand{\MakiResolvedFontPreset}{linux}%
+		\setCJKmainfont{Noto Serif CJK SC}%
+		\makipickfirstfont{Noto Sans CJK SC,Source Han Sans SC,FandolHei-Regular.otf}{FandolHei-Regular.otf}%
+		\setCJKsansfont{\MakiPickedFont}%
+		\makipickfirstfont{Noto Sans Mono CJK SC,Noto Sans CJK SC,Source Han Sans SC,FandolFang-Regular.otf}{FandolFang-Regular.otf}%
+		\setCJKmonofont{\MakiPickedFont}%
+		\makipickfirstfont{LXGW WenKai,FandolKai-Regular.otf}{FandolKai-Regular.otf}%
+		\setCJKfamilyfont{makiKai}{\MakiPickedFont}%
+		\setCJKfamilyfont{makiHeavyKai}{\MakiPickedFont}[AutoFakeBold = 10]%
+	}{%
+		\IfFontExistsTF{Source Han Serif SC}{%
+			\renewcommand{\MakiResolvedFontPreset}{linux}%
+			\setCJKmainfont{Source Han Serif SC}%
+			\makipickfirstfont{Source Han Sans SC,Noto Sans CJK SC,FandolHei-Regular.otf}{FandolHei-Regular.otf}%
+			\setCJKsansfont{\MakiPickedFont}%
+			\makipickfirstfont{Source Han Sans SC,Noto Sans CJK SC,FandolFang-Regular.otf}{FandolFang-Regular.otf}%
+			\setCJKmonofont{\MakiPickedFont}%
+			\makipickfirstfont{LXGW WenKai,FandolKai-Regular.otf}{FandolKai-Regular.otf}%
+			\setCJKfamilyfont{makiKai}{\MakiPickedFont}%
+			\setCJKfamilyfont{makiHeavyKai}{\MakiPickedFont}[AutoFakeBold = 10]%
+		}{%
+			\PackageWarningNoLine{maki-notes}{Font preset `linux' requested but no supported Linux CJK serif font was found. Falling back to `common'}%
+			\makisetcommoncjkfonts
+		}%
+	}%
+}
+
+\newcommand{\makiapplyfontpresetauto}{%
+	\IfFontExistsTF{Songti SC}{%
+		\makiapplyfontpresetmacos
+	}{%
+		\IfFontExistsTF{SimSun}{%
+			\makiapplyfontpresetwindows
+		}{%
+			\IfFontExistsTF{Noto Serif CJK SC}{%
+				\makiapplyfontpresetlinux
+			}{%
+				\IfFontExistsTF{Source Han Serif SC}{%
+					\makiapplyfontpresetlinux
+				}{%
+					\makiapplyfontpresetcommon
+				}%
+			}%
+		}%
+	}%
+}
+
+\newcommand{\makiapplyfontpreset}{%
+	\ifcsname makiapplyfontpreset\MakiFontPreset\endcsname
+		\csname makiapplyfontpreset\MakiFontPreset\endcsname
+	\else
+		\PackageError{maki-notes}{Unsupported fontpreset `\MakiFontPreset'}{Valid values are common, auto, windows, macos, linux. Falling back to `common'.}%
+		\makiapplyfontpresetcommon
+	\fi
+}
+
+\newcommand{\makiapplythemedefault}{%
+	\renewcommand{\MakiResolvedTheme}{default}%
+	\definecolor{LogicColor}{RGB}{200, 80, 110}%
+	\definecolor{LogicBg}{RGB}{255, 240, 245}%
+	\definecolor{DefColor}{RGB}{210, 105, 30}%
+	\definecolor{DefBg}{RGB}{255, 250, 240}%
+	\definecolor{ExColor}{RGB}{70, 130, 180}%
+	\definecolor{ExBg}{RGB}{240, 248, 255}%
+	\definecolor{NoteColor}{RGB}{34, 139, 34}%
+	\definecolor{NNInputColor}{RGB}{67, 145, 98}%
+	\definecolor{NNHiddenColor}{RGB}{76, 114, 176}%
+	\definecolor{NNOutputColor}{RGB}{200, 96, 73}%
+	\definecolor{NNTensorColor}{RGB}{219, 150, 69}%
+	\definecolor{GeometryColor}{RGB}{43, 110, 163}%
+	\definecolor{GeometryBg}{RGB}{236, 245, 252}%
+	\definecolor{TopologyColor}{RGB}{40, 122, 110}%
+	\definecolor{TopologyBg}{RGB}{238, 249, 246}%
+	\definecolor{MainText}{RGB}{20, 20, 20}%
+}
+
+\newcommand{\makiapplythemeocean}{%
+	\renewcommand{\MakiResolvedTheme}{ocean}%
+	\definecolor{LogicColor}{RGB}{32, 124, 166}%
+	\definecolor{LogicBg}{RGB}{236, 247, 251}%
+	\definecolor{DefColor}{RGB}{198, 132, 64}%
+	\definecolor{DefBg}{RGB}{251, 246, 239}%
+	\definecolor{ExColor}{RGB}{70, 104, 184}%
+	\definecolor{ExBg}{RGB}{240, 245, 255}%
+	\definecolor{NoteColor}{RGB}{36, 136, 122}%
+	\definecolor{NNInputColor}{RGB}{46, 147, 134}%
+	\definecolor{NNHiddenColor}{RGB}{69, 106, 173}%
+	\definecolor{NNOutputColor}{RGB}{205, 109, 76}%
+	\definecolor{NNTensorColor}{RGB}{191, 148, 76}%
+	\definecolor{GeometryColor}{RGB}{34, 124, 175}%
+	\definecolor{GeometryBg}{RGB}{236, 246, 253}%
+	\definecolor{TopologyColor}{RGB}{41, 127, 120}%
+	\definecolor{TopologyBg}{RGB}{237, 249, 246}%
+	\definecolor{MainText}{RGB}{18, 28, 38}%
+}
+
+\newcommand{\makiapplythemeforest}{%
+	\renewcommand{\MakiResolvedTheme}{forest}%
+	\definecolor{LogicColor}{RGB}{78, 107, 87}%
+	\definecolor{LogicBg}{RGB}{242, 247, 243}%
+	\definecolor{DefColor}{RGB}{171, 112, 56}%
+	\definecolor{DefBg}{RGB}{250, 246, 240}%
+	\definecolor{ExColor}{RGB}{72, 104, 121}%
+	\definecolor{ExBg}{RGB}{239, 245, 247}%
+	\definecolor{NoteColor}{RGB}{47, 124, 78}%
+	\definecolor{NNInputColor}{RGB}{91, 145, 110}%
+	\definecolor{NNHiddenColor}{RGB}{88, 118, 137}%
+	\definecolor{NNOutputColor}{RGB}{180, 114, 78}%
+	\definecolor{NNTensorColor}{RGB}{170, 140, 82}%
+	\definecolor{GeometryColor}{RGB}{54, 102, 132}%
+	\definecolor{GeometryBg}{RGB}{238, 244, 248}%
+	\definecolor{TopologyColor}{RGB}{55, 122, 111}%
+	\definecolor{TopologyBg}{RGB}{239, 247, 244}%
+	\definecolor{MainText}{RGB}{24, 28, 24}%
+}
+
+\newcommand{\makiapplythemegraphite}{%
+	\renewcommand{\MakiResolvedTheme}{graphite}%
+	\definecolor{LogicColor}{RGB}{148, 74, 62}%
+	\definecolor{LogicBg}{RGB}{249, 242, 240}%
+	\definecolor{DefColor}{RGB}{169, 122, 64}%
+	\definecolor{DefBg}{RGB}{248, 244, 236}%
+	\definecolor{ExColor}{RGB}{74, 92, 114}%
+	\definecolor{ExBg}{RGB}{240, 243, 248}%
+	\definecolor{NoteColor}{RGB}{78, 116, 103}%
+	\definecolor{NNInputColor}{RGB}{88, 132, 118}%
+	\definecolor{NNHiddenColor}{RGB}{90, 102, 122}%
+	\definecolor{NNOutputColor}{RGB}{162, 92, 73}%
+	\definecolor{NNTensorColor}{RGB}{177, 139, 79}%
+	\definecolor{GeometryColor}{RGB}{76, 99, 128}%
+	\definecolor{GeometryBg}{RGB}{239, 243, 249}%
+	\definecolor{TopologyColor}{RGB}{72, 116, 112}%
+	\definecolor{TopologyBg}{RGB}{240, 246, 245}%
+	\definecolor{MainText}{RGB}{28, 29, 32}%
+}
+
+\newcommand{\makiapplytheme}{%
+	\ifcsname makiapplytheme\MakiTheme\endcsname
+		\csname makiapplytheme\MakiTheme\endcsname
+	\else
+		\PackageError{maki-notes}{Unsupported theme `\MakiTheme'}{Valid values are default, ocean, forest, graphite. Falling back to `default'.}%
+		\makiapplythemedefault
+	\fi
+}
+
+\makisetlatinfonts
+\makiapplyfontpreset
+\renewcommand{\kaishu}{\CJKfamily{makiKai}}
+\renewcommand{\heavykaishu}{\CJKfamily{makiHeavyKai}}
+\makiapplytheme
 \color{MainText}
 
 \captionsetup[figure]{

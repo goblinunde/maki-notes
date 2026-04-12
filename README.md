@@ -2,6 +2,19 @@
 
 `maki-notes` 是一个面向中文数学讲义的 LaTeX 模板项目，核心由 [`maki-notes.cls`](./maki-notes.cls) 和 [`maki-notes.sty`](./maki-notes.sty) 组成，基于 `ctexbook`，默认使用 XeLaTeX 编译。仓库同时提供了示例文档、TikZ 模板页以及一组用于烟雾测试的最小文档。
 
+这两个文件是同一套模板的两层，而不是两个完全解耦的通用组件：
+
+- `maki-notes.cls` 是文档类入口，负责建立文档类、接收类选项并加载样式层
+- `maki-notes.sty` 是模板主体实现，集中管理字体、页面、颜色、环境、TikZ 样式和页眉页脚
+
+也就是说，当前仓库推荐的使用方式始终是：
+
+```tex
+\documentclass[...]{maki-notes}
+```
+
+而不是把 `.sty` 单独当成一个轻量通用包到处插拔。
+
 ## 特性
 
 - 基于 `ctexbook` 的中文讲义排版入口
@@ -45,6 +58,66 @@ xelatex -interaction=nonstopmode -file-line-error
 讲义正文。
 \end{document}
 ```
+
+如果你希望切换跨平台字体预设或主题配色，可以直接在 `\documentclass[...]` 里传入：
+
+```tex
+\documentclass[
+  a4paper,
+  12pt,
+  oneside,
+  fontpreset=common,
+  theme=default
+]{maki-notes}
+```
+
+## 字体与主题预设
+
+模板现在支持两组类选项：
+
+- `fontpreset=common|auto|windows|macos|linux`
+- `theme=default|ocean|forest|graphite`
+
+默认值是：
+
+- `fontpreset=common`
+- `theme=default`
+
+推荐写法：
+
+```tex
+\documentclass[
+  a4paper,
+  12pt,
+  oneside,
+  fontpreset=auto,
+  theme=ocean
+]{maki-notes}
+```
+
+### `fontpreset`
+
+- `common`：默认预设，优先使用 TeX Live 自带或稳定可用的字体组合，跨平台最稳
+- `auto`：按当前机器已安装字体自动选择最接近的平台预设
+- `windows`：优先使用常见 Windows 中文字体，缺失时回退到 `common`
+- `macos`：优先使用常见 macOS 中文字体，缺失时回退到 `common`
+- `linux`：优先使用常见 Linux 中文字体，缺失时回退到 `common`
+
+当前策略是：拉丁正文统一走更接近 Palatino 数学风格的正文字体栈，中文字体再按预设切换。这样可以避免旧版本里正文和数学字体风格不一致的问题。
+
+### `theme`
+
+- `default`：当前仓库原有的默认配色
+- `ocean`：偏蓝青，更轻快
+- `forest`：偏绿灰，更沉稳
+- `graphite`：偏墨灰与铜棕，更正式
+
+主题切换不会改变公开接口，只会改写现有的语义色位，例如 `LogicColor`、`DefColor`、`ExColor`、`NoteColor` 等。因此现有环境、TikZ 样式和页边批注会一起换色，但代码写法不需要变。
+
+### 回退与报错
+
+- 如果你选中了某个平台预设，但本机缺少对应字体，模板会自动回退到 `common`
+- 如果你显式写了不支持的值，例如 `fontpreset=desktop` 或 `theme=sunset`，模板会抛出清晰错误并指出合法取值
 
 ## 常用命令
 
@@ -111,13 +184,13 @@ make clean
 
 关键文件说明：
 
-- `maki-notes.cls`：文档类入口，定义标题页接口并加载样式包
-- `maki-notes.sty`：样式主体，集中管理字体、颜色、环境和 TikZ 样式
+- `maki-notes.cls`：文档类入口，解析模板级类选项并加载样式包
+- `maki-notes.sty`：样式主体，集中管理字体预设、主题色、环境和 TikZ 样式
 - `document2.tex`：较完整的讲义模板示例
 - `example.tex`：更适合作为二次开发起点的示例文档
 - `docs/wrapfig-margin-notes.md`：图文绕排与页边批注用法说明
 - `tikz-template-pages.tex`：可直接复用的图形模板页
-- `tests/`：用于验证模板基础能力的测试文档，其中 `tests/test-wrap-layout.tex` 集中覆盖新版绕排与页边接口
+- `tests/`：用于验证模板基础能力的测试文档，其中 `tests/test-basic.tex` 覆盖类选项兼容，`tests/test-wrap-layout.tex` 集中覆盖新版绕排与页边接口
 
 ## GitHub Release 流程
 
@@ -167,6 +240,7 @@ workflow 会执行以下动作：
 ## 开发建议
 
 - 修改模板能力时，先更新 [`maki-notes.sty`](./maki-notes.sty) 或 [`maki-notes.cls`](./maki-notes.cls)，再运行 `make test`
+- 调整字体预设或主题配色时，优先验证 [`tests/test-basic.tex`](./tests/test-basic.tex) 的类选项编译结果
 - 新增展示内容时，优先放到 `example.tex` 或 `tikz-template-pages.tex`
 - 调整图文绕排与页边批注时，优先同步更新 [`docs/wrapfig-margin-notes.md`](./docs/wrapfig-margin-notes.md) 和 [`tests/test-wrap-layout.tex`](./tests/test-wrap-layout.tex)
 - 发布新版本时，只需要推送新的 tag；普通提交不会触发 release workflow

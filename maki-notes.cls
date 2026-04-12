@@ -1,8 +1,15 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{maki-notes}[2026/04/09 Maki lecture notes class]
+\ProvidesClass{maki-notes}[2026/04/12 Maki lecture notes class]
 
-\DeclareOption*{\PassOptionsToClass{\CurrentOption}{ctexbook}}
-\ProcessOptions\relax
+\RequirePackage{kvoptions}
+\SetupKeyvalOptions{
+	family=maki,
+	prefix=maki@
+}
+\DeclareStringOption[common]{fontpreset}
+\DeclareStringOption[default]{theme}
+\DeclareDefaultOption{\PassOptionsToClass{\CurrentOption}{ctexbook}}
+\ProcessKeyvalOptions*
 
 \LoadClass[fontset=none]{ctexbook}
 
@@ -11,6 +18,10 @@
 \newcommand{\CoverTitle}{\LectureNotesTitle}
 \newcommand{\CoverAuthorBlock}{作者署名}
 \newcommand{\CoverFooterBlock}{日期}
+\newcommand{\MakiFontPreset}{common}
+\newcommand{\MakiTheme}{default}
+\edef\MakiFontPreset{\maki@fontpreset}
+\edef\MakiTheme{\maki@theme}
 
 \RequirePackage{maki-notes}
 
