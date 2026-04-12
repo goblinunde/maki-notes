@@ -19,7 +19,7 @@
 - 深度学习模板页
   包含 `Transformer`、`CNN`、`ResNet` 三类结构图
 - 数学与拓扑模板页
-  包含交换图、流形/潜空间示意、基本域到环面
+  包含交换图、pullback、球面、局部流形图、流形/潜空间示意、傅里叶变换、基本域到环面
 - 通用讲义图形模板页
   包含流程图、时间轴、条件事件/概率图、图论与网络结构图
 
@@ -55,6 +55,42 @@
 - 不需要每张图重复定义节点样式
 
 ## 新增页面索引
+
+### 交换图与 pullback 模板
+
+- 文件位置：[`tikz-template-pages.tex`](../tikz-template-pages.tex)
+- 模板入口：`交换图与 pullback 模板`
+- 主要样式：`diag object accent`、`diag object muted`、`diag morphism natural`、`diag morphism curve`、`diag 2cell`
+- 适合内容：pullback、pushout、自然变换、泛性质草图
+- 修改时优先调整：对象名、箭头标签、强调对象和二维单元位置
+- 适合的写法：把“核心对象”放进 `diag object accent`，把背景范畴或环境对象放进 `diag object muted`
+
+### 三维球面与切平面模板
+
+- 文件位置：[`tikz-template-pages.tex`](../tikz-template-pages.tex)
+- 模板入口：`三维球面与切平面模板`
+- 主要样式：`sphere shell`、`sphere hidden`、`sphere equator`、`sphere latitude`、`sphere tangent plane`、`sphere vector`
+- 适合内容：球面局部几何、经纬线、法向/径向向量、切平面示意
+- 修改时优先调整：球半径、点位置、切平面朝向、标注文字
+- 适合教学场景：微分几何导入、向量分析、球坐标和曲面上的局部线性化
+
+### 局部流形图与坐标图模板
+
+- 文件位置：[`tikz-template-pages.tex`](../tikz-template-pages.tex)
+- 模板入口：`局部流形图与坐标图模板`
+- 主要样式：`manifold patch`、`manifold geodesic`、`manifold tangent`、`manifold chart`、`manifold point`、`manifold map accent`
+- 适合内容：局部 chart、测地线、切平面、流形上的点与坐标映射
+- 修改时优先调整：patch 外形、局部图位置、测地线路径、映射标签
+- 和 `流形与潜空间示意模板` 的区别：这一页偏微分几何, 后者偏机器学习里的 manifold hypothesis
+
+### 傅里叶变换模板
+
+- 文件位置：[`tikz-template-pages.tex`](../tikz-template-pages.tex)
+- 模板入口：`傅里叶变换模板`
+- 主要样式：`fourier axis`、`fourier signal`、`fourier spectrum`、`fourier guide`、`fourier marker`、`fourier window`
+- 适合内容：时域/频域并排示意、矩形窗与 sinc 谱、信号处理导论
+- 修改时优先调整：时域波形、频域函数、关键频率标记、变换箭头文案
+- 常见改法：把矩形窗换成高斯、余弦包络、离散脉冲列，保留左右并排结构不变
 
 ### 流程图模板
 

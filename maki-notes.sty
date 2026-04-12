@@ -702,6 +702,90 @@
 			thick,
 			draw=LogicColor!85!black
 		},
+		diag object accent/.style={
+			diag object,
+			draw=LogicColor!82!black,
+			fill=LogicBg
+		},
+		diag object muted/.style={
+			diag object,
+			draw=MainText!42,
+			fill=black!4
+		},
+		diag morphism dotted/.style={
+			diag morphism,
+			dotted
+		},
+		diag morphism natural/.style={
+			-Latex,
+			semithick,
+			draw=NoteColor!82!black
+		},
+		diag morphism curve/.style={
+			-Latex,
+			thick,
+			draw=DefColor!84!black
+		},
+		diag corner/.style={
+			line width=0.85pt,
+			draw=LogicColor!84!black
+		},
+		diag 2cell/.style={
+			rounded corners=2pt,
+			draw=DefColor!82!black,
+			fill=DefBg,
+			thick,
+			inner sep=1.2pt,
+			font=\scriptsize,
+			align=center
+		},
+		sphere shell/.style={
+			shading=ball,
+			ball color=GeometryColor!18,
+			draw=GeometryColor!78!black,
+			line width=1pt
+		},
+		sphere hidden/.style={
+			semithick,
+			draw=GeometryColor!45!black,
+			densely dashed
+		},
+		sphere equator/.style={
+			very thick,
+			draw=GeometryColor!84!black
+		},
+		sphere longitude/.style={
+			thick,
+			draw=NoteColor!80!black
+		},
+		sphere latitude/.style={
+			thick,
+			draw=DefColor!82!black
+		},
+		sphere tangent plane/.style={
+			draw=LogicColor!72!black,
+			fill=LogicBg,
+			fill opacity=0.75,
+			text opacity=1,
+			thick
+		},
+		sphere point/.style={
+			circle,
+			draw=LogicColor!85!black,
+			fill=white,
+			thick,
+			inner sep=1.5pt
+		},
+		sphere vector/.style={
+			-Latex,
+			thick,
+			draw=LogicColor!85!black
+		},
+		sphere axis/.style={
+			-Latex,
+			semithick,
+			draw=MainText!82
+		},
 		manifold axis/.style={
 			-Latex,
 			semithick,
@@ -718,6 +802,47 @@
 			fill=NoteColor!12,
 			thick
 		},
+		manifold patch/.style={
+			draw=TopologyColor!82!black,
+			fill=TopologyBg,
+			fill opacity=0.85,
+			text opacity=1,
+			thick
+		},
+		manifold geodesic/.style={
+			very thick,
+			draw=GeometryColor!86!black
+		},
+		manifold tangent/.style={
+			draw=NoteColor!78!black,
+			fill=NoteColor!14,
+			fill opacity=0.82,
+			text opacity=1,
+			thick
+		},
+		manifold chart/.style={
+			rounded corners=2pt,
+			draw=NNHiddenColor!76!black,
+			fill=NNHiddenColor!10,
+			thick
+		},
+		manifold point/.style={
+			circle,
+			draw=LogicColor!85!black,
+			fill=LogicBg,
+			thick,
+			inner sep=1.25pt
+		},
+		manifold map accent/.style={
+			-Latex,
+			thick,
+			draw=LogicColor!85!black
+		},
+		manifold fiber/.style={
+			semithick,
+			densely dashed,
+			draw=DefColor!84!black
+		},
 		manifold latent/.style={
 			rounded corners=2pt,
 			draw=NNHiddenColor!75!black,
@@ -733,6 +858,41 @@
 			-Latex,
 			thick,
 			draw=ExColor!85!black
+		},
+		fourier axis/.style={
+			-Latex,
+			semithick,
+			draw=MainText!88
+		},
+		fourier signal/.style={
+			very thick,
+			draw=LogicColor!86!black
+		},
+		fourier guide/.style={
+			semithick,
+			densely dashed,
+			draw=MainText!48
+		},
+		fourier marker/.style={
+			circle,
+			draw=LogicColor!85!black,
+			fill=white,
+			thick,
+			inner sep=1.15pt
+		},
+		fourier arrow/.style={
+			-Latex,
+			thick,
+			draw=DefColor!84!black
+		},
+		fourier spectrum/.style={
+			very thick,
+			draw=ExColor!84!black
+		},
+		fourier window/.style={
+			maki annotation,
+			draw=ExColor!18,
+			fill=white
 		},
 		nn token/.style={
 			nn tensor,

@@ -138,7 +138,10 @@ xelatex -interaction=nonstopmode -file-line-error
 
 - 神经网络与深度学习：`nn input`、`nn hidden`、`nn output`、`nn tensor`、`nn op`、`nn skip`
 - 数学与几何：`math axis`、`math curve`、`math tangent`、`math vector`、`geom point`、`geom angle mark`
-- 拓扑与流形：`topo patch`、`topo identify`、`topo geodesic`、`diag object`、`manifold latent`
+- 三维球面：`sphere shell`、`sphere longitude`、`sphere latitude`、`sphere tangent plane`、`sphere vector`
+- 拓扑与流形：`topo patch`、`topo identify`、`topo geodesic`、`manifold patch`、`manifold geodesic`、`manifold chart`、`manifold map accent`
+- 交换图：`diag object`、`diag object accent`、`diag morphism emph`、`diag morphism natural`、`diag 2cell`
+- 傅里叶与信号图：`fourier axis`、`fourier signal`、`fourier spectrum`、`fourier guide`、`fourier window`
 - 流程图：`flow terminal`、`flow process`、`flow decision`、`flow io`、`flow arrow`
 - 时间轴：`timeline axis`、`timeline event`、`timeline milestone`、`timeline span`
 - 概率/集合图：`prob universe`、`prob event`、`prob event alt`、`prob condition`、`prob outcome`
@@ -156,6 +159,10 @@ xelatex -interaction=nonstopmode -file-line-error
 
 [`tikz-template-pages.tex`](./tikz-template-pages.tex) 现在除了深度学习与拓扑页，也包含一组更偏“课堂讲义/报告结构图”的通用模板页：
 
+- `交换图与 pullback 模板`：适合 pullback、自然变换、强调对象和背景范畴
+- `三维球面与切平面模板`：适合球面、经纬线、切平面和局部向量
+- `局部流形图与坐标图模板`：适合 patch、测地线、局部 chart 与坐标映射
+- `傅里叶变换模板`：适合时域/频域并排说明、窗函数和谱形示意
 - `流程图模板`：适合算法步骤、证明路线、实验流水线
 - `时间轴模板`：适合课程安排、项目里程碑、历史脉络
 - `概率与条件事件模板`：适合样本空间裁剪、条件概率和集合关系
@@ -164,6 +171,11 @@ xelatex -interaction=nonstopmode -file-line-error
 如果你想按“该用哪组样式、该改哪些元素”来查，而不是直接翻 `.tex` 文件，可以看：
 
 - [`docs/tikz-template-pages.md`](./docs/tikz-template-pages.md)
+
+这几组新样式也已经接进回归测试：
+
+- [`tests/test-tikz-styles.tex`](./tests/test-tikz-styles.tex) 现在会同时覆盖球面/流形、傅里叶时频图和交换图增强样式
+- [`tikz-template-pages.tex`](./tikz-template-pages.tex) 则提供对应的整页模板，适合直接复制改写
 
 ## 常用命令
 

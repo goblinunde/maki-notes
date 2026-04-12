@@ -248,4 +248,109 @@
 \captionof{figure}{概率/集合图与图论节点边样式测试}
 \end{center}
 
+\section{Spheres and Manifolds}
+
+这一组新增样式面向三维球体草图和流形局部几何示意. 球体部分参考了 tikz.net 的 \texttt{parametric-sphere} 页面里“经纬线 + 可见/不可见轮廓”的组织方式, 但这里收敛成更轻量的讲义模板; 流形部分则沿用了 tikz.net \texttt{manifold} 的“原空间/局部图/映射”表达习惯, 同时补上切平面、测地线和局部 chart 的语义样式.
+
+\begin{center}
+\begin{tikzpicture}[x=1cm, y=1cm]
+\begin{scope}
+  \shade[sphere shell] (0,0) circle (1.8);
+  \draw[sphere hidden] (-1.8,0) arc[start angle=180,end angle=360,x radius=1.8,y radius=0.55];
+  \draw[sphere equator] (1.8,0) arc[start angle=0,end angle=180,x radius=1.8,y radius=0.55];
+  \draw[sphere hidden] (0,1.8) arc[start angle=90,end angle=270,x radius=0.72,y radius=1.8];
+  \draw[sphere longitude] (0,-1.8) arc[start angle=-90,end angle=90,x radius=0.72,y radius=1.8];
+  \draw[sphere latitude] (-1.45,0.95) arc[start angle=180,end angle=360,x radius=1.45,y radius=0.33];
+  \draw[sphere latitude] (1.25,-0.88) arc[start angle=0,end angle=180,x radius=1.25,y radius=0.26];
+  \filldraw[sphere tangent plane] (1.2,0.9) -- (2.35,1.25) -- (2.0,2.0) -- (0.9,1.65) -- cycle;
+  \node[sphere point, label={[maki label]above right:$p$}] (sp) at (1.45,1.23) {};
+  \draw[sphere vector] (0,0) -- (sp);
+  \draw[sphere axis] (0,0) -- (2.5,0) node[right] {$x$};
+  \draw[sphere axis] (0,0) -- (0,2.35) node[above] {$z$};
+  \node[maki annotation] at (0,-2.45) {sphere + latitude/longitude\\+ tangent plane};
+\end{scope}
+
+\begin{scope}[xshift=7.2cm]
+  \draw[manifold patch] (0.15,1.0) .. controls (0.95,2.2) and (2.15,2.55) .. (3.2,2.05)
+    .. controls (4.1,1.62) and (4.55,0.85) .. (4.25,0.15)
+    .. controls (3.5,-0.4) and (2.0,-0.22) .. (1.0,0.25)
+    .. controls (0.45,0.5) and (0.05,0.82) .. cycle;
+  \draw[manifold geodesic] (0.75,0.9) .. controls (1.35,1.7) and (2.3,1.95) .. (3.25,1.72)
+    .. controls (3.85,1.58) and (4.15,1.2) .. (4.0,0.75);
+  \filldraw[manifold tangent] (2.08,1.06) -- (3.05,1.36) -- (2.78,2.08) -- (1.84,1.78) -- cycle;
+  \draw[manifold fiber] (2.42,1.58) -- ++(0.0,1.35);
+  \draw[manifold chart] (4.95,1.0) rectangle (6.35,2.38);
+  \draw[topo mesh] (5.42,1.0) -- (5.42,2.38);
+  \draw[topo mesh] (5.88,1.0) -- (5.88,2.38);
+  \draw[topo mesh] (4.95,1.46) -- (6.35,1.46);
+  \draw[topo mesh] (4.95,1.92) -- (6.35,1.92);
+  \node[manifold point, label={[maki label]above:$q$}] (mq) at (2.42,1.58) {};
+  \draw[manifold map accent] (mq) to[out=18,in=170] node[midway,above] {$\varphi$} (5.48,1.75);
+  \node[maki annotation] at (2.1,-0.7) {patch / geodesic / tangent plane};
+  \node[maki annotation] at (5.65,3.0) {local chart};
+\end{scope}
+\end{tikzpicture}
+\captionof{figure}{三维球体草图与流形局部几何样式测试}
+\end{center}
+
+\section{Fourier and Commutative Diagrams}
+
+这一组新增样式面向分析类讲义与交换图说明. 傅里叶部分参考 tikz.net 的 \texttt{fourier-transform} 页面, 抽出了时域/频域、窗函数、频率标记和变换箭头; 交换图部分则在现有 `diag` 样式上补了更适合 pullback、自然变换和强调对象的语义键.
+
+\begin{center}
+\begin{tikzpicture}[x=1cm, y=1cm]
+\begin{scope}
+  \draw[fourier axis] (-3.3,0) -- (3.4,0) node[right] {$t$};
+  \draw[fourier axis] (0,-0.4) -- (0,1.85) node[above] {$f(t)$};
+  \draw[fourier signal, line cap=round] (-2.9,0) -- (-1.0,0) -- (-1.0,1.15) -- (1.0,1.15) -- (1.0,0) -- (3.0,0);
+  \draw[fourier guide] (-1.0,0) -- (-1.0,1.15);
+  \draw[fourier guide] (1.0,0) -- (1.0,1.15);
+  \node[fourier marker, label={[maki label]below:$-T$}] at (-1.0,0) {};
+  \node[fourier marker, label={[maki label]below:$T$}] at (1.0,0) {};
+  \node[maki annotation] at (0.0,1.65) {time domain};
+
+  \draw[fourier arrow] (4.1,0.9) -- (5.8,0.9) node[midway,above] {$\mathcal F$};
+
+  \begin{scope}[xshift=9.1cm]
+    \draw[fourier axis] (-3.3,0) -- (3.4,0) node[right] {$\omega$};
+    \draw[fourier axis] (0,-0.55) -- (0,1.95) node[above] {$\hat f(\omega)$};
+    \draw[fourier spectrum, samples=160, smooth, variable=\x, domain=-3.0:3.0]
+      plot (\x,{1.28*(abs(\x)<0.06 ? 1 : sin(deg(2.15*\x))/(2.15*\x))});
+    \foreach \x/\lbl in {-2.92/$-\frac{2\pi}{T}$,-1.46/$-\frac{\pi}{T}$,1.46/$\frac{\pi}{T}$,2.92/$\frac{2\pi}{T}$}{
+      \draw[fourier guide] (\x,0) -- (\x,{1.28*(abs(\x)<0.06 ? 1 : sin(deg(2.15*\x))/(2.15*\x))});
+      \node[fourier marker] at (\x,0) {};
+      \node[maki label, below] at (\x,-0.04) {\lbl};
+    }
+    \node[maki annotation] at (0.2,1.72) {frequency domain};
+    \node[fourier window, anchor=west] at (1.15,1.2) {$\hat f(\omega)\propto \dfrac{\sin(T\omega)}{\omega}$};
+  \end{scope}
+\end{scope}
+\end{tikzpicture}
+\captionof{figure}{傅里叶变换时域/频域样式测试}
+\end{center}
+
+\begin{center}
+\begin{tikzpicture}[x=2.25cm, y=1.55cm]
+\node[diag object accent] (A) at (0,2) {$X\times_Z Y$};
+\node[diag object] (B) at (2.15,2) {$Y$};
+\node[diag object] (C) at (0,0) {$X$};
+\node[diag object accent] (D) at (2.15,0) {$Z$};
+\node[diag object muted] (E) at (4.25,1) {$\mathcal C$};
+
+\draw[diag morphism emph] (A) -- node[above] {$p_2$} (B);
+\draw[diag morphism emph] (A) -- node[left] {$p_1$} (C);
+\draw[diag morphism] (B) -- node[right] {$g$} (D);
+\draw[diag morphism] (C) -- node[below] {$f$} (D);
+\draw[diag morphism dotted] (A) to[bend left=10] node[above left] {$u$} (E);
+\draw[diag morphism natural] (B) -- node[above right] {$G$} (E);
+\draw[diag morphism natural] (C) -- node[below right] {$F$} (E);
+\draw[diag morphism curve] (A) to[bend right=18] node[below left] {$\eta$} (D);
+\draw[diag corner] ($(A.south east)+(0.16,-0.02)$) -- ++(0.22,0) -- ++(0,-0.22);
+\node[diag 2cell] at (1.08,1.04) {pb};
+\node[maki annotation] at (2.15,2.72) {pullback square};
+\node[maki annotation] at (4.25,-0.08) {derived / ambient\\context object};
+\end{tikzpicture}
+\captionof{figure}{交换图与 pullback / 自然变换样式测试}
+\end{center}
+
 \end{document}

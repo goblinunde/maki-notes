@@ -7,7 +7,7 @@
 	Maki Notes 图形模板集
 	\\[0.8em]
 	\Large
-	Transformer, CNN, ResNet, 流程图, 时间轴, 概率图, 图论网络图
+	Transformer, CNN, ResNet, 球面, 流形, 傅里叶变换, 交换图, 流程图, 时间轴
 	\\
 }
 \renewcommand{\CoverFooterBlock}{%
@@ -31,9 +31,12 @@
 \item \texttt{neural\_networks} 提供了网络层与张量块的组织思路
 \item \texttt{skip-connection} 提供了残差支路的结构思路
 \item \texttt{manifold} 提供了流形与潜空间映射的版面思路
+\item \texttt{parametric-sphere} 提供了球面、经纬线与切平面的结构思路
+\item \texttt{fourier-transform} 提供了时域/频域并排展示的结构思路
 \item \texttt{plane-to-torus} 与 \texttt{torus} 提供了拓扑识别与曲面表达的思路
 \item \texttt{flowchart} 与 \texttt{timeline} 提供了信息流程和时间组织的版面思路
 \item \texttt{venn-diagrams} 与 \texttt{graph-isomorphism} 提供了概率/集合图与节点边图的组织思路
+\item 交换图部分则基于当前模板已有的 \texttt{diag} 语义样式继续扩展
 \end{itemize}
 
 \tableofcontents
@@ -92,7 +95,7 @@
 这一页适合在卷积神经网络、视觉表征或多尺度特征章节里使用. 结构参考 tikz.net 的 \texttt{neural\_networks} 中 CNN 表达方式, 但这里改成了更适合课程讲义的“张量尺寸 + 算子流程”版.
 
 \begin{center}
-\begin{tikzpicture}[x=1cm,y=1cm]
+\begin{tikzpicture}[x=0.9cm,y=1cm]
 \node[nn tensor, minimum width=1.8cm, minimum height=2.6cm, label={[maki label]below:$224\times224\times3$}] (img) at (0,0) {image};
 
 \foreach \x/\w/\h/\lab/\dim in {
@@ -131,7 +134,7 @@
 这一页可以直接用于介绍残差学习的动机. 它参考了 tikz.net 的 \texttt{skip-connection} 结构, 但这里改成了更适合板书式讲义的块图写法.
 
 \begin{center}
-\begin{tikzpicture}[x=1cm,y=1cm]
+\begin{tikzpicture}[x=0.86cm,y=1cm]
 \node[nn tensor, minimum width=1.5cm, minimum height=0.9cm] (x) at (0,0) {$\bm x$};
 \node[nn op warm] (conv1) at (2.3,0) {Conv\\BN\\ReLU};
 \node[nn op warm] (conv2) at (5.0,0) {Conv\\BN};
@@ -189,6 +192,97 @@
 \captionof{figure}{代数拓扑/范畴论中的交换图模板}
 \end{center}
 
+\clearpage
+
+\section{交换图与 pullback 模板}
+
+这一页适合需要同时表达 pullback、自然变换或“背景范畴对象”的场景. 它沿用当前模板已有的 `diag` 系列样式, 但补上了强调对象、淡化对象、弯箭头和二维单元标记, 更适合讲交换图的“结构角色”而不是只画箭头网格.
+
+\begin{center}
+\begin{tikzpicture}[x=2.35cm,y=1.75cm]
+\node[diag object accent] (A) at (0,2) {$X\times_Z Y$};
+\node[diag object] (B) at (2.2,2) {$Y$};
+\node[diag object] (C) at (0,0) {$X$};
+\node[diag object accent] (D) at (2.2,0) {$Z$};
+\node[diag object muted] (E) at (4.5,1) {$\mathcal C$};
+
+\draw[diag morphism emph] (A) -- node[above] {$p_2$} (B);
+\draw[diag morphism emph] (A) -- node[left] {$p_1$} (C);
+\draw[diag morphism] (B) -- node[right] {$g$} (D);
+\draw[diag morphism] (C) -- node[below] {$f$} (D);
+\draw[diag morphism dotted] (A) to[bend left=10] node[above left] {$u$} (E);
+\draw[diag morphism natural] (B) -- node[above right] {$G$} (E);
+\draw[diag morphism natural] (C) -- node[below right] {$F$} (E);
+\draw[diag morphism curve] (A) to[bend right=18] node[below left] {$\eta$} (D);
+\draw[diag corner] ($(A.south east)+(0.16,-0.02)$) -- ++(0.22,0) -- ++(0,-0.22);
+\node[diag 2cell] at (1.1,1.0) {pb};
+
+\node[maki annotation] at (2.2,2.8) {pullback square};
+\node[maki annotation] at (4.5,-0.12) {ambient / derived\\context object};
+\end{tikzpicture}
+\captionof{figure}{pullback、自然变换与强调对象的交换图模板}
+\end{center}
+
+\clearpage
+
+\section{三维球面与切平面模板}
+
+这一页适合微分几何、向量分析或流形导论中介绍球面、经纬线和切平面. 图形组织参考了 tikz.net 的 \texttt{parametric-sphere} 页面, 但收敛成更适合讲义版面的轻量模板: 保留可见/不可见轮廓、经纬线与切平面的层次, 不追求过重的三维渲染.
+
+\begin{center}
+\begin{tikzpicture}[x=1cm,y=1cm]
+\shade[sphere shell] (0,0) circle (2.0);
+\draw[sphere hidden] (-2.0,0) arc[start angle=180,end angle=360,x radius=2.0,y radius=0.62];
+\draw[sphere equator] (2.0,0) arc[start angle=0,end angle=180,x radius=2.0,y radius=0.62];
+\draw[sphere hidden] (0,2.0) arc[start angle=90,end angle=270,x radius=0.8,y radius=2.0];
+\draw[sphere longitude] (0,-2.0) arc[start angle=-90,end angle=90,x radius=0.8,y radius=2.0];
+\draw[sphere latitude] (-1.55,1.05) arc[start angle=180,end angle=360,x radius=1.55,y radius=0.36];
+\draw[sphere latitude] (1.35,-0.95) arc[start angle=0,end angle=180,x radius=1.35,y radius=0.28];
+\filldraw[sphere tangent plane] (1.2,1.05) -- (2.5,1.45) -- (2.1,2.25) -- (0.85,1.85) -- cycle;
+\node[sphere point, label={[maki label]above right:$p$}] (sp) at (1.55,1.35) {};
+\draw[sphere vector] (0,0) -- (sp);
+\draw[sphere axis] (0,0) -- (2.8,0) node[right] {$x$};
+\draw[sphere axis] (0,0) -- (0,2.7) node[above] {$z$};
+\node[maki annotation] at (0,-2.65) {sphere shell\\latitude / longitude\\tangent plane};
+\node[maki annotation] at (2.7,2.35) {$T_pS^2$};
+\end{tikzpicture}
+\captionof{figure}{球面、经纬线与切平面模板}
+\end{center}
+
+\clearpage
+
+\section{局部流形图与坐标图模板}
+
+这一页更偏微分几何或“局部欧氏化”表达. 它与后面的“流形与潜空间”模板不同, 重点不是编码器/潜变量, 而是 patch、测地线、局部 chart 和点的坐标映射关系.
+
+\begin{center}
+\begin{tikzpicture}[x=1cm,y=1cm]
+\draw[manifold patch] (0.2,1.05) .. controls (1.05,2.28) and (2.3,2.6) .. (3.4,2.08)
+  .. controls (4.3,1.66) and (4.75,0.88) .. (4.42,0.12)
+  .. controls (3.68,-0.45) and (2.05,-0.2) .. (1.0,0.28)
+  .. controls (0.48,0.52) and (0.12,0.84) .. cycle;
+\draw[manifold geodesic] (0.82,0.92) .. controls (1.45,1.78) and (2.45,2.02) .. (3.42,1.76)
+  .. controls (4.02,1.62) and (4.35,1.22) .. (4.18,0.72);
+\filldraw[manifold tangent] (2.12,1.08) -- (3.12,1.38) -- (2.82,2.14) -- (1.88,1.84) -- cycle;
+\draw[manifold fiber] (2.48,1.62) -- ++(0,1.35);
+\node[manifold point, label={[maki label]above:$q$}] (mq) at (2.48,1.62) {};
+
+\draw[manifold chart] (5.32,1.02) rectangle (6.88,2.56);
+\draw[topo mesh] (5.84,1.02) -- (5.84,2.56);
+\draw[topo mesh] (6.36,1.02) -- (6.36,2.56);
+\draw[topo mesh] (5.32,1.53) -- (6.88,1.53);
+\draw[topo mesh] (5.32,2.04) -- (6.88,2.04);
+\draw[manifold map accent] (mq) to[out=16,in=170] node[midway,above] {$\varphi$} (5.92,1.82);
+\node[maki label] at (5.92,1.82) {$\varphi(q)$};
+
+\node[maki annotation] at (2.2,-0.72) {patch / geodesic / tangent plane};
+\node[maki annotation] at (6.12,3.02) {local chart};
+\end{tikzpicture}
+\captionof{figure}{局部流形图、测地线与坐标图模板}
+\end{center}
+
+\clearpage
+
 \section{流形与潜空间示意模板}
 
 这一页参考 tikz.net 的 \texttt{manifold} 页面思路, 适合写“高维数据流形假设”“表示学习”“自编码器几何解释”之类内容.
@@ -231,6 +325,46 @@
 \end{tikzpicture}
 \captionof{figure}{流形假设与潜空间映射模板}
 \end{center}
+
+\clearpage
+
+\section{傅里叶变换模板}
+
+这一页适合分析、信号处理或偏微分方程讲义里快速说明“时域到频域”的关系. 它参考了 tikz.net 的 \texttt{fourier-transform} 页面, 但把常用元素拆成了时域信号、频域谱线、窗函数标注和变换箭头, 方便直接替换成矩形窗、高斯或离散谱的版本.
+
+\begin{center}
+\begin{tikzpicture}[x=1cm,y=1cm]
+\begin{scope}
+  \draw[fourier axis] (-3.4,0) -- (3.45,0) node[right] {$t$};
+  \draw[fourier axis] (0,-0.45) -- (0,1.95) node[above] {$f(t)$};
+  \draw[fourier signal] (-3.0,0) -- (-1.1,0) -- (-1.1,1.18) -- (1.1,1.18) -- (1.1,0) -- (3.05,0);
+  \draw[fourier guide] (-1.1,0) -- (-1.1,1.18);
+  \draw[fourier guide] (1.1,0) -- (1.1,1.18);
+  \node[fourier marker, label={[maki label]below:$-T$}] at (-1.1,0) {};
+  \node[fourier marker, label={[maki label]below:$T$}] at (1.1,0) {};
+  \node[maki annotation] at (0.0,1.72) {time domain};
+\end{scope}
+
+\draw[fourier arrow] (4.25,0.95) -- (6.0,0.95) node[midway,above] {$\mathcal F$};
+
+\begin{scope}[xshift=10cm]
+  \draw[fourier axis] (-3.3,0) -- (3.4,0) node[right] {$\omega$};
+  \draw[fourier axis] (0,-0.55) -- (0,2.0) node[above] {$\hat f(\omega)$};
+  \draw[fourier spectrum, samples=180, smooth, variable=\x, domain=-3.0:3.0]
+    plot (\x,{1.3*(abs(\x)<0.06 ? 1 : sin(deg(2.2*\x))/(2.2*\x))});
+  \foreach \x/\lbl in {-2.92/$-\frac{2\pi}{T}$,-1.46/$-\frac{\pi}{T}$,1.46/$\frac{\pi}{T}$,2.92/$\frac{2\pi}{T}$}{
+    \draw[fourier guide] (\x,0) -- (\x,{1.3*(abs(\x)<0.06 ? 1 : sin(deg(2.2*\x))/(2.2*\x))});
+    \node[fourier marker] at (\x,0) {};
+    \node[maki label, below] at (\x,-0.04) {\lbl};
+  }
+  \node[maki annotation] at (0.15,1.8) {frequency domain};
+  \node[fourier window, anchor=west] at (1.18,1.24) {$\hat f(\omega)\propto \dfrac{\sin(T\omega)}{\omega}$};
+\end{scope}
+\end{tikzpicture}
+\captionof{figure}{矩形窗的时域/频域变换模板}
+\end{center}
+
+\clearpage
 
 \section{环面与基本域模板}
 
