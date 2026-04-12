@@ -35,6 +35,7 @@ jobs:
             tests/test-environments.tex
             tests/test-graphics.tex
             tests/test-tikz-styles.tex
+            tests/test-wrap-layout.tex
           latexmk_use_xelatex: true
           args: -interaction=nonstopmode -file-line-error -halt-on-error
 
@@ -47,7 +48,8 @@ jobs:
           mkdir -p dist/package/maki-notes
 
           cp README.md Makefile latexmkrc maki-notes.cls maki-notes.sty dist/package/maki-notes/
-          cp document2.tex example.tex tikz-template-pages.tex smoke-packaging.tex dist/package/maki-notes/
+          cp ./*.tex dist/package/maki-notes/
+          cp -R docs dist/package/maki-notes/docs
           cp -R tests dist/package/maki-notes/tests
 
           tar -czf "dist/maki-notes-${tag}-source.tar.gz" -C dist/package maki-notes

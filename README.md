@@ -24,6 +24,14 @@
 - 集成 `TikZ`、`PGFPlots`、`tikz-3dplot` 等绘图能力
 - 自带示例文档和基础测试文档，便于二次开发和回归验证
 
+## 文档入口
+
+如果你希望看比 README 更完整的说明，建议直接从 [`docs/README.md`](./docs/README.md) 开始。`docs/` 目录目前包含：
+
+- [`docs/template-guide.md`](./docs/template-guide.md)：模板总览、类选项、编译方式和维护建议
+- [`docs/wrapfig-margin-notes.md`](./docs/wrapfig-margin-notes.md)：图文绕排、侧题注与页边批注
+- [`docs/tikz-template-pages.md`](./docs/tikz-template-pages.md)：TikZ 模板册、样式族和新增页面索引
+
 ## 环境要求
 
 - TeX Live，且可使用 `xelatex`
@@ -138,8 +146,24 @@ xelatex -interaction=nonstopmode -file-line-error
 
 如果你想看完整可编译的组合示例，可以直接参考：
 
+- 文档索引：[`docs/README.md`](./docs/README.md)
+- 模板总览：[`docs/template-guide.md`](./docs/template-guide.md)
 - 样式测试页：[`tests/test-tikz-styles.tex`](./tests/test-tikz-styles.tex)
 - 模板页：[`tikz-template-pages.tex`](./tikz-template-pages.tex)
+- 模板册说明：[`docs/tikz-template-pages.md`](./docs/tikz-template-pages.md)
+
+### 模板册新增页面索引
+
+[`tikz-template-pages.tex`](./tikz-template-pages.tex) 现在除了深度学习与拓扑页，也包含一组更偏“课堂讲义/报告结构图”的通用模板页：
+
+- `流程图模板`：适合算法步骤、证明路线、实验流水线
+- `时间轴模板`：适合课程安排、项目里程碑、历史脉络
+- `概率与条件事件模板`：适合样本空间裁剪、条件概率和集合关系
+- `图论与网络结构模板`：适合最短路、最小割、网络流和搜索过程
+
+如果你想按“该用哪组样式、该改哪些元素”来查，而不是直接翻 `.tex` 文件，可以看：
+
+- [`docs/tikz-template-pages.md`](./docs/tikz-template-pages.md)
 
 ## 常用命令
 
@@ -211,6 +235,7 @@ make clean
 - `document2.tex`：较完整的讲义模板示例
 - `example.tex`：更适合作为二次开发起点的示例文档
 - `docs/wrapfig-margin-notes.md`：图文绕排与页边批注用法说明
+- `docs/tikz-template-pages.md`：TikZ 模板册结构与新增页面索引
 - `tikz-template-pages.tex`：可直接复用的图形模板页
 - `tests/`：用于验证模板基础能力的测试文档，其中 `tests/test-basic.tex` 覆盖类选项兼容，`tests/test-wrap-layout.tex` 集中覆盖新版绕排与页边接口
 
@@ -228,8 +253,8 @@ git push origin v0.1.0
 workflow 会执行以下动作：
 
 - 检出代码
-- 用 XeLaTeX 编译示例文档和测试文档
-- 打包一份源码发行包
+- 用 XeLaTeX 编译示例文档、TikZ 模板页和测试文档
+- 打包一份包含 `.tex` 源码、`docs/` 说明和 `tests/` 的源码发行包
 - 调用 GitHub Models 生成 release notes
 - 创建或更新与当前 tag 对应的 GitHub Release
 - 上传编译后的 PDF 和源码包作为 release assets
