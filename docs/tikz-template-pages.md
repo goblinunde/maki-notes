@@ -2,22 +2,31 @@
 
 [`tikz-template-pages.tex`](../tikz-template-pages.tex) 是仓库里的 TikZ 模板册入口，定位不是测试，而是“可以直接复制改写”的成品页集合。
 
+如果你要找的是“某个样式名到底怎么写、最小可复制代码长什么样、渲染出来是什么样”，请直接看配套的 [`tikz-example.tex`](../tikz-example.tex)。它和模板册不是竞争关系，而是两个互补入口：
+
+- `tikz-template-pages.tex`
+  偏成品页，强调“拿来就改”
+- `tikz-example.tex`
+  偏源码手册，强调“按样式名查源码 + 看实际渲染”
+
 它适合两类使用方式：
 
 - 从中挑一页，直接复制到讲义、论文附录或技术报告里
 - 先保留语义样式名，只替换节点文字、层数、尺寸和说明框
 
-它和 [`tests/test-tikz-styles.tex`](../tests/test-tikz-styles.tex) 的定位不同：
+它和 [`tests/test-tikz-styles.tex`](../tests/test-tikz-styles.tex) 的定位也不同：
 
 - `tikz-template-pages.tex`
   偏模板册，强调“拿来就改”
+- `tikz-example.tex`
+  偏源码手册，强调“当前公开样式都要有示例”
 - `tests/test-tikz-styles.tex`
   偏回归验证，强调“样式 key 仍然可编译”
 
 ## 当前模板册结构
 
 - 深度学习模板页
-  包含 `Transformer`、`CNN`、`ResNet` 三类结构图
+  包含 `Transformer`、`CNN`、`ResNet`、`PINN`、`fPINN` 五类结构图
 - 数学与拓扑模板页
   包含交换图、pullback、球面、局部流形图、流形/潜空间示意、傅里叶变换、基本域到环面
 - 通用讲义图形模板页
@@ -55,6 +64,34 @@
 - 不需要每张图重复定义节点样式
 
 ## 新增页面索引
+
+### Transformer 编码器模板
+
+- 文件位置：[`tikz-template-pages.tex`](../tikz-template-pages.tex)
+- 模板入口：`Transformer 编码器模板`
+- 主要样式：`transformer token`、`transformer pos`、`transformer attention block`、`transformer norm`、`transformer ffn`、`transformer residual`
+- 适合内容：自注意力结构、编码器块、层归一化与残差连接
+- 修改时优先调整：token 数量、block 文案、头数示意、输出记忆块数量
+- 建议写法：把结构角色写进样式名, 不要再用一组临时矩形同时扮演 token、attention 和 norm
+
+### PINN 结构模板
+
+- 文件位置：[`tikz-template-pages.tex`](../tikz-template-pages.tex)
+- 模板入口：`PINN 结构模板`
+- 主要样式：`pinn domain`、`pinn coordinate`、`pinn field`、`pinn physics`、`pinn boundary`、`pinn initial`、`pinn total`
+- 适合内容：Physics-Informed Neural Network、PDE 约束训练、边界/初值损失拆分
+- 修改时优先调整：采样域大小、损失分支数、PDE 文案、是否保留观测数据分支
+- 适合教学场景：科学机器学习、偏微分方程数值解、逆问题与参数识别
+
+### fPINN 结构模板
+
+- 文件位置：[`tikz-template-pages.tex`](../tikz-template-pages.tex)
+- 模板入口：`fPINN 结构模板`
+- 主要样式：`fpinn operator`、`fpinn quadrature`、`fpinn stencil`、`fpinn memory`、`fpinn branch`、`fpinn history`
+- 适合内容：fractional PINN、分数阶扩散、带记忆核或非局部算子的 PINN 结构
+- 修改时优先调整：非局部分支数量、历史积分节点、离散模板说明、损失汇总位置
+- 说明：这里默认把 `fPINN` 解释为 fractional PINN
+- 推荐做法：把“非局部物理分支”单独框出来, 这样后续换成 Caputo、Riesz 或 G-L 离散时不用重排整张图
 
 ### 交换图与 pullback 模板
 
@@ -161,6 +198,22 @@
 
 这些做法短期看灵活，长期会让图之间越来越不像同一套模板。
 
+### 方式三：先在源码手册里查单个样式
+
+如果你不是要整页复制，而是只想确认某个样式：
+
+- 名字是什么
+- 最小例子怎么写
+- 渲染后的观感如何
+
+那就先打开 [`tikz-example.tex`](../tikz-example.tex)。
+
+它适合这几类工作流：
+
+- 我知道自己要 `transformer cross block`，但忘了最小写法
+- 我想看 `pinn loss` / `fpinn branch` / `flow node` 这些新增样式分别长什么样
+- 我准备继续扩展 `.sty`，需要一份“源码 + 渲染”式的回归手册
+
 ## 从模板册到正式文档时建议保留什么
 
 - 样式名
@@ -192,11 +245,13 @@
 - 如果只是换主题，优先通过 `\documentclass[...,theme=...]{maki-notes}` 切换，不要在图里手写颜色
 - 如果要验证某组样式是否仍可编译，先看 [`tests/test-tikz-styles.tex`](../tests/test-tikz-styles.tex)
 - 如果要发布模板册，直接执行 `make tikz-templates`
+- 如果要编译源码手册，直接执行 `make tikz-example`
 
 ## 相关文件
 
 - 文档索引：[`README.md`](./README.md)
 - 模板总览：[`template-guide.md`](./template-guide.md)
 - 模板册源码：[`tikz-template-pages.tex`](../tikz-template-pages.tex)
+- 源码手册：[`tikz-example.tex`](../tikz-example.tex)
 - 样式测试：[`tests/test-tikz-styles.tex`](../tests/test-tikz-styles.tex)
 - 样式实现：[`maki-notes.sty`](../maki-notes.sty)

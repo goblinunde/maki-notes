@@ -30,12 +30,14 @@ jobs:
             document2.tex
             example.tex
             tikz-template-pages.tex
+            tikz-example.tex
             smoke-packaging.tex
             tests/test-basic.tex
             tests/test-environments.tex
             tests/test-graphics.tex
             tests/test-tikz-styles.tex
             tests/test-wrap-layout.tex
+            tests/test-workflow-guide.tex
           latexmk_use_xelatex: true
           args: -interaction=nonstopmode -file-line-error -halt-on-error
 
@@ -57,6 +59,7 @@ jobs:
           cp document2.pdf "dist/maki-notes-${tag}-manual.pdf"
           cp example.pdf "dist/maki-notes-${tag}-example.pdf"
           cp tikz-template-pages.pdf "dist/maki-notes-${tag}-tikz-templates.pdf"
+          cp tikz-example.pdf "dist/maki-notes-${tag}-tikz-example.pdf"
 
       - name: Generate AI release notes
         shell: bash

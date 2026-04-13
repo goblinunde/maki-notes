@@ -22,6 +22,7 @@
 *.toc
 *.vrb
 *.xdv
+*.listing
 
 # Bibliography helpers
 *.bbl
@@ -42,3 +43,4 @@ texput.log
 /test-tikz-styles.pdf
 /test-wrap-layout.pdf
 /tikz-template-pages.pdf
+/tikz-example.pdf

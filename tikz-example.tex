@@ -1,0 +1,749 @@
+\documentclass[a4paper,12pt,oneside]{maki-notes}
+
+\renewcommand{\LectureNotesTitle}{TikZ 样式示例手册}
+\renewcommand{\AuthorInfo}{Maki Notes Template Pack}
+\renewcommand{\CoverTitle}{TikZ 样式示例手册}
+\renewcommand{\CoverAuthorBlock}{%
+	Maki Notes TikZ Style Handbook
+	\\[0.8em]
+	\Large
+	按样式族组织的源码与渲染对照示例
+	\\
+}
+\renewcommand{\CoverFooterBlock}{%
+	覆盖当前模板中的全部 TikZ 语义样式
+	\\[0.5em]
+	适合查样式、复制代码与做回归核对
+	\\[2.5em]
+	二〇二六年四月
+}
+
+\lstset{
+	language=[LaTeX]TeX,
+	basicstyle=\ttfamily\scriptsize,
+	keywordstyle=\color{LogicColor!85!black},
+	commentstyle=\color{MainText!58},
+	columns=fullflexible,
+	keepspaces=true,
+	showstringspaces=false,
+	breaklines=true
+}
+
+\newtcolorbox{styleinventory}[1][]{%
+	commonbox,
+	colback=white,
+	colframe=MainText!12,
+	boxrule=0.5pt,
+	title={样式清单},
+	sharp corners,
+	breakable,
+	#1
+}
+
+\newtcblisting{tikzstyleexample}[2][]{%
+	listing and text,
+	listing engine=listings,
+	breakable,
+	colback=white,
+	colframe=MainText!16,
+	boxrule=0.6pt,
+	title={#2},
+	#1
+}
+
+\begin{document}
+
+\frontmatter
+\MakeTitlePage
+
+\chapter*{使用说明}
+这份文档的目标不是再给一册“现成模板页”, 而是把当前仓库里的 TikZ 语义样式按族整理成可以直接查阅的示例手册. 每个示例都采用上方源码、下方渲染的方式, 便于你同时完成三件事: 查接口名、复制结构、确认最终观感.
+
+文档里的图形结构主要取材于仓库现有的两类来源:
+\begin{itemize}
+\item \texttt{tikz-template-pages.tex}: 更偏“整页模板页”的成品图版.
+\item \texttt{tests/test-tikz-styles.tex}: 更偏“样式回归测试”的紧凑图例.
+\end{itemize}
+这两份文件又继续吸收了 tikz.net 上若干页面的布局思路, 例如 \texttt{neural\_networks}、\texttt{skip-connection}、\texttt{manifold}、\texttt{parametric-sphere}、\texttt{fourier-transform}、\texttt{flowchart} 和 \texttt{timeline}. 这里不再追求“整页排版”的成品感, 而是强调语义样式本身的组合方式.
+
+\begin{styleinventory}
+\begin{itemize}
+\item 当前文档默认依赖 \texttt{maki-notes} 文档类, 因此 \texttt{arrows.meta}、\texttt{calc}、\texttt{fit}、\texttt{positioning}、\texttt{decorations.markings} 等 TikZ 库已由模板统一加载.
+\item 为了保证源码窗口稳定显示, 示例内部尽量使用英文或数学标签; 中文说明放在正文标题、说明段和样式清单里.
+\item 如果你只是要复制图形进讲义, 优先保留样式名和节点名, 再改标签文字、尺寸、颜色或箭头路径.
+\end{itemize}
+\end{styleinventory}
+
+\tableofcontents
+
+\mainmatter
+
+\chapter{基础标注与说明层}
+
+\section{Maki 基础标注样式}
+
+这一组是所有图版都会反复复用的“轻量说明层”. 它们不绑定具体学科, 用来补标签、辅助线、强调箭头和局部高亮.
+
+\begin{styleinventory}
+\begin{itemize}
+\item \texttt{maki label}: 适合短标签、尺寸说明、坐标或模块名.
+\item \texttt{maki annotation}: 适合多行注释框.
+\item \texttt{maki guide}: 适合辅助投影线、参考线、对齐线.
+\item \texttt{maki point}: 适合普通关键点.
+\item \texttt{maki emphasis}: 适合强调箭头或重点方向.
+\end{itemize}
+\end{styleinventory}
+
+\begin{tikzstyleexample}{基础标注层示例}
+\begin{tikzpicture}[x=1cm,y=1cm]
+\draw[math axis] (-0.3,0) -- (5.2,0) node[right] {$x$};
+\draw[math axis] (0,-0.3) -- (0,3.1) node[above] {$y$};
+\draw[math curve, samples=120, domain=0.2:4.7, smooth] plot (\x,{0.55 + 0.35*\x + 0.32*sin(deg(1.35*\x))});
+\node[maki point, label={[maki label]above:$p$}] (p) at (1.7,1.55) {};
+\draw[maki guide] (p) -- (1.7,0) node[maki label, below] {$x_p$};
+\draw[maki guide] (p) -- (0,1.55) node[maki label, left] {$y_p$};
+\draw[maki emphasis] (3.85,2.6) -- (2.45,2.0);
+\node[maki annotation] at (4.25,2.85) {annotation box\\for local remark};
+\end{tikzpicture}
+\end{tikzstyleexample}
+
+\chapter{深度学习与科学机器学习}
+
+\section{神经网络基础块}
+
+这一节专门把 `nn` 家族里最基础、也最容易反复复用的样式放在一起: 节点层、张量块、卷积块、算子块、跳连、注意力辅助线和残差括号都在同一张图里出现, 适合你日后直接复制局部结构.
+
+\begin{styleinventory}
+\begin{itemize}
+\item \texttt{nn neuron}, \texttt{nn input}, \texttt{nn hidden}, \texttt{nn output}: 神经元节点层级.
+\item \texttt{nn tensor}, \texttt{nn conv}, \texttt{nn feature map}: 张量和卷积特征图表达.
+\item \texttt{nn block}, \texttt{nn token}, \texttt{nn op}, \texttt{nn op warm}, \texttt{nn op accent}: 模块盒子与算子节点.
+\item \texttt{nn sum}, \texttt{nn connect}, \texttt{nn connect strong}, \texttt{nn skip}, \texttt{nn attention}, \texttt{nn residual bracket}: 主流程、跳连、注意力支线与残差标记.
+\end{itemize}
+\end{styleinventory}
+
+\begin{tikzstyleexample}{神经网络基础语义样式}
+\begin{tikzpicture}[x=1cm,y=1cm]
+\foreach \y/\name in {1.2/i1,0/i2,-1.2/i3}{
+  \node[nn input] (\name) at (0,\y) {};
+}
+\foreach \y/\name in {0.8/h1,-0.2/h2,-1.2/h3}{
+  \node[nn hidden] (\name) at (2.0,\y) {};
+}
+\node[nn neuron] (core) at (3.8,-0.2) {$z$};
+\node[nn output] (out) at (5.6,-0.2) {$\hat y$};
+
+\foreach \a in {i1,i2,i3}{
+  \foreach \b in {h1,h2,h3}{
+    \draw[nn connect] (\a) -- (\b);
+  }
+}
+\foreach \b in {h1,h2,h3}{
+  \draw[nn connect] (\b) -- (core);
+}
+\draw[nn connect strong] (core) -- (out);
+\node[nn block, fit=(h1)(h3), label={[maki label]above:hidden stack}] {};
+
+\node[nn token] (tok) at (7.3,1.8) {[CLS]};
+\node[nn tensor] (ten) at (7.3,-0.2) {feat};
+\node[nn conv] (conv) at (9.0,-0.2) {Conv\\$3\times 3$};
+\node[nn op] (mix) at (10.9,1.8) {Mix};
+\node[nn op warm] (warm) at (10.9,-0.2) {Conv\\BN};
+\node[nn sum] (sum) at (12.8,-0.2) {$+$};
+\node[nn op accent] (head) at (14.5,-0.2) {Head};
+
+\draw[nn connect strong] (ten.east) -- (conv.west);
+\draw[nn connect strong] (conv.east) -- (warm.west);
+\draw[nn connect strong] (warm.east) -- (sum.west);
+\draw[nn connect strong] (sum.east) -- (head.west);
+\draw[nn connect strong] (tok.east) -- (mix.west);
+\draw[nn attention] (mix.south) -- (warm.north);
+\draw[nn skip] (conv.north) .. controls +(0,1.1) and +(0,1.1) .. (sum.north);
+\draw[nn residual bracket] (8.2,-1.1) -- (8.2,-1.45) -- (12.0,-1.45) -- (12.0,-1.1);
+\node[maki label] at (10.1,-1.8) {residual branch};
+
+\foreach \dx/\shade in {0.0/10,0.18/18,0.36/26}{
+  \draw[nn feature map, fill=NNTensorColor!\shade] (8.75+\dx,-3.5+\dx) rectangle ++(0.72,1.6);
+}
+\node[maki annotation] at (2.0,2.2) {layer roles\\via node styles};
+\node[maki annotation] at (11.0,3.0) {token, conv, op, skip,\\attention and sum};
+\end{tikzpicture}
+\end{tikzstyleexample}
+
+\section{Transformer 编码器与 Cross-Attention}
+
+这一节覆盖 `transformer` 家族全部语义样式. 和单纯的编码器图不同, 这里额外放入了 `cross block`、记忆块和桥接箭头, 方便你直接改成 encoder-decoder 或 retrieval-enhanced 结构图.
+
+\begin{styleinventory}
+\begin{itemize}
+\item \texttt{transformer token}, \texttt{transformer pos}: token 与位置编码.
+\item \texttt{transformer block}, \texttt{transformer attention block}, \texttt{transformer cross block}, \texttt{transformer ffn}, \texttt{transformer norm}: 主要算子模块.
+\item \texttt{transformer add}, \texttt{transformer head}, \texttt{transformer memory}, \texttt{transformer stack}: 残差加法、头部、记忆输出与层包络.
+\item \texttt{transformer flow}, \texttt{transformer residual}, \texttt{transformer bridge}: 主流程、残差支线和跨模块桥接.
+\end{itemize}
+\end{styleinventory}
+
+\begin{tikzstyleexample}{Transformer 全语义样式示例}
+\begin{tikzpicture}[x=0.9cm,y=0.9cm]
+\foreach \i/\txt in {1/$x_1$,2/$x_2$,3/$x_3$}{
+  \node[transformer token] (xt\i) at (\i*1.5,0) {\txt};
+  \node[transformer pos] (xp\i) at (\i*1.5,1.0) {$p_\i$};
+  \draw[transformer flow] (xt\i.north) -- (xp\i.south);
+}
+\node[transformer block] (embed) at (3.0,2.35) {Embed};
+\node[transformer attention block] (selfa) at (3.0,4.1) {Self-Attn};
+\node[transformer add] (add1) at (3.0,5.35) {$+$};
+\node[transformer norm] (norm1) at (3.0,6.55) {Norm};
+\node[transformer ffn] (ffn1) at (3.0,8.2) {FFN};
+\node[transformer add] (add2) at (3.0,9.45) {$+$};
+\node[transformer norm] (norm2) at (3.0,10.65) {Norm};
+
+\foreach \i in {1,...,3}{
+  \draw[transformer flow] (xp\i.north) -- (embed.south -| xp\i.north);
+}
+\draw[transformer flow] (embed.north) -- (selfa.south);
+\draw[transformer flow] (selfa.north) -- (add1.south);
+\draw[transformer flow] (add1.north) -- (norm1.south);
+\draw[transformer flow] (norm1.north) -- (ffn1.south);
+\draw[transformer flow] (ffn1.north) -- (add2.south);
+\draw[transformer flow] (add2.north) -- (norm2.south);
+\draw[transformer residual] ($(embed.east)+(0.1,0)$) .. controls +(0.95,0.95) and +(0.95,-0.95) .. ($(add1.east)+(0.1,0)$);
+\draw[transformer residual] ($(norm1.west)+(-0.1,0)$) .. controls +(-0.95,0.95) and +(-0.95,-0.95) .. ($(add2.west)+(-0.1,0)$);
+
+\foreach \x/\lab in {5.6/$Q$,6.8/$K$,8.0/$V$}{
+  \node[transformer head] at (\x,4.1) {\lab};
+}
+\draw[transformer bridge] (selfa.east) -- (5.2,4.1);
+
+\foreach \i/\txt in {1/$h_1$,2/$h_2$,3/$h_3$}{
+  \node[transformer memory] (mem\i) at (\i*1.5,12.0) {\txt};
+  \draw[transformer flow] (norm2.north -| mem\i.south) -- (mem\i.south);
+}
+\node[transformer stack, fit=(selfa)(norm2), label={[maki label]above:encoder}] {};
+
+\node[transformer token] (yt) at (11.0,0) {$y_{<t}$};
+\node[transformer pos] (yp) at (11.0,1.0) {$q_t$};
+\node[transformer block] (dembed) at (11.0,2.35) {Shift};
+\node[transformer attention block] (dself) at (11.0,4.1) {Masked\\Self-Attn};
+\node[transformer cross block] (cross) at (11.0,6.55) {Cross-Attn};
+\node[transformer ffn] (dffn) at (11.0,8.55) {FFN};
+\draw[transformer flow] (yt.north) -- (yp.south);
+\draw[transformer flow] (yp.north) -- (dembed.south);
+\draw[transformer flow] (dembed.north) -- (dself.south);
+\draw[transformer flow] (dself.north) -- (cross.south);
+\draw[transformer flow] (cross.north) -- (dffn.south);
+\draw[transformer bridge] (mem2.east) to[out=0,in=140] (cross.north west);
+\node[maki annotation] at (11.0,10.2) {decoder side with\\cross-attention};
+\end{tikzpicture}
+\end{tikzstyleexample}
+
+\section{PINN 多分支损失}
+
+这一节把 `pinn` 家族拆成“采样域 → 神经场 → 约束分支 → 单独损失 → 总损失”五层, 这样你后面写 PDE、逆问题或带数据约束的科学机器学习讲义时, 不会再把所有东西塞进一个普通 MLP 图里.
+
+\begin{styleinventory}
+\begin{itemize}
+\item \texttt{pinn coordinate}, \texttt{pinn module}, \texttt{pinn field}: 输入坐标、主网络与神经场输出.
+\item \texttt{pinn domain}, \texttt{pinn sample}: 采样域和采样点.
+\item \texttt{pinn physics}, \texttt{pinn boundary}, \texttt{pinn initial}, \texttt{pinn data}: 物理、边界、初值与数据支路.
+\item \texttt{pinn loss}, \texttt{pinn total}: 单独损失与总损失.
+\item \texttt{pinn flow}, \texttt{pinn constraint}, \texttt{pinn supervise}: 主流程、物理约束线和监督分支线.
+\end{itemize}
+\end{styleinventory}
+
+\begin{tikzstyleexample}{PINN 结构与损失分解}
+\begin{tikzpicture}[x=0.78cm,y=0.9cm]
+\node[pinn domain, minimum width=3.0cm, minimum height=3.7cm] (dom) at (1.9,1.9) {};
+\foreach \dx/\dy in {-0.95/0.95,-0.45/0.2,0.15/0.75,0.8/0.05,0.45/-0.75}{
+  \node[pinn sample] at ($(dom.center)+(\dx,\dy)$) {};
+}
+\foreach \dx/\dy in {-1.2/1.45,-0.3/1.45,0.6/1.45,1.2/-1.45,-0.1/-1.45}{
+  \node[pinn sample, fill=DefColor!88!black] at ($(dom.center)+(\dx,\dy)$) {};
+}
+\node[pinn coordinate] (coord) at (1.9,-0.95) {$(x,t)$};
+\node[pinn module] (net) at (5.5,1.9) {MLP};
+\node[pinn field] (field) at (8.2,1.9) {$\hat u_\theta$};
+
+\node[pinn physics] (pde) at (10.9,4.0) {PDE residual};
+\node[pinn loss] (lpde) at (13.7,4.0) {$\mathcal L_{\mathrm{pde}}$};
+\node[pinn boundary] (bc) at (10.9,2.45) {Boundary};
+\node[pinn loss] (lbc) at (13.7,2.45) {$\mathcal L_{\mathrm{bc}}$};
+\node[pinn initial] (ic) at (10.9,0.85) {Initial};
+\node[pinn loss] (lic) at (13.7,0.85) {$\mathcal L_{\mathrm{ic}}$};
+\node[pinn data] (data) at (10.9,-0.75) {Sensor data};
+\node[pinn loss] (ldata) at (13.7,-0.75) {$\mathcal L_{\mathrm{data}}$};
+\node[pinn total] (loss) at (16.6,1.65) {$\mathcal L$};
+
+\draw[pinn flow] (coord.north) -- (dom.south);
+\draw[pinn flow] (coord.east) -- (net.west);
+\draw[pinn flow] (net.east) -- (field.west);
+\draw[pinn constraint] (field.north) -- (pde.south);
+\draw[pinn supervise] (field.east) to[out=8,in=180] (bc.west);
+\draw[pinn supervise] (field.east) -- (9.25,1.9) |- (ic.west);
+\draw[pinn supervise] (field.south) -- (data.north);
+\draw[pinn constraint] ($(dom.east)+(0.06,0.95)$) -- (pde.west);
+\draw[pinn supervise] ($(dom.east)+(0.06,0.25)$) -- (bc.west);
+\draw[pinn supervise] ($(dom.east)+(0.06,-1.05)$) -- (ic.west);
+\draw[pinn flow] (pde.east) -- (lpde.west);
+\draw[pinn flow] (bc.east) -- (lbc.west);
+\draw[pinn flow] (ic.east) -- (lic.west);
+\draw[pinn flow] (data.east) -- (ldata.west);
+\draw[pinn flow] (lpde.east) to[out=0,in=150] (loss.north west);
+\draw[pinn flow] (lbc.east) -- (loss.west);
+\draw[pinn flow] (lic.east) -- (loss.west);
+\draw[pinn flow] (ldata.east) to[out=0,in=-150] (loss.south west);
+\node[maki annotation] at (5.5,4.85) {collocation, boundary,\\initial and data loss};
+\end{tikzpicture}
+\end{tikzstyleexample}
+
+\section{fPINN 非局部算子分支}
+
+这里把 `fPINN` 明确按 fractional PINN 理解. 重点不是普通 PDE 残差, 而是把分数阶算子、历史积分、离散模板和记忆项独立拆出来, 这样异常扩散、带记忆核的模型或 GL stencil 结构会清楚很多.
+
+\begin{styleinventory}
+\begin{itemize}
+\item \texttt{fpinn operator}, \texttt{fpinn stencil}, \texttt{fpinn quadrature}, \texttt{fpinn memory}: 非局部算子与离散/历史部件.
+\item \texttt{fpinn branch}: 用于圈出整条非局部分支.
+\item \texttt{fpinn flow}, \texttt{fpinn history}: 主流程箭头与历史依赖箭头.
+\end{itemize}
+\end{styleinventory}
+
+\begin{tikzstyleexample}{fPINN 非局部结构}
+\begin{tikzpicture}[x=0.82cm,y=0.92cm]
+\node[pinn coordinate] (fc) at (0,1.6) {$(x,t)$};
+\node[pinn module] (fn) at (2.8,1.6) {Neural field};
+\node[pinn field] (ff) at (5.35,1.6) {$\hat u_\theta$};
+\node[fpinn operator] (fo) at (5.35,4.05) {Fractional\\operator};
+\node[fpinn quadrature] (fq) at (8.1,4.05) {History\\quadrature};
+\node[fpinn stencil] (fs) at (8.1,1.6) {GL\\stencil};
+\node[fpinn memory] (fm) at (10.85,4.05) {Memory};
+\node[pinn physics] (fr) at (10.85,1.6) {Residual};
+\node[pinn boundary] (fb) at (10.85,-0.85) {BC / data};
+\node[pinn total] (fl) at (13.8,1.6) {$\mathcal L$};
+
+\draw[pinn flow] (fc.east) -- (fn.west);
+\draw[pinn flow] (fn.east) -- (ff.west);
+\draw[fpinn flow] (ff.north) -- (fo.south);
+\draw[fpinn flow] (ff.east) -- (fs.west);
+\draw[fpinn flow] (fo.east) -- (fq.west);
+\draw[fpinn flow] (fq.east) -- (fm.west);
+\draw[fpinn flow] (fs.east) -- (fr.west);
+\draw[fpinn flow] (fm.south) -- (fr.north);
+\draw[fpinn history] (fc.north) to[out=72,in=180] node[midway,above] {past states} (fq.west);
+\draw[pinn supervise] (ff.south east) to[out=-18,in=180] (fb.west);
+\draw[pinn flow] (fr.east) -- (fl.west);
+\draw[pinn flow] (fb.east) to[out=0,in=-145] (fl.south west);
+\node[fpinn branch, fit=(fo)(fq)(fm)(fs)(fr), label={[maki label]above:nonlocal branch}] {};
+\end{tikzpicture}
+\end{tikzstyleexample}
+
+\chapter{数学、几何与拓扑}
+
+\section{分析曲线与平面几何}
+
+这一节把 `math` 和 `geom` 两个家族放在同一张图里: 左边是分析/微积分常见的曲线、切线、法线、割线与向量, 右边是平面几何里的点、辅助线、轨迹、圆弧和角标. 这样能比较清楚地看出两组样式的分工边界.
+
+\begin{styleinventory}
+\begin{itemize}
+\item \texttt{math axis}, \texttt{math vector}, \texttt{math curve}, \texttt{math tangent}, \texttt{math normal}, \texttt{math secant}: 分析图中的坐标轴与线型.
+\item \texttt{math sample point}, \texttt{math region}: 采样点与区域填充.
+\item \texttt{geom point}, \texttt{geom highlighted point}, \texttt{geom segment}, \texttt{geom helper}, \texttt{geom locus}, \texttt{geom arc}, \texttt{geom angle mark}: 平面几何基本元素.
+\end{itemize}
+\end{styleinventory}
+
+\begin{tikzstyleexample}{分析与几何联合示例}
+\begin{tikzpicture}[x=1cm,y=1cm]
+\begin{scope}
+  \draw[math axis] (-0.4,0) -- (5.8,0) node[right] {$x$};
+  \draw[math axis] (0,-0.5) -- (0,3.8) node[above] {$y$};
+  \fill[math region] (0.7,0)
+    -- plot[samples=100, smooth, domain=0.7:4.3]
+      (\x,{0.12*(\x-0.6)*(\x-2.5)*(\x-4.8)+2.15})
+    -- (4.3,0) -- cycle;
+  \draw[math curve] plot[samples=120, smooth, domain=0.7:4.8]
+    (\x,{0.12*(\x-0.6)*(\x-2.5)*(\x-4.8)+2.15});
+  \coordinate (P) at (2.0,{0.12*(2.0-0.6)*(2.0-2.5)*(2.0-4.8)+2.15});
+  \coordinate (Q) at (4.0,{0.12*(4.0-0.6)*(4.0-2.5)*(4.0-4.8)+2.15});
+  \node[math sample point, label={[maki label]above left:$P$}] at (P) {};
+  \node[math sample point, label={[maki label]above:$Q$}] at (Q) {};
+  \draw[math tangent] ($(P)+(-1.05,-0.78)$) -- ($(P)+(1.25,0.92)$);
+  \draw[math normal] ($(P)+(-0.38,1.2)$) -- ($(P)+(0.38,-1.2)$);
+  \draw[math secant] (P) -- (Q);
+  \draw[math vector] (0,0) -- (P);
+  \node[maki annotation] at (4.9,3.1) {curve, tangent,\\normal, secant, region};
+\end{scope}
+
+\begin{scope}[xshift=7.2cm]
+  \coordinate (O) at (0,0);
+  \coordinate (A) at (2.4,0.3);
+  \coordinate (B) at (1.35,2.15);
+  \node[geom highlighted point, label={[maki label]below left:$O$}] at (O) {};
+  \node[geom point, label={[maki label]below:$A$}] at (A) {};
+  \node[geom point, label={[maki label]above:$B$}] at (B) {};
+  \draw[geom locus] (O) circle (2.42);
+  \draw[geom segment] (O) -- (A);
+  \draw[geom segment] (O) -- (B);
+  \draw[geom segment] (A) -- (B);
+  \draw[geom helper] (B) -- (1.35,0);
+  \draw[geom arc] (0.9,0.0) arc[start angle=0,end angle=57,radius=0.9];
+  \pic[draw=DefColor!85!black, thick] {angle = A--O--B};
+  \node[maki annotation] at (2.95,2.5) {locus, arc, helper\\and angle mark};
+\end{scope}
+\end{tikzpicture}
+\end{tikzstyleexample}
+
+\section{基本域与边识别}
+
+这一节直接对应 `topo` 家族. 左边是基本域与边识别, 右边是识别后的环面示意. 对拓扑和微分几何讲义来说, 这是最常见的一类基础版面.
+
+\begin{styleinventory}
+\begin{itemize}
+\item \texttt{topo patch}, \texttt{topo mesh}: 基本域底板和网格.
+\item \texttt{topo boundary}, \texttt{topo identify}, \texttt{topo identify reversed}: 边界与边识别箭头.
+\item \texttt{topo geodesic}, \texttt{topo loop}, \texttt{topo cut}: 曲线、基本环路与切割线.
+\end{itemize}
+\end{styleinventory}
+
+\begin{tikzstyleexample}{拓扑基本域示例}
+\begin{tikzpicture}[x=1cm,y=1cm]
+\begin{scope}
+  \draw[topo patch] (0,0) rectangle (4.2,4.2);
+  \foreach \k in {0.7,1.4,2.1,2.8,3.5}{
+    \draw[topo mesh] (\k,0) -- (\k,4.2);
+    \draw[topo mesh] (0,\k) -- (4.2,\k);
+  }
+  \draw[topo identify] (0,0) -- (4.2,0);
+  \draw[topo identify] (0,4.2) -- (4.2,4.2);
+  \draw[topo identify reversed] (0,0) -- (0,4.2);
+  \draw[topo identify reversed] (4.2,0) -- (4.2,4.2);
+  \draw[topo loop] (0.9,1.0) .. controls (1.6,2.8) and (2.8,2.7) .. (3.7,1.3);
+  \draw[topo geodesic] (0.7,3.4) .. controls (1.7,3.9) and (3.1,3.0) .. (3.8,3.55);
+  \node[maki annotation] at (2.1,2.1) {fundamental\\domain};
+  \node[maki label] at (2.1,-0.45) {$a$};
+  \node[maki label] at (2.1,4.65) {$a$};
+  \node[maki label] at (-0.35,2.1) {$b^{-1}$};
+  \node[maki label] at (4.55,2.1) {$b^{-1}$};
+\end{scope}
+
+\begin{scope}[xshift=7.4cm]
+  \draw[topo boundary, fill=TopologyBg] (0,0) ellipse (2.15 and 1.35);
+  \draw[topo boundary, fill=white] (0,0) ellipse (0.78 and 0.42);
+  \draw[topo loop] (0,0.72) ellipse (1.75 and 0.42);
+  \draw[topo geodesic] (-1.2,-0.05) .. controls (-0.3,1.15) and (0.95,1.0) .. (1.35,0.08);
+  \draw[topo cut] (0,-1.35) -- (0,1.35);
+  \node[maki annotation] at (0,-2.0) {identified torus};
+\end{scope}
+\end{tikzpicture}
+\end{tikzstyleexample}
+
+\section{交换图与 Pullback}
+
+这一节覆盖 `diag` 家族的全部公开样式. 它保留了 pullback 方块的中心结构, 同时额外加进强调对象、淡化对象、自然变换、曲箭头、虚线和二维单元标记.
+
+\begin{styleinventory}
+\begin{itemize}
+\item \texttt{diag object}, \texttt{diag object accent}, \texttt{diag object muted}: 对象节点层级.
+\item \texttt{diag morphism}, \texttt{diag morphism dashed}, \texttt{diag morphism emph}, \texttt{diag morphism dotted}, \texttt{diag morphism natural}, \texttt{diag morphism curve}: 箭头语义层级.
+\item \texttt{diag corner}, \texttt{diag 2cell}: pullback 角标与二维单元.
+\end{itemize}
+\end{styleinventory}
+
+\begin{tikzstyleexample}{交换图语义样式}
+\begin{tikzpicture}[x=2.3cm,y=1.7cm]
+\node[diag object accent] (A) at (0,2) {$X\times_Z Y$};
+\node[diag object] (B) at (2.15,2) {$Y$};
+\node[diag object] (C) at (0,0) {$X$};
+\node[diag object accent] (D) at (2.15,0) {$Z$};
+\node[diag object muted] (E) at (4.45,1) {$\mathcal C$};
+
+\draw[diag morphism emph] (A) -- node[above] {$p_2$} (B);
+\draw[diag morphism emph] (A) -- node[left] {$p_1$} (C);
+\draw[diag morphism] (B) -- node[right] {$g$} (D);
+\draw[diag morphism] (C) -- node[below] {$f$} (D);
+\draw[diag morphism dotted] (A) to[bend left=10] node[above left] {$u$} (E);
+\draw[diag morphism natural] (B) -- node[above right] {$G$} (E);
+\draw[diag morphism dashed] (C) -- node[below right] {$H$} (E);
+\draw[diag morphism curve] (A) to[bend right=18] node[below left] {$\eta$} (D);
+\draw[diag corner] ($(A.south east)+(0.16,-0.02)$) -- ++(0.22,0) -- ++(0,-0.22);
+\node[diag 2cell] at (1.08,1.04) {pb};
+\node[maki annotation] at (2.15,2.78) {pullback square};
+\node[maki annotation] at (4.45,-0.08) {ambient object};
+\end{tikzpicture}
+\end{tikzstyleexample}
+
+\chapter{曲面、流形与频域}
+
+\section{球面与切平面}
+
+这一节对应 `sphere` 家族. 风格重点不是追求重型 3D 效果, 而是让经纬线、可见/不可见轮廓、切平面和径向向量在讲义里足够清楚.
+
+\begin{styleinventory}
+\begin{itemize}
+\item \texttt{sphere shell}, \texttt{sphere hidden}, \texttt{sphere equator}, \texttt{sphere longitude}, \texttt{sphere latitude}: 球壳与曲线层次.
+\item \texttt{sphere tangent plane}, \texttt{sphere point}, \texttt{sphere vector}, \texttt{sphere axis}: 切平面、点、向量与坐标轴.
+\end{itemize}
+\end{styleinventory}
+
+\begin{tikzstyleexample}{球面局部几何示例}
+\begin{tikzpicture}[x=1cm,y=1cm]
+\shade[sphere shell] (0,0) circle (1.9);
+\draw[sphere hidden] (-1.9,0) arc[start angle=180,end angle=360,x radius=1.9,y radius=0.58];
+\draw[sphere equator] (1.9,0) arc[start angle=0,end angle=180,x radius=1.9,y radius=0.58];
+\draw[sphere hidden] (0,1.9) arc[start angle=90,end angle=270,x radius=0.76,y radius=1.9];
+\draw[sphere longitude] (0,-1.9) arc[start angle=-90,end angle=90,x radius=0.76,y radius=1.9];
+\draw[sphere latitude] (-1.45,1.0) arc[start angle=180,end angle=360,x radius=1.45,y radius=0.33];
+\draw[sphere latitude] (1.25,-0.9) arc[start angle=0,end angle=180,x radius=1.25,y radius=0.26];
+\filldraw[sphere tangent plane] (1.18,0.92) -- (2.42,1.28) -- (2.06,2.06) -- (0.9,1.7) -- cycle;
+\node[sphere point, label={[maki label]above right:$p$}] (sp) at (1.46,1.26) {};
+\draw[sphere vector] (0,0) -- (sp);
+\draw[sphere axis] (0,0) -- (2.65,0) node[right] {$x$};
+\draw[sphere axis] (0,0) -- (0,2.45) node[above] {$z$};
+\node[maki annotation] at (0,-2.5) {sphere shell + tangent plane};
+\end{tikzpicture}
+\end{tikzstyleexample}
+
+\section{流形、局部图与潜空间}
+
+这一节覆盖 `manifold` 家族里最完整的一组语义样式: 原空间坐标轴、数据云、局部 sheet、局部 patch、测地线、切平面、fiber、局部 chart、latent 区域和前向/后向映射都在同一张图里出现.
+
+\begin{styleinventory}
+\begin{itemize}
+\item \texttt{manifold axis}, \texttt{manifold cloud}, \texttt{manifold sheet}, \texttt{manifold patch}: 原空间与局部几何背景.
+\item \texttt{manifold geodesic}, \texttt{manifold tangent}, \texttt{manifold point}, \texttt{manifold fiber}: 局部曲线、切平面、点和 fiber.
+\item \texttt{manifold chart}, \texttt{manifold latent}: chart 与 latent 区域.
+\item \texttt{manifold map accent}, \texttt{manifold forward}, \texttt{manifold backward}: 映射箭头.
+\end{itemize}
+\end{styleinventory}
+
+\begin{tikzstyleexample}{流形与潜空间示例}
+\begin{tikzpicture}[x=1cm,y=1cm]
+\draw[manifold axis] (0,0) -- (0,2.7);
+\draw[manifold axis] (0,0) -- (2.8,0.75);
+\draw[manifold axis] (0,0) -- (3.5,0) node[midway,below=4pt] {ambient space};
+
+\fill[manifold cloud]
+  (0.35,0.85) to[out=10,in=155] (2.1,0.45)
+  to[out=25,in=210] (3.25,1.4)
+  to[out=125,in=15] (2.35,2.15)
+  to[out=190,in=40] (0.9,2.0)
+  to[out=220,in=135] cycle;
+
+\filldraw[manifold sheet]
+  (0.82,0.98) to[out=12,in=170] (2.15,0.75)
+  to[out=18,in=205] (2.9,1.28)
+  to[out=132,in=8] (2.12,1.7)
+  to[out=198,in=32] (1.0,1.58)
+  to[out=220,in=135] cycle;
+
+\filldraw[manifold patch]
+  (1.0,1.05) .. controls (1.55,1.95) and (2.35,2.08) .. (3.0,1.78)
+  .. controls (3.42,1.58) and (3.65,1.18) .. (3.45,0.82)
+  .. controls (2.95,0.5) and (1.75,0.62) .. (1.18,0.92)
+  .. controls (1.02,0.95) and (0.98,1.0) .. cycle;
+\draw[manifold geodesic] (1.2,1.08) .. controls (1.72,1.62) and (2.5,1.78) .. (3.18,1.42);
+\filldraw[manifold tangent] (1.95,1.02) -- (2.9,1.28) -- (2.64,2.0) -- (1.74,1.72) -- cycle;
+\node[manifold point, label={[maki label]above:$q$}] (mq) at (2.25,1.45) {};
+\draw[manifold fiber] (mq) -- ++(0,1.2);
+
+\draw[manifold chart] (5.2,0.95) rectangle (6.7,2.45);
+\draw[topo mesh] (5.7,0.95) -- (5.7,2.45);
+\draw[topo mesh] (6.2,0.95) -- (6.2,2.45);
+\draw[topo mesh] (5.2,1.45) -- (6.7,1.45);
+\draw[topo mesh] (5.2,1.95) -- (6.7,1.95);
+\draw[manifold latent] (7.7,1.05) rectangle (9.1,2.35);
+\draw[topo mesh] (8.17,1.05) -- (8.17,2.35);
+\draw[topo mesh] (8.63,1.05) -- (8.63,2.35);
+\draw[topo mesh] (7.7,1.48) -- (9.1,1.48);
+\draw[topo mesh] (7.7,1.91) -- (9.1,1.91);
+
+\draw[manifold map accent] (mq) to[out=16,in=180] node[midway,above] {$\varphi$} (5.72,1.72);
+\draw[manifold forward] (2.95,1.2) to[out=8,in=180] node[midway,above] {$f$} (7.85,1.72);
+\draw[manifold backward] (8.92,1.42) to[out=215,in=-12] node[midway,below] {$g$} (3.15,0.92);
+\node[maki annotation] at (8.4,2.95) {chart / latent code};
+\end{tikzpicture}
+\end{tikzstyleexample}
+
+\section{傅里叶变换}
+
+这一节对应 `fourier` 家族. 它把时域、频域、变换箭头、频率导线、关键频点和窗函数注释盒全部拆开了, 后续无论你换成矩形窗、离散谱还是高斯核, 结构都可以直接复用.
+
+\begin{styleinventory}
+\begin{itemize}
+\item \texttt{fourier axis}, \texttt{fourier signal}, \texttt{fourier spectrum}: 坐标轴、时域信号和频域谱线.
+\item \texttt{fourier guide}, \texttt{fourier marker}: 导线和频点标记.
+\item \texttt{fourier arrow}, \texttt{fourier window}: 变换箭头和窗函数注释框.
+\end{itemize}
+\end{styleinventory}
+
+\begin{tikzstyleexample}{傅里叶时域/频域示例}
+\begin{tikzpicture}[x=1cm,y=1cm]
+\begin{scope}
+  \draw[fourier axis] (-3.3,0) -- (3.4,0) node[right] {$t$};
+  \draw[fourier axis] (0,-0.4) -- (0,1.85) node[above] {$f(t)$};
+  \draw[fourier signal] (-2.9,0) -- (-1.0,0) -- (-1.0,1.15) -- (1.0,1.15) -- (1.0,0) -- (3.0,0);
+  \draw[fourier guide] (-1.0,0) -- (-1.0,1.15);
+  \draw[fourier guide] (1.0,0) -- (1.0,1.15);
+  \node[fourier marker, label={[maki label]below:$-T$}] at (-1.0,0) {};
+  \node[fourier marker, label={[maki label]below:$T$}] at (1.0,0) {};
+  \node[maki annotation] at (0.0,1.65) {time domain};
+\end{scope}
+
+\draw[fourier arrow] (4.15,0.9) -- (5.9,0.9) node[midway,above] {$\mathcal F$};
+
+\begin{scope}[xshift=9.2cm]
+  \draw[fourier axis] (-3.3,0) -- (3.4,0) node[right] {$\omega$};
+  \draw[fourier axis] (0,-0.55) -- (0,1.95) node[above] {$\hat f(\omega)$};
+  \draw[fourier spectrum, samples=180, smooth, variable=\x, domain=-3.0:3.0]
+    plot (\x,{1.28*(abs(\x)<0.06 ? 1 : sin(deg(2.15*\x))/(2.15*\x))});
+  \foreach \x/\lbl in {-2.92/$-\frac{2\pi}{T}$,-1.46/$-\frac{\pi}{T}$,1.46/$\frac{\pi}{T}$,2.92/$\frac{2\pi}{T}$}{
+    \draw[fourier guide] (\x,0) -- (\x,{1.28*(abs(\x)<0.06 ? 1 : sin(deg(2.15*\x))/(2.15*\x))});
+    \node[fourier marker] at (\x,0) {};
+    \node[maki label, below] at (\x,-0.04) {\lbl};
+  }
+  \node[maki annotation] at (0.18,1.72) {frequency domain};
+  \node[fourier window, anchor=west] at (1.15,1.2) {$\hat f(\omega)\propto \dfrac{\sin(T\omega)}{\omega}$};
+\end{scope}
+\end{tikzpicture}
+\end{tikzstyleexample}
+
+\chapter{通用流程、时间、概率与网络图}
+
+\section{流程图}
+
+这一节对应 `flow` 家族. 我额外把基类 `flow node` 也直接放进了示例, 这样你能清楚看到通用流程节点和更具体的 terminal/process/decision/io 之间的关系.
+
+\begin{styleinventory}
+\begin{itemize}
+\item \texttt{flow node}, \texttt{flow terminal}, \texttt{flow process}, \texttt{flow decision}, \texttt{flow io}: 节点层级.
+\item \texttt{flow arrow}, \texttt{flow arrow emph}, \texttt{flow arrow feedback}: 主箭头、强调箭头与反馈箭头.
+\item \texttt{flow note}: 补充说明框.
+\end{itemize}
+\end{styleinventory}
+
+\begin{tikzstyleexample}{流程图样式示例}
+\begin{tikzpicture}[x=1cm,y=1cm]
+\node[flow terminal] (start) at (0,2.2) {Start};
+\node[flow process] (collect) at (2.8,2.2) {Collect\\inputs};
+\node[flow decision] (check) at (5.9,2.2) {Need\\new style?};
+\node[flow node] (generic) at (8.9,3.55) {Generic\\flow node};
+\node[flow process] (build) at (8.9,2.2) {Build\\example};
+\node[flow io] (docs) at (8.9,0.3) {Sync docs\\and tests};
+\node[flow terminal] (done) at (11.9,2.2) {Done};
+\node[flow note, anchor=west] at (9.9,0.3) {keep source and rendered figure\\side by side for copy-and-check workflow};
+
+\draw[flow arrow] (start) -- (collect);
+\draw[flow arrow] (collect) -- (check);
+\draw[flow arrow emph] (check) -- node[above, maki label] {yes} (build);
+\draw[flow arrow] (build) -- (done);
+\draw[flow arrow] (build.north) -- (generic.south);
+\draw[flow arrow feedback] (check) -- ++(0,-1.55) -| node[pos=0.25, left, maki label] {update} (docs.west);
+\draw[flow arrow] (docs.north) |- (build.south);
+\node[maki annotation] at (2.8,4.0) {prepare};
+\node[maki annotation] at (8.9,4.55) {main branch};
+\end{tikzpicture}
+\end{tikzstyleexample}
+
+\section{时间轴}
+
+这一节对应 `timeline` 家族. 它适合课程节奏、项目里程碑、版本演化或历史脉络.
+
+\begin{styleinventory}
+\begin{itemize}
+\item \texttt{timeline axis}, \texttt{timeline tick}: 主轴与刻度.
+\item \texttt{timeline event}, \texttt{timeline milestone}: 硬节点与里程碑块.
+\item \texttt{timeline span}, \texttt{timeline connector}: 时间窗与连接箭头.
+\end{itemize}
+\end{styleinventory}
+
+\begin{tikzstyleexample}{时间轴样式示例}
+\begin{tikzpicture}[x=0.95cm,y=0.95cm]
+\draw[timeline axis] (0.3,0) -- (14.1,0);
+\foreach \x/\label in {1.0/W1,3.1/W3,5.5/W5,8.1/W8,10.9/W11,13.2/W14}{
+  \draw[timeline tick] (\x,-0.18) -- (\x,0.18);
+  \node[maki label, below] at (\x,-0.2) {\label};
+}
+\draw[timeline span] (1.2,0.85) -- (5.2,0.85);
+\draw[timeline span, draw=LogicColor!74!black] (5.8,0.85) -- (10.5,0.85);
+\draw[timeline span, draw=DefColor!76!black] (11.0,0.85) -- (13.0,0.85);
+
+\node[timeline milestone] (m1) at (2.1,1.55) {Basics};
+\node[timeline milestone] (m2) at (4.45,1.55) {Exercises};
+\node[timeline event] (e1) at (5.5,0) {};
+\node[timeline milestone] (m3) at (7.5,1.55) {Topics};
+\node[timeline milestone] (m4) at (10.0,1.55) {Project};
+\node[timeline event, fill=LogicBg, draw=LogicColor!80!black] (e2) at (10.9,0) {};
+\node[timeline milestone] (m5) at (12.1,1.55) {Release};
+
+\draw[timeline connector] (m1.south) -- (2.1,0.18);
+\draw[timeline connector] (m2.south) -- (4.45,0.18);
+\draw[timeline connector] (m3.south) -- (7.5,0.18);
+\draw[timeline connector] (m4.south) -- (10.0,0.18);
+\draw[timeline connector] (m5.south) -- (12.1,0.18);
+\node[maki label, above=2pt of e1] {mid};
+\node[maki label, above=2pt of e2] {final};
+\end{tikzpicture}
+\end{tikzstyleexample}
+
+\section{概率与条件事件}
+
+这一节对应 `prob` 家族. 它的价值在于把样本空间、事件区域、条件切分和离散 outcome 点统一成一套风格, 适合概率论、统计推断和集合关系导入页.
+
+\begin{styleinventory}
+\begin{itemize}
+\item \texttt{prob universe}, \texttt{prob event}, \texttt{prob event alt}: 样本空间和事件区域.
+\item \texttt{prob condition}: 条件划分线.
+\item \texttt{prob outcome}, \texttt{prob label}: 离散样本点和事件标签.
+\end{itemize}
+\end{styleinventory}
+
+\begin{tikzstyleexample}{概率图样式示例}
+\begin{tikzpicture}[x=1cm,y=1cm]
+\draw[prob universe] (0,0) rectangle (5.7,4.3);
+\node[maki label, above left] at (0,4.3) {$\Omega$};
+\filldraw[prob event] (1.55,2.2) ellipse (1.1 and 1.5);
+\filldraw[prob event alt] (4.0,2.8) ellipse (0.85 and 0.72);
+\filldraw[prob event alt] (4.0,1.2) ellipse (0.95 and 0.72);
+\draw[prob condition] (2.85,0) -- (2.85,4.3);
+\foreach \x/\y in {1.0/3.0,1.3/2.35,1.6/1.8,1.9/2.6,1.45/1.2,3.7/2.95,4.15/2.6,3.75/1.15,4.25/0.95,4.55/1.3}{
+  \node[prob outcome] at (\x,\y) {};
+}
+\node[prob label] at (1.55,3.78) {$A$};
+\node[prob label] at (4.1,3.5) {$B$};
+\node[prob label] at (4.1,1.88) {$C$};
+\node[prob label, anchor=west] at (3.0,4.0) {$A^c$};
+\node[maki annotation] at (5.0,-0.55) {condition line keeps\\event structure readable};
+\end{tikzpicture}
+\end{tikzstyleexample}
+
+\section{图论与网络结构}
+
+这一节对应 `graph` 家族. 它适合最短路、最小割、搜索过程、网络流或图算法讲义里的局部结构图.
+
+\begin{styleinventory}
+\begin{itemize}
+\item \texttt{graph node}, \texttt{graph node accent}, \texttt{graph node muted}: 普通顶点、强调顶点和淡化顶点.
+\item \texttt{graph edge}, \texttt{graph edge strong}, \texttt{graph edge cut}, \texttt{graph walk}: 普通边、强调边、割边和带方向的 walk.
+\item \texttt{graph label}: 边标签或节点旁的短标签.
+\end{itemize}
+\end{styleinventory}
+
+\begin{tikzstyleexample}{图论样式示例}
+\begin{tikzpicture}[x=1cm,y=1cm]
+\node[graph node accent] (s) at (0,1.8) {$s$};
+\node[graph node] (a) at (2.0,3.0) {$a$};
+\node[graph node] (b) at (4.2,2.5) {$b$};
+\node[graph node muted] (t) at (6.5,1.7) {$t$};
+\node[graph node] (c) at (4.0,0.7) {$c$};
+\node[graph node] (d) at (1.8,0.0) {$d$};
+
+\foreach \u/\v/\w in {s/a/2,a/b/1,b/t/4,s/d/3,d/c/2,c/t/1,a/d/2,a/c/5}{
+  \draw[graph edge] (\u) -- (\v) node[midway, graph label] {\w};
+}
+\draw[graph edge strong] (s) -- (b);
+\draw[graph edge cut] (a) -- (t);
+\draw[graph walk] (d) to[bend left=14] (b);
+\node[flow note, anchor=west] at (7.05,2.7) {strong edge = chosen path\\dashed edge = cut candidate};
+\end{tikzpicture}
+\end{tikzstyleexample}
+
+\end{document}

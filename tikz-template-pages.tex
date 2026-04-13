@@ -7,7 +7,7 @@
 	Maki Notes 图形模板集
 	\\[0.8em]
 	\Large
-	Transformer, CNN, ResNet, 球面, 流形, 傅里叶变换, 交换图, 流程图, 时间轴
+	Transformer, CNN, ResNet, PINN, fPINN, 球面, 流形, 傅里叶变换, 交换图, 流程图, 时间轴
 	\\
 }
 \renewcommand{\CoverFooterBlock}{%
@@ -47,45 +47,54 @@
 
 \section{Transformer 编码器模板}
 
-这一页适合放在“模型结构”或“序列建模”一章. 版式重点不是复刻论文中的每一个算子, 而是把 token、注意力、前馈层、残差与归一化的逻辑顺序表达清楚.
+这一页适合放在“模型结构”或“序列建模”一章. 结构布局继续借鉴了 tikz.net 的 \texttt{neural\_networks} 和 \texttt{autoencoder} 里那种“按层堆叠、把重复算子抽成节点族”的组织思路, 但这里改写成更适合讲义版面的 Transformer 语义样式: token、位置编码、注意力、残差、归一化和前馈层各自独立命名.
 
 \begin{center}
-\begin{tikzpicture}[x=0.79cm,y=0.88cm]
+\begin{tikzpicture}[x=0.88cm,y=0.9cm]
 \foreach \i/\txt in {1/$x_1$,2/$x_2$,3/$x_3$,4/$x_4$,5/$x_5$}{
-  \node[nn token] (tok\i) at (\i*1.4,0) {\txt};
-  \draw[nn attention] (tok\i.north) -- ++(0,0.7);
+  \node[transformer token] (tok\i) at (\i*1.55,0) {\txt};
+  \node[transformer pos] (pos\i) at (\i*1.55,1.05) {$p_\i$};
+  \draw[transformer flow] (tok\i.north) -- (pos\i.south);
 }
 
-\node[nn op accent, minimum width=8.2cm, minimum height=1cm] (embed) at (4.2,1.5) {Embedding $+$ Positional Encoding};
+\node[transformer block] (embed) at (4.65,2.55) {Token + Pos\\Embedding};
 \foreach \i in {1,...,5}{
-  \draw[nn connect strong] (tok\i.north) -- (embed.south -| tok\i.north);
+  \draw[transformer flow] (pos\i.north) -- (embed.south -| pos\i.north);
 }
 
-\node[nn op warm, minimum width=8.2cm, minimum height=1.15cm] (attn) at (4.2,3.2) {Multi-Head Self-Attention};
-\node[nn sum] (add1) at (4.2,4.5) {$+$};
-\node[nn op, minimum width=8.2cm, minimum height=0.95cm] (norm1) at (4.2,5.8) {LayerNorm};
-\node[nn op warm, minimum width=8.2cm, minimum height=1.15cm] (ffn) at (4.2,7.5) {Feed-Forward Network};
-\node[nn sum] (add2) at (4.2,8.8) {$+$};
-\node[nn op, minimum width=8.2cm, minimum height=0.95cm] (norm2) at (4.2,10.1) {LayerNorm};
+\node[transformer attention block] (attn) at (4.65,4.45) {Multi-Head\\Self-Attention};
+\node[transformer add] (add1) at (4.65,5.8) {$+$};
+\node[transformer norm] (norm1) at (4.65,7.1) {LayerNorm};
+\node[transformer ffn] (ffn) at (4.65,8.9) {Feed-Forward\\Network};
+\node[transformer add] (add2) at (4.65,10.2) {$+$};
+\node[transformer norm] (norm2) at (4.65,11.5) {LayerNorm};
 
-\draw[nn connect strong] (embed.north) -- (attn.south);
-\draw[nn connect strong] (attn.north) -- (add1.south);
-\draw[nn connect strong] (add1.north) -- (norm1.south);
-\draw[nn connect strong] (norm1.north) -- (ffn.south);
-\draw[nn connect strong] (ffn.north) -- (add2.south);
-\draw[nn connect strong] (add2.north) -- (norm2.south);
+\draw[transformer flow] (embed.north) -- (attn.south);
+\draw[transformer flow] (attn.north) -- (add1.south);
+\draw[transformer flow] (add1.north) -- (norm1.south);
+\draw[transformer flow] (norm1.north) -- (ffn.south);
+\draw[transformer flow] (ffn.north) -- (add2.south);
+\draw[transformer flow] (add2.north) -- (norm2.south);
 
-\draw[nn skip] ($(embed.east)+(0.15,0)$) .. controls +(1.2,1.1) and +(1.2,-1.1) .. ($(add1.east)+(0.15,0)$);
-\draw[nn skip] ($(norm1.west)+(-0.15,0)$) .. controls +(-1.2,1.1) and +(-1.2,-1.1) .. ($(add2.west)+(-0.15,0)$);
+\draw[transformer residual] ($(embed.east)+(0.15,0)$) .. controls +(1.25,1.2) and +(1.25,-1.2) .. ($(add1.east)+(0.15,0)$);
+\draw[transformer residual] ($(norm1.west)+(-0.15,0)$) .. controls +(-1.25,1.15) and +(-1.25,-1.15) .. ($(add2.west)+(-0.15,0)$);
 
 \foreach \i/\txt in {1/$h_1$,2/$h_2$,3/$h_3$,4/$h_4$,5/$h_5$}{
-  \node[nn token] (out\i) at (\i*1.4,11.6) {\txt};
-  \draw[nn connect strong] (norm2.north -| out\i.south) -- (out\i.south);
+  \node[transformer memory] (mem\i) at (\i*1.55,12.95) {\txt};
+  \draw[transformer flow] (norm2.north -| mem\i.south) -- (mem\i.south);
 }
 
-\node[maki annotation] at (8.9,3.2) {attention\\mixes token\\interactions};
-\node[maki annotation] at (-0.6,6.7) {residual\\paths};
-\node[maki annotation] at (8.9,7.5) {position-wise\\nonlinearity};
+\foreach \x/\lab in {7.85/$Q$,9.45/$K$,11.05/$V$}{
+  \node[transformer head] at (\x,4.45) {\lab};
+}
+\draw[transformer bridge] (attn.east) -- (7.15,4.45);
+\draw[transformer bridge] (7.15,4.45) -- (7.35,4.45);
+\draw[transformer bridge] (7.15,4.45) -- (8.95,4.45);
+\draw[transformer bridge] (7.15,4.45) -- (10.55,4.45);
+
+\node[transformer stack, fit=(attn)(norm2), label={[maki label]above:encoder block}] {};
+\node[maki annotation] at (9.55,7.2) {separate styles for\\attention / norm / FFN};
+\node[maki annotation] at (-0.2,7.0) {residual\\paths};
 \end{tikzpicture}
 \captionof{figure}{Transformer 编码器块模板}
 \end{center}
@@ -161,6 +170,98 @@
 \node[maki annotation] at (8.8,-3.55) {optional $1\times1$ conv when channel\\or stride mismatch occurs};
 \end{tikzpicture}
 \captionof{figure}{ResNet 残差块模板}
+\end{center}
+
+\section{PINN 结构模板}
+
+这一页适合偏微分方程、逆问题或科学机器学习讲义. 图形重点不是画成“普通神经网络”, 而是把 PINN 的三层逻辑拆开: 采样域、神经场、物理/边界/初值损失分支.
+
+\begin{center}
+\begin{tikzpicture}[x=0.82cm,y=0.9cm]
+\node[pinn domain, minimum width=3.4cm, minimum height=4.0cm] (dom) at (1.9,2.5) {};
+\node[maki label, above] at (dom.north) {$\Omega\times[0,T]$};
+
+\foreach \dx/\dy in {-1.1/1.1,-0.55/0.25,0.15/0.85,0.9/0.1,0.45/-0.75}{
+  \node[pinn sample] at ($(dom.center)+(\dx,\dy)$) {};
+}
+\foreach \dx/\dy in {-1.45/1.65,-0.55/1.65,0.35/1.65,1.25/1.65}{
+  \node[pinn sample, fill=DefColor!88!black] at ($(dom.center)+(\dx,\dy)$) {};
+}
+\foreach \dx in {-1.35,-0.45,0.45,1.35}{
+  \node[pinn sample, fill=NoteColor!86!black] at ($(dom.center)+(\dx,-1.65)$) {};
+}
+
+\node[pinn coordinate] (coord) at (1.9,-0.4) {$(x,t)$};
+\node[pinn module] (net) at (5.7,2.5) {MLP\\$u_\theta(x,t)$};
+\node[pinn field] (field) at (8.85,2.5) {$\hat u_\theta$};
+
+\node[pinn physics] (pde) at (8.85,5.15) {Autodiff +\\PDE residual};
+\node[pinn boundary] (bc) at (12.3,4.0) {Boundary loss\\$\mathcal L_{\mathrm{bc}}$};
+\node[pinn initial] (ic) at (12.3,1.1) {Initial loss\\$\mathcal L_{\mathrm{ic}}$};
+\node[pinn data] (data) at (8.85,-0.9) {Sensor / data\\misfit};
+\node[pinn total] (loss) at (15.0,2.5) {Total loss\\$\mathcal L$};
+
+\draw[pinn flow] (coord.north) -- (dom.south);
+\draw[pinn flow] (coord.east) -- (net.west);
+\draw[pinn flow] (net.east) -- (field.west);
+
+\draw[pinn constraint] (field.north) -- (pde.south);
+\draw[pinn supervise] (field.east) to[out=12,in=180] (bc.west);
+\draw[pinn supervise] (field.east) -- (10.45,2.5) |- (ic.west);
+\draw[pinn supervise] (field.south) -- (data.north);
+
+\draw[pinn constraint] ($(dom.east)+(0.05,1.05)$) -- (pde.west);
+\draw[pinn supervise] ($(dom.east)+(0.05,0.45)$) -- (bc.west);
+\draw[pinn supervise] ($(dom.east)+(0.05,-1.1)$) -- (ic.west);
+
+\draw[pinn flow] (pde.east) to[out=0,in=145] (loss.north west);
+\draw[pinn flow] (bc.east) -- (loss.west);
+\draw[pinn flow] (ic.east) -- (loss.west);
+\draw[pinn flow] (data.east) to[out=0,in=-145] (loss.south west);
+
+\node[maki annotation] at (5.7,5.45) {collocation / boundary / initial samples};
+\node[maki annotation] at (15.0,-0.25) {physics-informed training};
+\end{tikzpicture}
+\captionof{figure}{PINN 的采样域、神经场与多分支损失模板}
+\end{center}
+
+\section{fPINN 结构模板}
+
+这一页把 `fPINN` 按 fractional PINN 处理. 版面重点是把“非局部算子”单独拆成分数阶导数、离散模板、历史积分/记忆项几条支路, 这样写分数阶扩散、异常输运或带记忆核的模型时更清楚.
+
+\begin{center}
+\begin{tikzpicture}[x=0.78cm,y=0.92cm]
+\node[pinn coordinate] (coordf) at (0,1.5) {$(x,t)$};
+\node[pinn module] (netf) at (2.8,1.5) {Neural field\\$u_\theta$};
+\node[pinn field] (fieldf) at (5.3,1.5) {$\hat u_\theta$};
+
+\node[fpinn operator] (frac) at (5.3,4.05) {Fractional\\operator};
+\node[fpinn quadrature] (quad) at (8.1,4.05) {History\\quadrature};
+\node[fpinn stencil] (stencil) at (8.1,1.5) {Directional /\\GL stencil};
+\node[fpinn memory] (memory) at (10.9,4.05) {Memory\\buffer};
+\node[pinn physics] (resf) at (10.9,1.5) {Fractional\\residual};
+\node[pinn boundary] (bcf) at (10.9,-1.0) {BC / data\\loss};
+\node[pinn total] (lossf) at (13.9,1.5) {Total loss\\$\mathcal L$};
+
+\draw[pinn flow] (coordf.east) -- (netf.west);
+\draw[pinn flow] (netf.east) -- (fieldf.west);
+
+\draw[fpinn flow] (fieldf.north) -- (frac.south);
+\draw[fpinn flow] (fieldf.east) -- (stencil.west);
+\draw[fpinn flow] (frac.east) -- (quad.west);
+\draw[fpinn flow] (quad.east) -- (memory.west);
+\draw[fpinn flow] (stencil.east) -- (resf.west);
+\draw[fpinn flow] (memory.south) -- (resf.north);
+\draw[pinn supervise] (fieldf.south east) to[out=-18,in=180] (bcf.west);
+
+\draw[fpinn history] (coordf.north) to[out=70,in=180] node[midway,above] {past states} (quad.west);
+\draw[pinn flow] (resf.east) -- (lossf.west);
+\draw[pinn flow] (bcf.east) to[out=0,in=-145] (lossf.south west);
+
+\node[fpinn branch, fit=(frac)(quad)(memory)(stencil)(resf), label={[maki label]above:nonlocal physics branch}] {};
+\node[maki annotation] at (13.9,-0.55) {assumption: fPINN = fractional PINN};
+\end{tikzpicture}
+\captionof{figure}{fPINN 中非局部算子、记忆项与损失耦合模板}
 \end{center}
 
 \chapter{数学与拓扑模板页}

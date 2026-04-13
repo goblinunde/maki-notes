@@ -33,7 +33,7 @@
 - [`docs/template-guide.md`](./docs/template-guide.md)：模板总览、类选项、编译方式和维护建议
 - [`docs/workflow-guide.md`](./docs/workflow-guide.md)：课程元信息、章节导读、本章导航与数学讲义专用块
 - [`docs/wrapfig-margin-notes.md`](./docs/wrapfig-margin-notes.md)：图文绕排、侧题注与页边批注
-- [`docs/tikz-template-pages.md`](./docs/tikz-template-pages.md)：TikZ 模板册、样式族和新增页面索引
+- [`docs/tikz-template-pages.md`](./docs/tikz-template-pages.md)：TikZ 模板册、样式族、新增页面索引和源码手册入口
 
 ## 环境要求
 
@@ -171,6 +171,8 @@ xelatex -interaction=nonstopmode -file-line-error
 当前内置的预设主要包括：
 
 - 神经网络与深度学习：`nn input`、`nn hidden`、`nn output`、`nn tensor`、`nn op`、`nn skip`
+- Transformer：`transformer token`、`transformer attention block`、`transformer norm`、`transformer ffn`、`transformer residual`
+- PINN / fPINN：`pinn physics`、`pinn boundary`、`pinn initial`、`pinn total`、`fpinn operator`、`fpinn quadrature`、`fpinn memory`
 - 数学与几何：`math axis`、`math curve`、`math tangent`、`math vector`、`geom point`、`geom angle mark`
 - 三维球面：`sphere shell`、`sphere longitude`、`sphere latitude`、`sphere tangent plane`、`sphere vector`
 - 拓扑与流形：`topo patch`、`topo identify`、`topo geodesic`、`manifold patch`、`manifold geodesic`、`manifold chart`、`manifold map accent`
@@ -187,12 +189,16 @@ xelatex -interaction=nonstopmode -file-line-error
 - 模板总览：[`docs/template-guide.md`](./docs/template-guide.md)
 - 样式测试页：[`tests/test-tikz-styles.tex`](./tests/test-tikz-styles.tex)
 - 模板页：[`tikz-template-pages.tex`](./tikz-template-pages.tex)
+- 源码+渲染手册：[`tikz-example.tex`](./tikz-example.tex)
 - 模板册说明：[`docs/tikz-template-pages.md`](./docs/tikz-template-pages.md)
 
 ### 模板册新增页面索引
 
 [`tikz-template-pages.tex`](./tikz-template-pages.tex) 现在除了深度学习与拓扑页，也包含一组更偏“课堂讲义/报告结构图”的通用模板页：
 
+- `Transformer 编码器模板`：适合注意力结构、编码器块和残差归一化流程
+- `PINN 结构模板`：适合 PDE 残差、边界/初值条件和物理约束训练结构
+- `fPINN 结构模板`：适合 fractional PINN 的非局部分支、历史项和离散算子示意
 - `交换图与 pullback 模板`：适合 pullback、自然变换、强调对象和背景范畴
 - `三维球面与切平面模板`：适合球面、经纬线、切平面和局部向量
 - `局部流形图与坐标图模板`：适合 patch、测地线、局部 chart 与坐标映射
@@ -208,8 +214,9 @@ xelatex -interaction=nonstopmode -file-line-error
 
 这几组新样式也已经接进回归测试：
 
-- [`tests/test-tikz-styles.tex`](./tests/test-tikz-styles.tex) 现在会同时覆盖球面/流形、傅里叶时频图和交换图增强样式
+- [`tests/test-tikz-styles.tex`](./tests/test-tikz-styles.tex) 现在会同时覆盖 Transformer、PINN / fPINN、球面/流形、傅里叶时频图和交换图增强样式
 - [`tikz-template-pages.tex`](./tikz-template-pages.tex) 则提供对应的整页模板，适合直接复制改写
+- [`tikz-example.tex`](./tikz-example.tex) 则把当前全部公开 TikZ 语义样式整理成“源码 + 实际渲染”的手册，适合按样式名查最小可复制示例
 
 ## 常用命令
 
@@ -217,6 +224,7 @@ xelatex -interaction=nonstopmode -file-line-error
 make main
 make example
 make tikz-templates
+make tikz-example
 make smoke
 make test
 make clean
@@ -227,6 +235,7 @@ make clean
 - `make main`：编译主示例 [`document2.tex`](./document2.tex)
 - `make example`：编译简化示例 [`example.tex`](./example.tex)
 - `make tikz-templates`：编译 TikZ 模板页 [`tikz-template-pages.tex`](./tikz-template-pages.tex)
+- `make tikz-example`：编译 TikZ 源码+渲染手册 [`tikz-example.tex`](./tikz-example.tex)
 - `make smoke`：编译最小烟雾测试文档 [`smoke-packaging.tex`](./smoke-packaging.tex)
 - `make test`：编译烟雾文档和 `tests/` 下的基础测试文档
 - `make clean`：清理中间文件
@@ -301,7 +310,7 @@ git push origin v0.1.0
 workflow 会执行以下动作：
 
 - 检出代码
-- 用 XeLaTeX 编译示例文档、TikZ 模板页和测试文档
+- 用 XeLaTeX 编译主示例、TikZ 模板页、TikZ 源码手册和测试文档
 - 打包一份包含 `.tex` 源码、`docs/` 说明和 `tests/` 的源码发行包
 - 调用 GitHub Models 生成 release notes
 - 创建或更新与当前 tag 对应的 GitHub Release
@@ -313,6 +322,7 @@ workflow 会执行以下动作：
 - `maki-notes-<tag>-manual.pdf`
 - `maki-notes-<tag>-example.pdf`
 - `maki-notes-<tag>-tikz-templates.pdf`
+- `maki-notes-<tag>-tikz-example.pdf`
 
 ## GitHub Models 自动化
 

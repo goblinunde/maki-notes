@@ -30,11 +30,11 @@
 - 适合：正文中需要插图绕排、侧题注、页边批注的人
 - 内容：接口说明、推荐用法、图题选择、页边批注策略、常见排版注意事项
 
-### 4. TikZ 模板册
+### 4. TikZ 模板册与源码手册
 
 - 文件：[`tikz-template-pages.md`](./tikz-template-pages.md)
 - 适合：需要直接复用结构图、球面/流形图、交换图、傅里叶图、流程图、时间轴、概率图、图论图的人
-- 内容：模板册结构、各页面用途、修改策略、与主题配色的关系、验证入口
+- 内容：模板册结构、各页面用途、修改策略、与主题配色的关系、验证入口，以及 [`tikz-example.tex`](../tikz-example.tex) 这份“源码 + 渲染”查阅手册的定位
 
 ## 文档与源码的对应关系
 
@@ -43,6 +43,7 @@
 - 主示例：[`document2.tex`](../document2.tex)
 - 简化示例：[`example.tex`](../example.tex)
 - TikZ 模板册：[`tikz-template-pages.tex`](../tikz-template-pages.tex)
+- TikZ 源码手册：[`tikz-example.tex`](../tikz-example.tex)
 - 测试文档：[`tests/`](../tests)
 
 ## 当你要做不同类型的修改时
@@ -51,6 +52,7 @@
 - 改课程元信息、章节导读或本章导航：先看 [`workflow-guide.md`](./workflow-guide.md)
 - 改图文绕排、侧题注或页边批注：先看 [`wrapfig-margin-notes.md`](./wrapfig-margin-notes.md)
 - 改 TikZ 结构图或新增模板页：先看 [`tikz-template-pages.md`](./tikz-template-pages.md)
+- 按样式名查源码和最小可复制图例：先看 [`tikz-example.tex`](../tikz-example.tex)
 - 验证样式没有被改坏：优先运行 `make test`
 
 ## 维护约定
@@ -58,3 +60,4 @@
 - 用户可见的新功能，优先补到 `docs/`
 - 只改公开接口时，至少同步更新对应的专项文档
 - 如果新增了新的模板页或新的样式族，除了更新 `README.md`，也要同步更新 [`tikz-template-pages.md`](./tikz-template-pages.md)
+- 如果新增了可公开复用的 TikZ 语义样式，也建议同步补到 [`tikz-example.tex`](../tikz-example.tex)

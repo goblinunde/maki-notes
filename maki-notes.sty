@@ -1045,11 +1045,226 @@
 			draw=LogicColor!80!black,
 			fill=LogicBg
 		},
-		nn feature map/.style={
+	nn feature map/.style={
 			rounded corners=1pt,
 			draw=NNTensorColor!80!black,
 			fill=NNTensorColor!15,
 			thick
+		},
+		transformer token/.style={
+			nn token,
+			minimum width=15mm,
+			minimum height=8.5mm
+		},
+		transformer pos/.style={
+			transformer token,
+			draw=DefColor!82!black,
+			fill=DefBg
+		},
+		transformer block/.style={
+			nn op,
+			rounded corners=4pt,
+			minimum width=24mm,
+			minimum height=10mm
+		},
+		transformer attention block/.style={
+			transformer block,
+			draw=NNTensorColor!86!black,
+			fill=NNTensorColor!18
+		},
+		transformer cross block/.style={
+			transformer block,
+			draw=NoteColor!80!black,
+			fill=NoteColor!12
+		},
+		transformer ffn/.style={
+			transformer block,
+			draw=NNHiddenColor!78!black,
+			fill=NNHiddenColor!14
+		},
+		transformer norm/.style={
+			transformer block,
+			draw=MainText!52,
+			fill=black!3,
+			minimum height=8.5mm
+		},
+		transformer add/.style={
+			nn sum,
+			fill=LogicBg!72!white
+		},
+		transformer head/.style={
+			rounded corners=3pt,
+			draw=DefColor!82!black,
+			fill=DefBg,
+			thick,
+			minimum width=14mm,
+			minimum height=8mm,
+			align=center
+		},
+		transformer memory/.style={
+			nn tensor,
+			draw=NNOutputColor!78!black,
+			fill=NNOutputColor!12,
+			minimum width=17mm,
+			minimum height=9mm
+		},
+		transformer stack/.style={
+			nn block,
+			draw=LogicColor!64!black,
+			fill=LogicBg!42!white
+		},
+		transformer flow/.style={
+			-Latex,
+			thick,
+			draw=NNHiddenColor!78!black,
+			shorten <=1pt,
+			shorten >=1pt
+		},
+		transformer residual/.style={
+			-Latex,
+			semithick,
+			draw=LogicColor!86!black,
+			densely dashed,
+			shorten <=1pt,
+			shorten >=1pt
+		},
+		transformer bridge/.style={
+			-Latex,
+			semithick,
+			draw=NoteColor!84!black,
+			dash pattern=on 4pt off 2pt on 1pt off 2pt,
+			shorten <=1pt,
+			shorten >=1pt
+		},
+		pinn coordinate/.style={
+			nn token,
+			minimum width=16mm,
+			draw=GeometryColor!82!black,
+			fill=GeometryBg
+		},
+		pinn field/.style={
+			nn tensor,
+			minimum width=18mm,
+			minimum height=9mm,
+			draw=NNOutputColor!80!black,
+			fill=NNOutputColor!14
+		},
+		pinn module/.style={
+			rounded corners=4pt,
+			draw=NNHiddenColor!78!black,
+			fill=NNHiddenColor!12,
+			thick,
+			minimum width=24mm,
+			minimum height=10mm,
+			align=center
+		},
+		pinn physics/.style={
+			pinn module,
+			draw=GeometryColor!84!black,
+			fill=GeometryBg
+		},
+		pinn boundary/.style={
+			pinn module,
+			draw=DefColor!82!black,
+			fill=DefBg
+		},
+		pinn initial/.style={
+			pinn module,
+			draw=NoteColor!80!black,
+			fill=NoteColor!12
+		},
+		pinn data/.style={
+			pinn module,
+			draw=NNTensorColor!86!black,
+			fill=NNTensorColor!16
+		},
+		pinn loss/.style={
+			rounded corners=4pt,
+			draw=ExColor!82!black,
+			fill=ExBg,
+			thick,
+			minimum width=18mm,
+			minimum height=8.5mm,
+			align=center
+		},
+		pinn total/.style={
+			pinn loss,
+			draw=LogicColor!84!black,
+			fill=LogicBg
+		},
+		pinn domain/.style={
+			rounded corners=4pt,
+			draw=GeometryColor!70!black,
+			fill=GeometryBg!70!white,
+			thick
+		},
+		pinn sample/.style={
+			circle,
+			fill=GeometryColor!88!black,
+			inner sep=1.25pt
+		},
+		pinn flow/.style={
+			-Latex,
+			thick,
+			draw=NNHiddenColor!78!black,
+			shorten <=1pt,
+			shorten >=1pt
+		},
+		pinn constraint/.style={
+			-Latex,
+			semithick,
+			draw=GeometryColor!84!black,
+			densely dashed,
+			shorten <=1pt,
+			shorten >=1pt
+		},
+		pinn supervise/.style={
+			-Latex,
+			semithick,
+			draw=DefColor!84!black,
+			dash pattern=on 4pt off 2pt on 1pt off 2pt,
+			shorten <=1pt,
+			shorten >=1pt
+		},
+		fpinn operator/.style={
+			pinn module,
+			draw=ExColor!84!black,
+			fill=ExBg
+		},
+		fpinn stencil/.style={
+			pinn module,
+			draw=NNTensorColor!86!black,
+			fill=NNTensorColor!18
+		},
+		fpinn quadrature/.style={
+			pinn module,
+			draw=NoteColor!82!black,
+			fill=NoteColor!14
+		},
+		fpinn memory/.style={
+			pinn module,
+			draw=LogicColor!84!black,
+			fill=LogicBg
+		},
+		fpinn branch/.style={
+			pinn module,
+			draw=NNHiddenColor!72!black,
+			fill=NNHiddenColor!10
+		},
+		fpinn flow/.style={
+			-Latex,
+			thick,
+			draw=ExColor!84!black,
+			shorten <=1pt,
+			shorten >=1pt
+		},
+		fpinn history/.style={
+			-Latex,
+			semithick,
+			draw=LogicColor!82!black,
+			densely dotted,
+			shorten <=1pt,
+			shorten >=1pt
 		},
 	nn residual bracket/.style={
 			very thick,

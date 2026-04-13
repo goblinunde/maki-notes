@@ -47,7 +47,7 @@
 
 \section{Deep Learning}
 
-这一页用于验证神经网络相关样式是否能在讲义中直接复用. 布局思路参考了 tikz.net 的 \texttt{neural\_networks} 页面: 节点样式按输入层、隐藏层、输出层分色, 连线、跳连与张量块则拆成语义化样式, 方便在不同网络结构中复用.
+这一页用于验证神经网络相关样式是否能在讲义中直接复用. 布局思路主要参考了 tikz.net 的 \texttt{neural\_networks}、\texttt{autoencoder} 与 \texttt{skip-connection} 页面: 节点样式按结构角色分色, 连线、跳连与张量块则拆成语义化样式, 方便在 MLP、Transformer、PINN 与 fPINN 之间复用.
 
 \begin{center}
 \begin{tikzpicture}[x=1.45cm, y=1.0cm]
@@ -91,6 +91,106 @@
 \node[maki annotation] at ($(O1)!0.5!(O2)+(1.6,0)$) {classification\\scores};
 \end{tikzpicture}
 \captionof{figure}{多层感知机与跳连的样式测试}
+\end{center}
+
+\medskip
+
+下面这一组专门验证新加的 `transformer` 语义样式. 重点不是精确复刻论文版式, 而是确认 token、位置编码、注意力块、残差线和输出记忆块可以独立命名并稳定编译.
+
+\begin{center}
+\begin{tikzpicture}[x=0.9cm, y=0.9cm]
+\foreach \i/\txt in {1/$x_1$,2/$x_2$,3/$x_3$,4/$x_4$}{
+  \node[transformer token] (tt\i) at (\i*1.45,0) {\txt};
+  \node[transformer pos] (tp\i) at (\i*1.45,0.95) {$p_\i$};
+  \draw[transformer flow] (tt\i.north) -- (tp\i.south);
+}
+\node[transformer block] (te) at (3.6,2.3) {Embed};
+\node[transformer attention block] (ta) at (3.6,4.0) {Self-Attn};
+\node[transformer add] (ts1) at (3.6,5.25) {$+$};
+\node[transformer norm] (tn1) at (3.6,6.45) {Norm};
+\node[transformer ffn] (tf) at (3.6,8.05) {FFN};
+\node[transformer add] (ts2) at (3.6,9.3) {$+$};
+\node[transformer norm] (tn2) at (3.6,10.5) {Norm};
+
+\foreach \i in {1,...,4}{
+  \draw[transformer flow] (tp\i.north) -- (te.south -| tp\i.north);
+}
+\draw[transformer flow] (te.north) -- (ta.south);
+\draw[transformer flow] (ta.north) -- (ts1.south);
+\draw[transformer flow] (ts1.north) -- (tn1.south);
+\draw[transformer flow] (tn1.north) -- (tf.south);
+\draw[transformer flow] (tf.north) -- (ts2.south);
+\draw[transformer flow] (ts2.north) -- (tn2.south);
+\draw[transformer residual] ($(te.east)+(0.1,0)$) .. controls +(1.0,1.0) and +(1.0,-1.0) .. ($(ts1.east)+(0.1,0)$);
+\draw[transformer residual] ($(tn1.west)+(-0.1,0)$) .. controls +(-1.0,1.0) and +(-1.0,-1.0) .. ($(ts2.west)+(-0.1,0)$);
+
+\foreach \x/\lab in {6.5/$Q$,7.7/$K$,8.9/$V$}{
+  \node[transformer head] at (\x,4.0) {\lab};
+}
+\draw[transformer bridge] (ta.east) -- (6.0,4.0);
+\foreach \i/\txt in {1/$h_1$,2/$h_2$,3/$h_3$,4/$h_4$}{
+  \node[transformer memory] (tm\i) at (\i*1.45,11.9) {\txt};
+  \draw[transformer flow] (tn2.north -| tm\i.south) -- (tm\i.south);
+}
+\node[transformer stack, fit=(ta)(tn2), label={[maki label]above:encoder}] {};
+\end{tikzpicture}
+\captionof{figure}{Transformer 语义样式测试}
+\end{center}
+
+\medskip
+
+最后一组验证 `pinn` 与 `fpinn` 样式. 这里把 fPINN 按 fractional PINN 处理, 重点检查“神经场 + 物理约束 + 非局部分支”这类图能否不依赖临时参数而直接画出来.
+
+\begin{center}
+\begin{tikzpicture}[x=0.92cm, y=0.92cm]
+\begin{scope}
+  \node[pinn domain, minimum width=2.9cm, minimum height=3.2cm] (dom) at (1.5,1.9) {};
+  \foreach \dx/\dy in {-0.8/0.75,-0.25/0.1,0.4/0.6,0.85/-0.35,-0.55/-0.7}{
+    \node[pinn sample] at ($(dom.center)+(\dx,\dy)$) {};
+  }
+  \node[pinn coordinate] (pc) at (1.5,-0.7) {$(x,t)$};
+  \node[pinn module] (pn) at (4.5,1.9) {MLP};
+  \node[pinn field] (pf) at (7.1,1.9) {$\hat u_\theta$};
+  \node[pinn physics] (pp) at (7.1,4.1) {PDE};
+  \node[pinn boundary] (pb) at (9.95,2.95) {BC};
+  \node[pinn initial] (pi) at (9.95,0.75) {IC};
+  \node[pinn total] (pl) at (12.5,1.9) {$\mathcal L$};
+  \draw[pinn flow] (pc.north) -- (dom.south);
+  \draw[pinn flow] (pc.east) -- (pn.west);
+  \draw[pinn flow] (pn.east) -- (pf.west);
+  \draw[pinn constraint] (pf.north) -- (pp.south);
+  \draw[pinn supervise] (pf.east) to[out=10,in=180] (pb.west);
+  \draw[pinn supervise] (pf.east) to[out=-10,in=180] (pi.west);
+  \draw[pinn flow] (pp.east) to[out=0,in=145] (pl.north west);
+  \draw[pinn flow] (pb.east) -- (pl.west);
+  \draw[pinn flow] (pi.east) -- (pl.west);
+  \node[maki annotation] at (4.9,4.95) {PINN};
+\end{scope}
+
+\begin{scope}[yshift=-7.15cm]
+  \node[pinn coordinate] (fc) at (0,1.9) {$(x,t)$};
+  \node[pinn module] (fn) at (2.8,1.9) {Neural\\field};
+  \node[pinn field] (ff) at (5.45,1.9) {$\hat u_\theta$};
+  \node[fpinn operator] (fo) at (5.45,4.05) {Frac. op};
+  \node[fpinn quadrature] (fq) at (8.2,4.05) {History};
+  \node[fpinn stencil] (fs) at (8.2,1.9) {Stencil};
+  \node[fpinn memory] (fm) at (10.95,4.05) {Memory};
+  \node[pinn physics] (fr) at (10.95,1.9) {Residual};
+  \node[pinn total] (fl) at (13.7,1.9) {$\mathcal L$};
+  \draw[pinn flow] (fc.east) -- (fn.west);
+  \draw[pinn flow] (fn.east) -- (ff.west);
+  \draw[fpinn flow] (ff.north) -- (fo.south);
+  \draw[fpinn flow] (ff.east) -- (fs.west);
+  \draw[fpinn flow] (fo.east) -- (fq.west);
+  \draw[fpinn flow] (fq.east) -- (fm.west);
+  \draw[fpinn flow] (fs.east) -- (fr.west);
+  \draw[fpinn flow] (fm.south) -- (fr.north);
+  \draw[fpinn history] (fc.north) to[out=70,in=180] (fq.west);
+  \draw[pinn flow] (fr.east) -- (fl.west);
+  \node[fpinn branch, fit=(fo)(fq)(fm)(fs)(fr), label={[maki label]above:fPINN}] {};
+\end{scope}
+\end{tikzpicture}
+\captionof{figure}{PINN 与 fPINN 语义样式测试}
 \end{center}
 
 \section{Mathematics and Geometry}
