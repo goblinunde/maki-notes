@@ -191,7 +191,7 @@ make clean
 
 ### 3. 数学研究写作层
 
-- `\SetResearchInfo{...}`：项目、方向、作者、状态、更新时间、标签等研究元信息
+- `\SetResearchInfo{...}`：项目、方向、作者、创建时间、状态、更新时间、标签等研究元信息
 - `\SetEntryInfo{...}`：当前研究条目的主题、来源、标签、目标等信息
 - `\MakeEntryGuide{...}`：生成条目导引块，集中写摘要、依赖、障碍和下一步
 - `notation`、`question`、`conjecture`、`claim`：可编号的研究对象

@@ -18,6 +18,7 @@
   project={紧算子与谱结构},
   area={泛函分析},
   author={Maki},
+  created={2026-04-13},
   status={working draft},
   updated={2026-04-13},
   tags={compact operator, spectrum}
@@ -81,6 +82,8 @@
 
 - 页眉中的项目名 / 状态 / 更新时间
 - 条目导引块顶部信息
+
+其中 `created` 会显示在条目导引块的顶部信息里，适合标出一个长期项目何时开始建立。
 
 如果你不写这层，模板仍会回退到原有的讲义标题和作者信息。
 

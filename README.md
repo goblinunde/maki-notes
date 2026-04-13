@@ -139,6 +139,7 @@ xelatex -interaction=nonstopmode -file-line-error
   project={紧算子与谱结构},
   area={泛函分析},
   author={Maki},
+  created={2026-04-13},
   status={working draft},
   updated={2026-04-13},
   tags={compact operator, spectrum}

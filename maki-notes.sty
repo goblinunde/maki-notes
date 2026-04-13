@@ -1785,6 +1785,10 @@
 		\ifdefempty{\MakiEntryInfoUpdated}{\MakiResearchInfoUpdated}{\MakiEntryInfoUpdated}%
 	}
 
+	\newcommand{\maki@entryguidecreated}{%
+		\MakiResearchInfoCreated
+	}
+
 	\newcommand{\maki@entryguidetags}{%
 		\ifdefempty{\MakiEntryInfoTags}{%
 			\MakiResearchInfoTags
@@ -1803,6 +1807,7 @@
 			\maki@entryguideinforow{来源}{\maki@entryguidesource}
 			\maki@entryguideinforow{作者}{\maki@entryguidepeople}
 			\maki@entryguideinforow{状态}{\MakiResearchInfoStatus}
+			\maki@entryguideinforow{创建}{\maki@entryguidecreated}
 			\maki@entryguideinforow{更新}{\maki@entryguideupdated}
 			\maki@entryguideinforow{标签}{\maki@entryguidetags}
 		\end{tcolorbox}
