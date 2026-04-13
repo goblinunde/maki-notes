@@ -1,16 +1,29 @@
 # Maki Notes
 
-`maki-notes` 是一个面向中文数学讲义的 LaTeX 模板项目，核心由 [`maki-notes.cls`](./maki-notes.cls) 和 [`maki-notes.sty`](./maki-notes.sty) 组成，基于 `ctexbook`，默认使用 XeLaTeX 编译。仓库同时提供了示例文档、TikZ 模板页以及一组用于烟雾测试的最小文档。
+`maki-notes` 是一个面向中文数学讲义与课程演示文稿的 LaTeX 模板项目。仓库现在提供两套文档类入口：
 
-这两个文件是同一套模板的两层，而不是两个完全解耦的通用组件：
+- [`maki-notes.cls`](./maki-notes.cls)
+  基于 `ctexbook` 的书式讲义入口。
+- [`maki-beamer.cls`](./maki-beamer.cls)
+  基于 `ctexbeamer` 的演示文稿入口。
 
-- `maki-notes.cls` 是文档类入口，负责建立文档类、接收类选项并加载样式层
-- `maki-notes.sty` 是模板主体实现，集中管理字体、页面、颜色、环境、TikZ 样式和页眉页脚
+这两个入口共享同一层核心样式实现：
 
-也就是说，当前仓库推荐的使用方式始终是：
+- [`maki-notes.sty`](./maki-notes.sty)
+  集中管理字体预设、主题色、数学命令、内容块和 TikZ 语义样式。
+- [`beamerthememaki.sty`](./beamerthememaki.sty)
+  负责 Beamer 的 title page、outline、headline、footline 和 block 外观。
+
+也就是说，当前仓库推荐的使用方式是：
 
 ```tex
 \documentclass[...]{maki-notes}
+```
+
+或者：
+
+```tex
+\documentclass[...]{maki-beamer}
 ```
 
 而不是把 `.sty` 单独当成一个轻量通用包到处插拔。
@@ -18,10 +31,12 @@
 ## 特性
 
 - 基于 `ctexbook` 的中文讲义排版入口
+- 基于 `ctexbeamer` 的中文课件排版入口
 - 内置封面、章节标题、页眉页脚与数学环境样式
 - 提供定义、定理、例题、真题、注释等讲义常用盒子环境
 - 提供课程元信息、整页章节导读与章内导航
 - 提供核心公式、方法提要、常见误区、考试关注等数学讲义专用块
+- 提供参考 `beamer-example/` 设计的 Beamer 主题页、目录页与章节导航
 - 提供左右图文绕排、页边侧题注与无边框页边批注
 - 集成 `TikZ`、`PGFPlots`、`tikz-3dplot` 等绘图能力
 - 自带示例文档和基础测试文档，便于二次开发和回归验证
@@ -32,6 +47,7 @@
 
 - [`docs/template-guide.md`](./docs/template-guide.md)：模板总览、类选项、编译方式和维护建议
 - [`docs/workflow-guide.md`](./docs/workflow-guide.md)：课程元信息、章节导读、本章导航与数学讲义专用块
+- [`docs/beamer-guide.md`](./docs/beamer-guide.md)：`maki-beamer.cls` 的接口、共享层关系与演示文稿建议写法
 - [`docs/wrapfig-margin-notes.md`](./docs/wrapfig-margin-notes.md)：图文绕排、侧题注与页边批注
 - [`docs/tikz-template-pages.md`](./docs/tikz-template-pages.md)：TikZ 模板册、样式族、新增页面索引和源码手册入口
 
@@ -113,9 +129,41 @@ xelatex -interaction=nonstopmode -file-line-error
 
 详细写法见 [`docs/workflow-guide.md`](./docs/workflow-guide.md)。
 
+如果你要写演示文稿, 建议直接从 [`beamer-demo.tex`](./beamer-demo.tex) 开始：
+
+```tex
+\documentclass[
+  aspectratio=169,
+  fontpreset=common,
+  theme=graphite
+]{maki-beamer}
+
+\title{科学机器学习讲义}
+\subtitle{Transformer, PINN 与共享样式层}
+\author{Maki Notes Demo}
+\institute{maki-beamer / maki-notes}
+\date{2026-04-13}
+
+\begin{document}
+\MakeTitlePage
+\makeoutline[本次内容]
+
+\section{引言}
+\begin{frame}{共享样式}
+  \begin{keyformula}
+    \[
+      \mathcal L = \mathcal L_r + \mathcal L_b + \mathcal L_i
+    \]
+  \end{keyformula}
+\end{frame}
+\end{document}
+```
+
+完整说明见 [`docs/beamer-guide.md`](./docs/beamer-guide.md)。
+
 ## 字体与主题预设
 
-模板现在支持两组类选项：
+模板现在支持两组跨 notes / beamer 共享的类选项：
 
 - `fontpreset=common|auto|windows|macos|linux`
 - `theme=default|ocean|forest|graphite|amber|berry|sandstone`
@@ -223,6 +271,7 @@ xelatex -interaction=nonstopmode -file-line-error
 ```sh
 make main
 make example
+make beamer-demo
 make tikz-templates
 make tikz-example
 make smoke
@@ -234,6 +283,7 @@ make clean
 
 - `make main`：编译主示例 [`document2.tex`](./document2.tex)
 - `make example`：编译简化示例 [`example.tex`](./example.tex)
+- `make beamer-demo`：编译 Beamer 示例 [`beamer-demo.tex`](./beamer-demo.tex)
 - `make tikz-templates`：编译 TikZ 模板页 [`tikz-template-pages.tex`](./tikz-template-pages.tex)
 - `make tikz-example`：编译 TikZ 源码+渲染手册 [`tikz-example.tex`](./tikz-example.tex)
 - `make smoke`：编译最小烟雾测试文档 [`smoke-packaging.tex`](./smoke-packaging.tex)
@@ -271,11 +321,16 @@ make clean
 
 ```text
 .
+├── maki-beamer.cls
 ├── maki-notes.cls
+├── beamerthememaki.sty
 ├── maki-notes.sty
 ├── latexmkrc
 ├── Makefile
+├── beamer-example/
 ├── docs/
+├── docs/beamer-guide.md
+├── beamer-demo.tex
 ├── docs/workflow-guide.md
 ├── document2.tex
 ├── example.tex
@@ -286,15 +341,19 @@ make clean
 
 关键文件说明：
 
+- `maki-beamer.cls`：Beamer 文档类入口，负责装配 `ctexbeamer` 与共享样式层
 - `maki-notes.cls`：文档类入口，解析模板级类选项并加载样式包
+- `beamerthememaki.sty`：Beamer 主题实现，负责标题页、目录页、页眉页脚与 block 风格
 - `maki-notes.sty`：样式主体，集中管理字体预设、主题色、环境和 TikZ 样式
+- `beamer-demo.tex`：Beamer 支持的完整演示文稿示例
+- `docs/beamer-guide.md`：Beamer 接口、设计来源与使用建议
 - `document2.tex`：较完整的讲义模板示例
 - `example.tex`：更适合作为二次开发起点的示例文档
 - `docs/workflow-guide.md`：课程元信息、章节导读与本章导航说明
 - `docs/wrapfig-margin-notes.md`：图文绕排与页边批注用法说明
 - `docs/tikz-template-pages.md`：TikZ 模板册结构与新增页面索引
 - `tikz-template-pages.tex`：可直接复用的图形模板页
-- `tests/`：用于验证模板基础能力的测试文档，其中 `tests/test-basic.tex` 覆盖类选项兼容，`tests/test-wrap-layout.tex` 集中覆盖新版绕排与页边接口，`tests/test-workflow-guide.tex` 集中覆盖课程元信息与章节导读工作流
+- `tests/`：用于验证模板基础能力的测试文档，其中 `tests/test-basic.tex` 覆盖类选项兼容，`tests/test-beamer.tex` 覆盖 `maki-beamer` 与共享内容层，`tests/test-wrap-layout.tex` 集中覆盖新版绕排与页边接口，`tests/test-workflow-guide.tex` 集中覆盖课程元信息与章节导读工作流
 
 ## GitHub Release 流程
 
@@ -310,8 +369,8 @@ git push origin v0.1.0
 workflow 会执行以下动作：
 
 - 检出代码
-- 用 XeLaTeX 编译主示例、TikZ 模板页、TikZ 源码手册和测试文档
-- 打包一份包含 `.tex` 源码、`docs/` 说明和 `tests/` 的源码发行包
+- 用 XeLaTeX 编译讲义示例、Beamer 示例、TikZ 模板页、TikZ 源码手册和测试文档
+- 打包一份包含 `.cls` / `.sty`、`.tex` 源码、`beamer-example/`、`docs/` 说明和 `tests/` 的源码发行包
 - 调用 GitHub Models 生成 release notes
 - 创建或更新与当前 tag 对应的 GitHub Release
 - 上传编译后的 PDF 和源码包作为 release assets
@@ -321,6 +380,7 @@ workflow 会执行以下动作：
 - `maki-notes-<tag>-source.tar.gz`
 - `maki-notes-<tag>-manual.pdf`
 - `maki-notes-<tag>-example.pdf`
+- `maki-notes-<tag>-beamer-demo.pdf`
 - `maki-notes-<tag>-tikz-templates.pdf`
 - `maki-notes-<tag>-tikz-example.pdf`
 
@@ -344,8 +404,9 @@ workflow 会执行以下动作：
 
 ## 开发建议
 
-- 修改模板能力时，先更新 [`maki-notes.sty`](./maki-notes.sty) 或 [`maki-notes.cls`](./maki-notes.cls)，再运行 `make test`
+- 修改模板能力时，先更新对应入口文件或共享样式层，再运行 `make test`
 - 调整字体预设或主题配色时，优先验证 [`tests/test-basic.tex`](./tests/test-basic.tex) 的类选项编译结果
+- 调整 Beamer 支持时，优先同步更新 [`docs/beamer-guide.md`](./docs/beamer-guide.md)、[`beamer-demo.tex`](./beamer-demo.tex) 和 [`tests/test-beamer.tex`](./tests/test-beamer.tex)
 - 新增展示内容时，优先放到 `example.tex` 或 `tikz-template-pages.tex`
 - 调整图文绕排与页边批注时，优先同步更新 [`docs/wrapfig-margin-notes.md`](./docs/wrapfig-margin-notes.md) 和 [`tests/test-wrap-layout.tex`](./tests/test-wrap-layout.tex)
 - 发布新版本时，只需要推送新的 tag；普通提交不会触发 release workflow

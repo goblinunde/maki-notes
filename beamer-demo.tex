@@ -1,0 +1,191 @@
+\documentclass[aspectratio=169,fontpreset=common,theme=graphite]{maki-beamer}
+
+\renewcommand{\LectureNotesTitle}{科学机器学习讲义}
+\title{\LectureNotesTitle}
+\subtitle{Transformer, PINN 与共享样式层}
+\author{Maki Notes Demo}
+\institute{maki-beamer / maki-notes}
+\date{2026-04-13}
+
+\begin{document}
+
+\MakeTitlePage
+\makeoutline[本次内容]
+
+\section{课程定位}
+\subsection{问题背景}
+
+\begin{frame}[t]{为什么把 Beamer 接进 maki-notes}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.48\textwidth}
+    \begin{block}{目标}
+      \begin{itemize}
+        \item 讲义与课件共享同一套 \texttt{fontpreset} 与 \texttt{theme}.
+        \item 数学块和 TikZ 语义样式不需要双份维护.
+        \item 课程从讲义导出到报告时, 视觉层保持连续.
+      \end{itemize}
+    \end{block}
+
+    \column{0.48\textwidth}
+    \begin{alertblock}{设计取向}
+      这一套 Beamer 支持参考了 \texttt{beamer-example/} 里的 Durham 风格, 但主题色、数学块和图形语义继续复用 \texttt{maki-notes.sty}.
+    \end{alertblock}
+
+    \begin{exampleblock}{适合的内容}
+      数学定义页、结构图页、课程导读页、算法流程页, 都可以直接沿用同一套色位与图形语言.
+    \end{exampleblock}
+  \end{columns}
+\end{frame}
+
+\section{Transformer 结构}
+\subsection{编码器块}
+
+\begin{frame}[t]{Transformer 编码器块}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.62\textwidth}
+    \centering
+    \resizebox{\linewidth}{!}{%
+    \begin{tikzpicture}[x=0.9cm,y=0.9cm]
+      \node[transformer token] (tok) at (0,0) {Token\\embedding};
+      \node[transformer attention block] (attn) at (2.9,0) {Multi-head\\attention};
+      \node[transformer add] (add1) at (5.2,0) {$+$};
+      \node[transformer norm] (norm1) at (6.4,0) {Norm};
+      \node[transformer ffn] (ffn) at (8.9,0) {FFN};
+      \node[transformer add] (add2) at (11.2,0) {$+$};
+      \node[transformer norm] (norm2) at (12.4,0) {Norm};
+
+      \draw[transformer flow] (tok.east) -- (attn.west);
+      \draw[transformer flow] (attn.east) -- (add1.west);
+      \draw[transformer flow] (add1.east) -- (norm1.west);
+      \draw[transformer flow] (norm1.east) -- (ffn.west);
+      \draw[transformer flow] (ffn.east) -- (add2.west);
+      \draw[transformer flow] (add2.east) -- (norm2.west);
+      \draw[transformer residual] (tok.north) to[out=60,in=120] (add1.north);
+      \draw[transformer residual] (norm1.north) to[out=60,in=120] (add2.north);
+
+      \node[maki annotation] at (6.2,1.6) {shared Transformer TikZ styles};
+    \end{tikzpicture}%
+    }
+
+    \column{0.34\textwidth}
+    \begin{block}{讲法}
+      \begin{itemize}
+        \item 左侧不是临时画的图, 而是复用 \texttt{transformer ...} 样式族.
+        \item 主题切换后, 颜色会自动跟着 \texttt{maki-notes} 主题色位变化.
+        \item 同一张结构图也能直接放回讲义正文.
+      \end{itemize}
+    \end{block}
+  \end{columns}
+\end{frame}
+
+\section{PINN 与 fPINN}
+\subsection{物理约束}
+
+\begin{frame}[t]{PINN / fPINN 结构页}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.6\textwidth}
+    \centering
+    \resizebox{\linewidth}{!}{%
+    \begin{tikzpicture}[x=0.76cm,y=0.82cm]
+      \node[pinn coordinate] (coord) at (0,0.9) {$(x,t)$};
+      \node[pinn module] (net) at (2.7,0.9) {Neural field\\$u_\theta$};
+      \node[pinn field] (field) at (5.3,0.9) {$\hat u_\theta$};
+
+      \node[pinn physics] (phys) at (8.2,2.3) {PDE\\residual};
+      \node[pinn boundary] (bc) at (8.2,0.9) {BC / data};
+      \node[pinn initial] (ic) at (8.2,-0.5) {IC loss};
+      \node[fpinn operator] (frac) at (10.9,2.3) {Fractional\\operator};
+      \node[fpinn quadrature] (quad) at (10.9,0.9) {History\\quadrature};
+      \node[fpinn memory] (memory) at (10.9,-0.5) {Memory};
+      \node[pinn total] (loss) at (13.8,0.9) {Total loss\\$\mathcal L$};
+
+      \draw[pinn flow] (coord.east) -- (net.west);
+      \draw[pinn flow] (net.east) -- (field.west);
+      \draw[pinn flow] (field.east) -- (bc.west);
+      \draw[pinn constraint] (field.north east) to[out=25,in=180] (phys.west);
+      \draw[pinn constraint] (field.south east) to[out=-25,in=180] (ic.west);
+      \draw[fpinn flow] (phys.east) -- (frac.west);
+      \draw[fpinn flow] (bc.east) -- (quad.west);
+      \draw[fpinn flow] (ic.east) -- (memory.west);
+      \draw[pinn flow] (frac.east) -- (loss.north west);
+      \draw[pinn flow] (quad.east) -- (loss.west);
+      \draw[pinn flow] (memory.east) -- (loss.south west);
+
+      \node[maki annotation] at (10.8,3.45) {physics + nonlocal branch};
+    \end{tikzpicture}%
+    }
+
+    \column{0.36\textwidth}
+    \begin{block}{共享收益}
+      \begin{itemize}
+        \item 讲义中的 PINN 图可以直接搬到汇报里.
+        \item \texttt{pinn ...} 与 \texttt{fpinn ...} 语义层已经统一进样式库.
+        \item 课件只需要重排版面, 不需要重写图代码.
+      \end{itemize}
+    \end{block}
+  \end{columns}
+\end{frame}
+
+\section{数学接口}
+\subsection{共享内容层}
+
+\begin{frame}[t]{Beamer 里继续复用数学内容块}
+  \small
+  \begin{columns}[T,onlytextwidth]
+    \column{0.52\textwidth}
+    \begin{definition}[残差最小化]
+      给定 PDE 算子 \(\mathcal N\), 目标是在采样点上逼近
+      \[
+        \mathcal N[u_\theta](x,t) \approx 0
+      \]
+      并同时满足边界与初值约束.
+    \end{definition}
+
+    \column{0.44\textwidth}
+    \begin{keyformula}[损失拆解]
+      \[
+        \mathcal L
+        =
+        \lambda_r \mathcal L_r
+        +
+        \lambda_b \mathcal L_b
+        +
+        \lambda_i \mathcal L_i
+      \]
+    \end{keyformula}
+
+  \end{columns}
+\end{frame}
+
+\subsection{使用边界}
+
+\begin{frame}[t]{哪些内容该留在 Beamer, 哪些不该}
+  \small
+  \begin{columns}[T,onlytextwidth]
+    \column{0.48\textwidth}
+    \begin{methodnote}
+      课件里通常更适合保留“损失拆解”或“训练路线”页, 而不是把完整推导整页搬上来.
+    \end{methodnote}
+
+    \column{0.48\textwidth}
+    \begin{pitfall}
+      不要把讲义里的 \texttt{chapter} 工作流直接搬进 Beamer. 幻灯片更应该依赖 \texttt{section} / \texttt{subsection} 导航.
+    \end{pitfall}
+  \end{columns}
+\end{frame}
+
+\section{总结}
+\subsection{复用策略}
+
+\begin{frame}[t]{现在这套 Beamer 支持能做什么}
+  \begin{examfocus}[落地接口]
+    \begin{itemize}
+      \item 使用 \texttt{maki-beamer} 建立课件, 并继续沿用共享的字体与主题选项.
+      \item 使用 \texttt{\string\MakeTitlePage} 和 \texttt{\string\makeoutline[标题]} 生成封面与目录页.
+      \item 继续复用 \texttt{keyformula}、\texttt{methodnote}、\texttt{pitfall}、\texttt{examfocus}.
+      \item 继续复用 Transformer / PINN / fPINN 等 TikZ 语义样式.
+    \end{itemize}
+  \end{examfocus}
+\end{frame}
+
+\end{document}

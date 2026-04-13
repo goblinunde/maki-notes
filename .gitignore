@@ -34,10 +34,12 @@ texput.log
 # Generated PDFs for this project
 /document.pdf
 /document2.pdf
+/beamer-demo.pdf
 /example.pdf
 /main-dist.pdf
 /smoke-packaging.pdf
 /test-basic.pdf
+/test-beamer.pdf
 /test-environments.pdf
 /test-graphics.pdf
 /test-tikz-styles.pdf

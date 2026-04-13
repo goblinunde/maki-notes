@@ -29,10 +29,12 @@ jobs:
           root_file: |
             document2.tex
             example.tex
+            beamer-demo.tex
             tikz-template-pages.tex
             tikz-example.tex
             smoke-packaging.tex
             tests/test-basic.tex
+            tests/test-beamer.tex
             tests/test-environments.tex
             tests/test-graphics.tex
             tests/test-tikz-styles.tex
@@ -49,8 +51,9 @@ jobs:
           tag="${GITHUB_REF_NAME}"
           mkdir -p dist/package/maki-notes
 
-          cp README.md Makefile latexmkrc maki-notes.cls maki-notes.sty dist/package/maki-notes/
-          cp ./*.tex dist/package/maki-notes/
+          cp README.md Makefile latexmkrc dist/package/maki-notes/
+          cp ./*.cls ./*.sty ./*.tex dist/package/maki-notes/
+          cp -R beamer-example dist/package/maki-notes/beamer-example
           cp -R docs dist/package/maki-notes/docs
           cp -R tests dist/package/maki-notes/tests
 
@@ -58,6 +61,7 @@ jobs:
 
           cp document2.pdf "dist/maki-notes-${tag}-manual.pdf"
           cp example.pdf "dist/maki-notes-${tag}-example.pdf"
+          cp beamer-demo.pdf "dist/maki-notes-${tag}-beamer-demo.pdf"
           cp tikz-template-pages.pdf "dist/maki-notes-${tag}-tikz-templates.pdf"
           cp tikz-example.pdf "dist/maki-notes-${tag}-tikz-example.pdf"
 

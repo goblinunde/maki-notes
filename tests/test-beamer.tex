@@ -1,0 +1,46 @@
+\documentclass[aspectratio=169,fontpreset=common,theme=default]{maki-beamer}
+
+\title{Maki Beamer Test}
+\subtitle{Shared Style Layer}
+\author{Test Runner}
+\institute{Maki Notes Template Pack}
+\date{2026-04-13}
+
+\begin{document}
+
+\MakeTitlePage
+\makeoutline[本次内容]
+
+\section{数学块}
+
+\begin{frame}{数学讲义块}
+  \begin{definition}[连续]
+    设函数 \(f\) 在点 \(x_0\) 的某邻域内有定义. 若
+    \[
+      \lim_{x \to x_0} f(x) = f(x_0),
+    \]
+    则称 \(f\) 在 \(x_0\) 处连续.
+  \end{definition}
+
+  \begin{keyformula}
+    \[
+      \lim_{x \to x_0} f(x) = A
+    \]
+  \end{keyformula}
+\end{frame}
+
+\section{TikZ 样式}
+
+\begin{frame}{TikZ 语义样式}
+  \centering
+  \begin{tikzpicture}[x=1cm,y=1cm]
+    \node[transformer token] (x1) at (0,0) {$x_1$};
+    \node[transformer attention block] (attn) at (2.3,0) {Self-Attn};
+    \node[transformer ffn] (ffn) at (4.7,0) {FFN};
+    \draw[transformer flow] (x1.east) -- (attn.west);
+    \draw[transformer flow] (attn.east) -- (ffn.west);
+    \node[maki annotation] at (2.3,1.2) {shared TikZ styles};
+  \end{tikzpicture}
+\end{frame}
+
+\end{document}

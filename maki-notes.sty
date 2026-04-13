@@ -1,23 +1,34 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{maki-notes}[2026/04/12 Maki lecture notes style]
+\ProvidesPackage{maki-notes}[2026/04/13 Maki lecture notes style]
 
-\RequirePackage[
-	a4paper,
-	left=2.5cm,
-	right=2.5cm,
-	top=2.5cm,
-	bottom=2.5cm,
-	marginparwidth=20mm,
-	marginparsep=4mm
-]{geometry}
-\RequirePackage{fancyhdr}
+\newif\ifMakiBeamerMode
+\MakiBeamerModefalse
+\makeatletter
+\@ifclassloaded{beamer}{\MakiBeamerModetrue}{}
+\@ifclassloaded{ctexbeamer}{\MakiBeamerModetrue}{}
+\makeatother
+
+\ifMakiBeamerMode\else
+	\RequirePackage[
+		a4paper,
+		left=2.5cm,
+		right=2.5cm,
+		top=2.5cm,
+		bottom=2.5cm,
+		marginparwidth=20mm,
+		marginparsep=4mm
+	]{geometry}
+	\RequirePackage{fancyhdr}
+\fi
 \RequirePackage{amsmath, amssymb, amsthm, mathtools}
 \RequirePackage{mathpazo}
 \RequirePackage[most]{tcolorbox}
 \RequirePackage{xcolor}
 \RequirePackage{newunicodechar}
 \RequirePackage{etoolbox}
-\RequirePackage{etoc}
+\ifMakiBeamerMode\else
+	\RequirePackage{etoc}
+\fi
 \RequirePackage{esint}
 \RequirePackage{multirow}
 \RequirePackage{diagbox}
@@ -43,12 +54,17 @@
 \RequirePackage{makecell}
 \RequirePackage{pgfplots}
 \pgfplotsset{compat=1.18}
-\RequirePackage{capt-of}
-\RequirePackage{graphicx,caption,subcaption}
-\RequirePackage{wrapfig}
-\RequirePackage{marginnote}
-\RequirePackage{ifoddpage}
-\renewcommand{\thesubfigure}{\Alph{subfigure}}
+\RequirePackage{graphicx}
+\ifMakiBeamerMode\else
+	\RequirePackage{capt-of}
+	\RequirePackage{caption,subcaption}
+	\RequirePackage{wrapfig}
+	\RequirePackage{marginnote}
+	\RequirePackage{ifoddpage}
+\fi
+\ifMakiBeamerMode\else
+	\renewcommand{\thesubfigure}{\Alph{subfigure}}
+\fi
 \RequirePackage{tikz-3dplot}
 \tdplotsetmaincoords{70}{110}
 \RequirePackage{booktabs}
@@ -65,7 +81,9 @@
 	}
 }
 
-\setlength{\headheight}{26pt}
+\ifMakiBeamerMode\else
+	\setlength{\headheight}{26pt}
+\fi
 
 \newunicodechar{。}{.\ \ignorespaces}
 \newunicodechar{，}{,\ \ignorespaces}
@@ -428,22 +446,24 @@
 \makiapplytheme
 \color{MainText}
 
-\captionsetup[figure]{
-	font={small,stretch=1.08},
-	labelfont={bf,color=LogicColor},
-	textfont={small},
-	justification=raggedright,
-	singlelinecheck=false,
-	skip=4pt
-}
-\captionsetup[table]{
-	font={small,stretch=1.08},
-	labelfont={bf,color=LogicColor},
-	textfont={small},
-	justification=raggedright,
-	singlelinecheck=false,
-	skip=4pt
-}
+\ifMakiBeamerMode\else
+	\captionsetup[figure]{
+		font={small,stretch=1.08},
+		labelfont={bf,color=LogicColor},
+		textfont={small},
+		justification=raggedright,
+		singlelinecheck=false,
+		skip=4pt
+	}
+	\captionsetup[table]{
+		font={small,stretch=1.08},
+		labelfont={bf,color=LogicColor},
+		textfont={small},
+		justification=raggedright,
+		singlelinecheck=false,
+		skip=4pt
+	}
+\fi
 
 \newlength{\MakiMarginRuleWidth}
 \newlength{\MakiMarginNoteGap}
@@ -1451,217 +1471,225 @@
 
 \makeatletter
 
-\pretocmd{\@chapter}{\MakiBindPendingChapterInfo}{}{}
-\pretocmd{\@schapter}{\MakiBindPendingChapterInfo}{}{}
+\ifMakiBeamerMode
+	\NewDocumentCommand{\MakeChapterGuide}{m}{%
+		\PackageWarningNoLine{maki-notes}{\string\MakeChapterGuide\space is not supported in beamer mode and will be ignored}%
+	}
+\else
+	\pretocmd{\@chapter}{\MakiBindPendingChapterInfo}{}{}
+	\pretocmd{\@schapter}{\MakiBindPendingChapterInfo}{}{}
 
-\renewcommand{\chaptermark}[1]{%
-	\markboth{#1}{}%
-	\gdef\MakiCurrentChapterTitle{#1}%
-	\xdef\MakiCurrentChapterNumber{\thechapter}%
-}
+	\renewcommand{\chaptermark}[1]{%
+		\markboth{#1}{}%
+		\gdef\MakiCurrentChapterTitle{#1}%
+		\xdef\MakiCurrentChapterNumber{\thechapter}%
+	}
 
-\newbox\maki@localtocbox
+	\newbox\maki@localtocbox
 
-\newcommand{\maki@guideinforow}[2]{%
-	\ifdefempty{#2}{}{%
-		{\color{LogicColor}\bfseries #1}\hspace{0.6em}#2\par
-	}%
-}
-
-\newcommand{\maki@guidefieldbox}[2]{%
-	\ifdefempty{#2}{}{%
-		\begin{tcolorbox}[maki workflow card,title={#1}]
-			#2
-		\end{tcolorbox}%
-	}%
-}
-
-\newcommand{\maki@chapterguideheader}{%
-	\begin{center}
-		{\fontsize{28pt}{34pt}\selectfont\heavykaishu\color{LogicColor} 第\ \MakiCurrentChapterNumber\ 章\par}
-		\vspace{0.75em}
-		{\fontsize{26pt}{32pt}\selectfont\heavykaishu\color{MainText} \MakiCurrentChapterTitle\par}
-		\ifdefempty{\MakiCurrentChapterSubtitle}{}{%
-			\vspace{0.7em}
-			{\large\kaishu\color{MainText!78} \MakiCurrentChapterSubtitle\par}
+	\newcommand{\maki@guideinforow}[2]{%
+		\ifdefempty{#2}{}{%
+			{\color{LogicColor}\bfseries #1}\hspace{0.6em}#2\par
 		}%
-	\end{center}
-}
+	}
 
-\newcommand{\maki@chapterguideoverview}{%
-	\begin{tcolorbox}[maki workflow hero]
-		\maki@guideinforow{课程}{\MakiCourseInfoCourse}
-		\maki@guideinforow{学期}{\MakiCourseInfoTerm}
-		\maki@guideinforow{对象}{\MakiCourseInfoAudience}
-		\maki@guideinforow{授课}{\MakiCourseInfoInstructor}
-		\maki@guideinforow{讲次}{\MakiEffectiveChapterLecture}
-		\maki@guideinforow{日期}{\MakiEffectiveChapterDate}
-	\end{tcolorbox}
-}
-
-\newcommand{\maki@chapterguidenavigation}{%
-	\begingroup
-		\etocchecksemptiness
-		\etocsettocstyle{}{}%
-		\etocsetstyle{section}
-			{\begin{list}{}{\leftmargin=0pt\itemsep=0.45em\topsep=0pt\parsep=0pt\partopsep=0pt\labelwidth=0pt\labelsep=0pt}}%
-			{}%
-			{\item \textcolor{LogicColor}{\bfseries\etocthenumber}\hspace{0.6em}\etocname\hfill{\footnotesize\color{MainText!58}\etocthepage}}%
-			{\end{list}}%
-		\etocsetnexttocdepth{section}%
-		\setbox\maki@localtocbox=\vbox{%
-			\hsize=\linewidth
-			\localtableofcontents
-		}%
-		\etocifwasempty{}{%
-			\begin{tcolorbox}[maki workflow card,title={本章导航}]
-				\unvbox\maki@localtocbox
+	\newcommand{\maki@guidefieldbox}[2]{%
+		\ifdefempty{#2}{}{%
+			\begin{tcolorbox}[maki workflow card,title={#1}]
+				#2
 			\end{tcolorbox}%
 		}%
-	\endgroup
-}
+	}
 
-\NewDocumentCommand{\MakeChapterGuide}{m}{%
-	\MakiClearGuideInfo
-	\pgfkeys{/maki/guide, #1}%
-	\MakiResolveEffectiveChapterInfo
-	\clearpage
-	\thispagestyle{plain}
-	\maki@chapterguideheader
-	\vspace{0.4em}
-	\maki@chapterguideoverview
-	\begin{tcbraster}[raster columns=2,raster column skip=6mm,raster row skip=6mm]
-		\maki@guidefieldbox{先修要求}{\MakiCurrentChapterPrereq}
-		\maki@guidefieldbox{学习目标}{\MakiCurrentChapterGoals}
-		\maki@guidefieldbox{关键词}{\MakiCurrentChapterKeywords}
-		\maki@guidefieldbox{本章路线}{\MakiGuideRoute}
-		\maki@guidefieldbox{核心公式}{\MakiGuideFormulas}
-		\maki@guidefieldbox{方法提要}{\MakiGuideMethods}
-		\maki@guidefieldbox{常见误区}{\MakiGuidePitfalls}
-		\maki@guidefieldbox{考试关注}{\MakiGuideExamFocus}
-	\end{tcbraster}
-	\maki@chapterguidenavigation
-	\clearpage
-}
+	\newcommand{\maki@chapterguideheader}{%
+		\begin{center}
+			{\fontsize{28pt}{34pt}\selectfont\heavykaishu\color{LogicColor} 第\ \MakiCurrentChapterNumber\ 章\par}
+			\vspace{0.75em}
+			{\fontsize{26pt}{32pt}\selectfont\heavykaishu\color{MainText} \MakiCurrentChapterTitle\par}
+			\ifdefempty{\MakiCurrentChapterSubtitle}{}{%
+				\vspace{0.7em}
+				{\large\kaishu\color{MainText!78} \MakiCurrentChapterSubtitle\par}
+			}%
+		\end{center}
+	}
 
-\newcommand{\maki@marginnoteformatright}[1]{%
-	\begin{tabular}{@{}p{\MakiMarginRuleWidth}@{\hspace{\MakiMarginNoteGap}}>{\raggedright\arraybackslash}p{\dimexpr\marginparwidth-\MakiMarginRuleWidth-\MakiMarginNoteGap\relax}@{}}%
-		{\color{LogicColor}\vrule width \MakiMarginRuleWidth} & #1
-	\end{tabular}%
-}
+	\newcommand{\maki@chapterguideoverview}{%
+		\begin{tcolorbox}[maki workflow hero]
+			\maki@guideinforow{课程}{\MakiCourseInfoCourse}
+			\maki@guideinforow{学期}{\MakiCourseInfoTerm}
+			\maki@guideinforow{对象}{\MakiCourseInfoAudience}
+			\maki@guideinforow{授课}{\MakiCourseInfoInstructor}
+			\maki@guideinforow{讲次}{\MakiEffectiveChapterLecture}
+			\maki@guideinforow{日期}{\MakiEffectiveChapterDate}
+		\end{tcolorbox}
+	}
 
-\newcommand{\maki@marginnoteformatleft}[1]{%
-	\begin{tabular}{@{}>{\raggedleft\arraybackslash}p{\dimexpr\marginparwidth-\MakiMarginRuleWidth-\MakiMarginNoteGap\relax}@{\hspace{\MakiMarginNoteGap}}p{\MakiMarginRuleWidth}@{}}%
-		#1 & {\color{LogicColor}\vrule width \MakiMarginRuleWidth}
-	\end{tabular}%
-}
+	\newcommand{\maki@chapterguidenavigation}{%
+		\begingroup
+			\etocchecksemptiness
+			\etocsettocstyle{}{}%
+			\etocsetstyle{section}
+				{\begin{list}{}{\leftmargin=0pt\itemsep=0.45em\topsep=0pt\parsep=0pt\partopsep=0pt\labelwidth=0pt\labelsep=0pt}}%
+				{}%
+				{\item \textcolor{LogicColor}{\bfseries\etocthenumber}\hspace{0.6em}\etocname\hfill{\footnotesize\color{MainText!58}\etocthepage}}%
+				{\end{list}}%
+			\etocsetnexttocdepth{section}%
+			\setbox\maki@localtocbox=\vbox{%
+				\hsize=\linewidth
+				\localtableofcontents
+			}%
+			\etocifwasempty{}{%
+				\begin{tcolorbox}[maki workflow card,title={本章导航}]
+					\unvbox\maki@localtocbox
+				\end{tcolorbox}%
+			}%
+		\endgroup
+	}
 
-\newcommand{\maki@marginnotebody}[2]{%
-	{\footnotesize\linespread{1.12}\selectfont\color{MainText!85}%
-	\ifstrempty{#1}{}{%
-		{\color{LogicColor}\heavykaishu #1}\par\vspace{0.18em}%
-	}%
-	#2}%
-}
+	\NewDocumentCommand{\MakeChapterGuide}{m}{%
+		\MakiClearGuideInfo
+		\pgfkeys{/maki/guide, #1}%
+		\MakiResolveEffectiveChapterInfo
+		\clearpage
+		\thispagestyle{plain}
+		\maki@chapterguideheader
+		\vspace{0.4em}
+		\maki@chapterguideoverview
+		\begin{tcbraster}[raster columns=2,raster column skip=6mm,raster row skip=6mm]
+			\maki@guidefieldbox{先修要求}{\MakiCurrentChapterPrereq}
+			\maki@guidefieldbox{学习目标}{\MakiCurrentChapterGoals}
+			\maki@guidefieldbox{关键词}{\MakiCurrentChapterKeywords}
+			\maki@guidefieldbox{本章路线}{\MakiGuideRoute}
+			\maki@guidefieldbox{核心公式}{\MakiGuideFormulas}
+			\maki@guidefieldbox{方法提要}{\MakiGuideMethods}
+			\maki@guidefieldbox{常见误区}{\MakiGuidePitfalls}
+			\maki@guidefieldbox{考试关注}{\MakiGuideExamFocus}
+		\end{tcbraster}
+		\maki@chapterguidenavigation
+		\clearpage
+	}
+\fi
 
-\newcommand{\maki@outernote}[2]{%
-	\marginnote{%
-		\checkoddpage
-		\if@twoside
-			\ifoddpage
-				\maki@marginnoteformatright{\maki@marginnotebody{#1}{#2}}%
+	\newcommand{\maki@marginnoteformatright}[1]{%
+		\begin{tabular}{@{}p{\MakiMarginRuleWidth}@{\hspace{\MakiMarginNoteGap}}>{\raggedright\arraybackslash}p{\dimexpr\marginparwidth-\MakiMarginRuleWidth-\MakiMarginNoteGap\relax}@{}}%
+			{\color{LogicColor}\vrule width \MakiMarginRuleWidth} & #1
+		\end{tabular}%
+	}
+
+	\newcommand{\maki@marginnoteformatleft}[1]{%
+		\begin{tabular}{@{}>{\raggedleft\arraybackslash}p{\dimexpr\marginparwidth-\MakiMarginRuleWidth-\MakiMarginNoteGap\relax}@{\hspace{\MakiMarginNoteGap}}p{\MakiMarginRuleWidth}@{}}%
+			#1 & {\color{LogicColor}\vrule width \MakiMarginRuleWidth}
+		\end{tabular}%
+	}
+
+	\newcommand{\maki@marginnotebody}[2]{%
+		{\footnotesize\linespread{1.12}\selectfont\color{MainText!85}%
+		\ifstrempty{#1}{}{%
+			{\color{LogicColor}\heavykaishu #1}\par\vspace{0.18em}%
+		}%
+		#2}%
+	}
+
+	\newcommand{\maki@outernote}[2]{%
+		\marginnote{%
+			\checkoddpage
+			\if@twoside
+				\ifoddpage
+					\maki@marginnoteformatright{\maki@marginnotebody{#1}{#2}}%
+				\else
+					\maki@marginnoteformatleft{\maki@marginnotebody{#1}{#2}}%
+				\fi
 			\else
-				\maki@marginnoteformatleft{\maki@marginnotebody{#1}{#2}}%
+				\maki@marginnoteformatright{\maki@marginnotebody{#1}{#2}}%
 			\fi
-		\else
-			\maki@marginnoteformatright{\maki@marginnotebody{#1}{#2}}%
-		\fi
-	}%
-}
+		}%
+	}
 
-\newcommand{\maki@wrapfigurestyle}{%
-	\captionsetup{type=figure}%
-	\setlength{\columnsep}{\MakiWrapColumnSep}%
-	\setlength{\intextsep}{\MakiWrapTextSep}%
-}
+	\newcommand{\maki@wrapfigurestyle}{%
+		\captionsetup{type=figure}%
+		\setlength{\columnsep}{\MakiWrapColumnSep}%
+		\setlength{\intextsep}{\MakiWrapTextSep}%
+	}
 
-\NewDocumentEnvironment{leftfiguretext}{o m +b}{%
-	\IfNoValueTF{#1}
-		{\begin{wrapfigure}{l}{#2}}
-		{\begin{wrapfigure}[#1]{l}{#2}}%
-	\maki@wrapfigurestyle
-	#3
-}{%
-	\end{wrapfigure}
-}
+	\NewDocumentEnvironment{leftfiguretext}{o m +b}{%
+		\IfNoValueTF{#1}
+			{\begin{wrapfigure}{l}{#2}}
+			{\begin{wrapfigure}[#1]{l}{#2}}%
+		\maki@wrapfigurestyle
+		#3
+	}{%
+		\end{wrapfigure}
+	}
 
-\NewDocumentEnvironment{rightfiguretext}{o m +b}{%
-	\IfNoValueTF{#1}
-		{\begin{wrapfigure}{r}{#2}}
-		{\begin{wrapfigure}[#1]{r}{#2}}%
-	\maki@wrapfigurestyle
-	#3
-}{%
-	\end{wrapfigure}
-}
+	\NewDocumentEnvironment{rightfiguretext}{o m +b}{%
+		\IfNoValueTF{#1}
+			{\begin{wrapfigure}{r}{#2}}
+			{\begin{wrapfigure}[#1]{r}{#2}}%
+		\maki@wrapfigurestyle
+		#3
+	}{%
+		\end{wrapfigure}
+	}
 
-\NewDocumentEnvironment{figuretextleft}{o m +b}{%
-	\IfNoValueTF{#1}
-		{\begin{leftfiguretext}{#2}}
-		{\begin{leftfiguretext}[#1]{#2}}%
-	#3
-	\end{leftfiguretext}
-}{}
+	\NewDocumentEnvironment{figuretextleft}{o m +b}{%
+		\IfNoValueTF{#1}
+			{\begin{leftfiguretext}{#2}}
+			{\begin{leftfiguretext}[#1]{#2}}%
+		#3
+		\end{leftfiguretext}
+	}{}
 
-\NewDocumentEnvironment{figuretextright}{o m +b}{%
-	\IfNoValueTF{#1}
-		{\begin{rightfiguretext}{#2}}
-		{\begin{rightfiguretext}[#1]{#2}}%
-	#3
-	\end{rightfiguretext}
-}{}
+	\NewDocumentEnvironment{figuretextright}{o m +b}{%
+		\IfNoValueTF{#1}
+			{\begin{rightfiguretext}{#2}}
+			{\begin{rightfiguretext}[#1]{#2}}%
+		#3
+		\end{rightfiguretext}
+	}{}
 
-\NewDocumentCommand{\wrapcaption}{m}{\caption{#1}}
+	\NewDocumentCommand{\wrapcaption}{m}{\caption{#1}}
 
-\NewDocumentCommand{\sidenote}{m}{%
-	\maki@outernote{}{#1}%
-}
+	\NewDocumentCommand{\sidenote}{m}{%
+		\maki@outernote{}{#1}%
+	}
 
-\NewDocumentCommand{\marginremark}{o m}{%
-	\IfNoValueTF{#1}
-		{\maki@outernote{}{#2}}
-		{\maki@outernote{#1}{#2}}%
-}
+	\NewDocumentCommand{\marginremark}{o m}{%
+		\IfNoValueTF{#1}
+			{\maki@outernote{}{#2}}
+			{\maki@outernote{#1}{#2}}%
+	}
 
-\NewDocumentCommand{\sidecaptionof}{m m}{%
-	\refstepcounter{#1}%
-	\marginremark[\csname fnum@#1\endcsname]{#2}%
-}
+	\NewDocumentCommand{\sidecaptionof}{m m}{%
+		\refstepcounter{#1}%
+		\marginremark[\csname fnum@#1\endcsname]{#2}%
+	}
 
-\NewDocumentCommand{\sidecaption}{m}{%
-	\sidecaptionof{figure}{#1}%
-}
+	\NewDocumentCommand{\sidecaption}{m}{%
+		\sidecaptionof{figure}{#1}%
+	}
 
 \makeatother
 
 \newcommand{\fillin}[1][3cm]{\,\underline{\hspace{#1}}\,}
 \newcommand{\selectbracket}{\unskip\nolinebreak\quad \raisebox{0.7pt}[0pt][0pt]{\mbox{$(\qquad)$}}\par}
 
-\ctexset{
-	chapter = {
-		format = \centering,
-		nameformat = \fontsize{40pt}{50pt}\selectfont\heavykaishu\color{LogicColor},
-		titleformat = \fontsize{40pt}{50pt}\selectfont\heavykaishu\color{LogicColor},
-		aftername = \hspace{1.8em},
-		beforeskip = 10pt,
-		afterskip = 55pt,
-	},
-	section = {
-		format = \centering\LARGE\bfseries\color{MainText},
-		beforeskip = 24pt,
-		afterskip = 27pt,
+\ifMakiBeamerMode\else
+	\ctexset{
+		chapter = {
+			format = \centering,
+			nameformat = \fontsize{40pt}{50pt}\selectfont\heavykaishu\color{LogicColor},
+			titleformat = \fontsize{40pt}{50pt}\selectfont\heavykaishu\color{LogicColor},
+			aftername = \hspace{1.8em},
+			beforeskip = 10pt,
+			afterskip = 55pt,
+		},
+		section = {
+			format = \centering\LARGE\bfseries\color{MainText},
+			beforeskip = 24pt,
+			afterskip = 27pt,
+		}
 	}
-}
+\fi
 
 \tcbset{
 	commonbox/.style={
@@ -1760,14 +1788,18 @@
 	#1
 }
 
-\newcounter{theorem}[chapter]
-\renewcommand{\thetheorem}{\thechapter.\arabic{theorem}}
+\ifMakiBeamerMode\else
+	\newcounter{theorem}[chapter]
+	\renewcommand{\thetheorem}{\thechapter.\arabic{theorem}}
+\fi
 
-\newenvironment{theorem}[1][]{\begin{thmBox}{定理}{#1}}{\end{thmBox}}
-\newenvironment{lemma}[1][]{\begin{thmBox}{引理}{#1}}{\end{thmBox}}
-\newenvironment{proposition}[1][]{\begin{thmBox}{命题}{#1}}{\end{thmBox}}
-\newenvironment{corollary}[1][]{\begin{thmBox}{推论}{#1}}{\end{thmBox}}
-\newenvironment{property}[1][]{\begin{thmBox}{性质}{#1}}{\end{thmBox}}
+\ifMakiBeamerMode\else
+	\newenvironment{theorem}[1][]{\begin{thmBox}{定理}{#1}}{\end{thmBox}}
+	\newenvironment{lemma}[1][]{\begin{thmBox}{引理}{#1}}{\end{thmBox}}
+	\newenvironment{proposition}[1][]{\begin{thmBox}{命题}{#1}}{\end{thmBox}}
+	\newenvironment{corollary}[1][]{\begin{thmBox}{推论}{#1}}{\end{thmBox}}
+	\newenvironment{property}[1][]{\begin{thmBox}{性质}{#1}}{\end{thmBox}}
+\fi
 
 \newtcolorbox{defBox}[3][]{%
 	commonbox,
@@ -1778,11 +1810,15 @@
 	#1
 }
 
-\newcounter{definition}[chapter]
-\renewcommand{\thedefinition}{\thechapter.\arabic{definition}}
+\ifMakiBeamerMode\else
+	\newcounter{definition}[chapter]
+	\renewcommand{\thedefinition}{\thechapter.\arabic{definition}}
+\fi
 
-\newenvironment{definition}[1][]{\begin{defBox}{定义}{#1}}{\end{defBox}}
-\newenvironment{axiom}[1][]{\begin{defBox}{公理}{#1}}{\end{defBox}}
+\ifMakiBeamerMode\else
+	\newenvironment{definition}[1][]{\begin{defBox}{定义}{#1}}{\end{defBox}}
+	\newenvironment{axiom}[1][]{\begin{defBox}{公理}{#1}}{\end{defBox}}
+\fi
 
 \newtcolorbox{exBox}[3][]{%
 	commonbox,
@@ -1803,12 +1839,16 @@
 	#1
 }
 
-\newcounter{example}[chapter]
-\renewcommand{\theexample}{\thechapter.\arabic{example}}
+\ifMakiBeamerMode\else
+	\newcounter{example}[chapter]
+	\renewcommand{\theexample}{\thechapter.\arabic{example}}
+\fi
 
-\newenvironment{example}[1][]{\begin{exBox}{例题}{#1}}{\end{exBox}}
-\newenvironment{longexample}[1][]{\begin{longexBox}{例题}{#1}}{\end{longexBox}}
-\newenvironment{exercise}[1][]{\begin{exBox}{练习}{#1}}{\end{exBox}}
+\ifMakiBeamerMode\else
+	\newenvironment{example}[1][]{\begin{exBox}{例题}{#1}}{\end{exBox}}
+	\newenvironment{longexample}[1][]{\begin{longexBox}{例题}{#1}}{\end{longexBox}}
+	\newenvironment{exercise}[1][]{\begin{exBox}{练习}{#1}}{\end{exBox}}
+\fi
 
 \newtcolorbox{realexamBox}[2][]{%
 	commonbox,
@@ -1827,8 +1867,10 @@
 	#1
 }
 
-\newenvironment{realexam}[1][]{\begin{realexamBox}{#1}}{\end{realexamBox}}
-\newenvironment{longrealexam}[1][]{\begin{longrealexamBox}{#1}}{\end{longrealexamBox}}
+\ifMakiBeamerMode\else
+	\newenvironment{realexam}[1][]{\begin{realexamBox}{#1}}{\end{realexamBox}}
+	\newenvironment{longrealexam}[1][]{\begin{longrealexamBox}{#1}}{\end{longrealexamBox}}
+\fi
 
 \NewDocumentEnvironment{keyformula}{o +b}{%
 	\begin{tcolorbox}[maki keyformula box,title={\IfNoValueTF{#1}{核心公式}{#1}}]
@@ -1854,35 +1896,41 @@
 	\end{tcolorbox}
 }{}
 
-\newenvironment{note}{%
-	\par\vspace{0.5em}\noindent
-	\textbf{\color{NoteColor} 注：}%
-}{%
-	\par\vspace{0.5em}%
-}
+\ifMakiBeamerMode\else
+	\newenvironment{note}{%
+		\par\vspace{0.5em}\noindent
+		\textbf{\color{NoteColor} 注：}%
+	}{%
+		\par\vspace{0.5em}%
+	}
 
-\renewenvironment{proof}{%
-	\par\vspace{0.5em}\noindent
-	\textbf{\color{LogicColor} 证明：}%
-}{%
-	\hfill \textcolor{LogicColor}{\rule{0.6em}{0.6em}} \par
-}
+	\renewenvironment{proof}{%
+		\par\vspace{0.5em}\noindent
+		\textbf{\color{LogicColor} 证明：}%
+	}{%
+		\hfill \textcolor{LogicColor}{\rule{0.6em}{0.6em}} \par
+	}
+\fi
 
-\pagestyle{fancy}
-\fancyhf{}
-\fancyhead[L]{\small \kaishu \MakiHeaderLeftText}
-\fancyhead[R]{\small \kaishu \MakiHeaderRightText}
-\fancyfoot[C]{\thepage}
-\renewcommand{\headrulewidth}{0.5pt}
-\renewcommand{\headrule}{\hbox to\headwidth{\color{LogicColor}\leaders\hrule height \headrulewidth\hfill}}
-
-\fancypagestyle{plain}{
+\ifMakiBeamerMode
+	\numberwithin{equation}{section}
+\else
+	\pagestyle{fancy}
 	\fancyhf{}
 	\fancyhead[L]{\small \kaishu \MakiHeaderLeftText}
 	\fancyhead[R]{\small \kaishu \MakiHeaderRightText}
 	\fancyfoot[C]{\thepage}
 	\renewcommand{\headrulewidth}{0.5pt}
 	\renewcommand{\headrule}{\hbox to\headwidth{\color{LogicColor}\leaders\hrule height \headrulewidth\hfill}}
-}
 
-\numberwithin{equation}{chapter}
+	\fancypagestyle{plain}{
+		\fancyhf{}
+		\fancyhead[L]{\small \kaishu \MakiHeaderLeftText}
+		\fancyhead[R]{\small \kaishu \MakiHeaderRightText}
+		\fancyfoot[C]{\thepage}
+		\renewcommand{\headrulewidth}{0.5pt}
+		\renewcommand{\headrule}{\hbox to\headwidth{\color{LogicColor}\leaders\hrule height \headrulewidth\hfill}}
+	}
+
+	\numberwithin{equation}{chapter}
+\fi

@@ -1,0 +1,126 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{beamerthemedurhamzh}[2026/03/14 v1.0.0 Durham Beamer Theme Chinese Extension]
+
+\DeclareOptionBeamer*{\PassOptionsToPackage{\CurrentOption}{beamerthemedurham}}
+\ProcessOptionsBeamer
+
+\RequirePackage{iftex}
+\makeatletter
+\@ifpackageloaded{ctex}{}{\RequirePackage[UTF8]{ctex}}
+\makeatother
+\RequirePackage{beamerthemedurham}
+\usetikzlibrary{positioning}
+\RequirePackage{pifont}
+
+\newcommand{\DurhamIconEnvelope}{@}
+\newcommand{\DurhamIconLink}{\texttt{link}}
+\newcommand{\DurhamIconGithub}{\texttt{gh}}
+\newcommand{\DurhamIconOrcid}{\texttt{id}}
+\newcommand{\DurhamIconScholar}{\texttt{gs}}
+\newcommand{\DurhamIconCheck}{\ding{51}}
+\newcommand{\DurhamIconCross}{\ding{55}}
+
+\IfFileExists{fontawesome5.sty}{%
+  \RequirePackage{fontawesome5}
+  \renewcommand{\DurhamIconEnvelope}{\faIcon{envelope}}
+  \renewcommand{\DurhamIconLink}{\faIcon{link}}
+  \renewcommand{\DurhamIconGithub}{\faIcon{github}}
+  \renewcommand{\DurhamIconOrcid}{\faIcon{orcid}}
+  \renewcommand{\DurhamIconScholar}{\faIcon{graduation-cap}}
+}{%
+  \IfFileExists{fontawesome.sty}{%
+    \RequirePackage{fontawesome}
+    \renewcommand{\DurhamIconEnvelope}{\faEnvelope}
+    \renewcommand{\DurhamIconLink}{\faLink}
+    \renewcommand{\DurhamIconGithub}{\faGithub}
+    \renewcommand{\DurhamIconOrcid}{\faLink}
+    \renewcommand{\DurhamIconScholar}{\faGraduationCap}
+  }{}%
+}
+
+\newcommand{\DurhamZHSetupBundledLuaFonts}{%
+  \setCJKsansfont{FandolHei-Regular}[BoldFont=FandolHei-Bold]%
+  \setCJKmainfont{FandolSong-Regular}[BoldFont=FandolSong-Bold]%
+  \setCJKmonofont{FandolFang-Regular}%
+}
+\newcommand{\DurhamZHSetupBundledXeFonts}{%
+  % Let ctex choose the engine-native CJK fontset under XeLaTeX.
+}
+\newcommand{\DurhamZHUseBundledFonts}{%
+  \ifLuaTeX
+    \DurhamZHSetupBundledLuaFonts
+  \fi
+  \ifXeTeX
+    \DurhamZHSetupBundledXeFonts
+  \fi
+}
+\newcommand{\DurhamZHSetupLuaSystemFonts}{%
+  \IfFontExistsTF{Noto Sans CJK SC}{%
+    \setCJKsansfont{Noto Sans CJK SC}%
+  }{%
+    \setCJKsansfont{FandolHei-Regular}[BoldFont=FandolHei-Bold]%
+  }%
+  \IfFontExistsTF{Noto Serif CJK SC}{%
+    \setCJKmainfont{Noto Serif CJK SC}%
+  }{%
+    \setCJKmainfont{FandolSong-Regular}[BoldFont=FandolSong-Bold]%
+  }%
+  \IfFontExistsTF{Noto Sans Mono CJK SC}{%
+    \setCJKmonofont{Noto Sans Mono CJK SC}%
+  }{%
+    \setCJKmonofont{FandolFang-Regular}%
+  }%
+}
+\newcommand{\DurhamZHSetupXeSystemFonts}{%
+  \IfFontExistsTF{Microsoft YaHei}{%
+    \setCJKsansfont{Microsoft YaHei}%
+  }{%
+    \IfFontExistsTF{PingFang SC}{%
+      \setCJKsansfont{PingFang SC}%
+    }{%
+      \IfFontExistsTF{SimHei}{%
+        \setCJKsansfont{SimHei}%
+      }{%
+        \setCJKsansfont{FandolHei-Regular}[BoldFont=FandolHei-Bold]%
+      }%
+    }%
+  }%
+  \IfFontExistsTF{SimSun}{%
+    \IfFontExistsTF{SimHei}{%
+      \setCJKmainfont{SimSun}[BoldFont=SimHei]%
+    }{%
+      \IfFontExistsTF{Microsoft YaHei}{%
+        \setCJKmainfont{SimSun}[BoldFont=Microsoft YaHei]%
+      }{%
+        \setCJKmainfont{SimSun}%
+      }%
+    }%
+  }{%
+    \IfFontExistsTF{Songti SC}{%
+      \setCJKmainfont{Songti SC}%
+    }{%
+      \setCJKmainfont{FandolSong-Regular}[BoldFont=FandolSong-Bold]%
+    }%
+  }%
+  \IfFontExistsTF{NSimSun}{%
+    \setCJKmonofont{NSimSun}%
+  }{%
+    \IfFontExistsTF{SimSun}{%
+      \setCJKmonofont{SimSun}%
+    }{%
+      \setCJKmonofont{FandolFang-Regular}%
+    }%
+  }%
+}
+\newcommand{\DurhamZHUseSystemFonts}{%
+  \ifLuaTeX
+    \DurhamZHSetupLuaSystemFonts
+  \fi
+  \ifXeTeX
+    \DurhamZHSetupXeSystemFonts
+  \fi
+}
+\newcommand{\DurhamZHSetupFonts}{\DurhamZHUseBundledFonts}
+\DurhamZHUseBundledFonts
+
+\endinput

@@ -1,14 +1,22 @@
 # 模板总览
 
-`maki-notes` 是一个面向中文数学讲义的 LaTeX 模板。它不是“一个通用 `.sty` 包 + 随便搭一个文档类”的松散组合，而是一套配套设计的模板：
+`maki-notes` 是一个面向中文数学讲义与课程演示文稿的 LaTeX 模板。它不是“一个通用 `.sty` 包 + 随便搭一个文档类”的松散组合，而是一套配套设计的模板：
 
+- [`maki-beamer.cls`](../maki-beamer.cls) 负责 Beamer 文档类入口、类选项解析和演示文稿装配
 - [`maki-notes.cls`](../maki-notes.cls) 负责文档类入口、类选项解析和整体装配
+- [`beamerthememaki.sty`](../beamerthememaki.sty) 负责 Beamer 的标题页、目录页、页眉页脚和 block 风格
 - [`maki-notes.sty`](../maki-notes.sty) 负责页面、字体、主题色、环境、TikZ 样式、页眉页脚等核心实现
 
-推荐的使用方式始终是：
+推荐的使用方式是：
 
 ```tex
 \documentclass[...]{maki-notes}
+```
+
+或者：
+
+```tex
+\documentclass[...]{maki-beamer}
 ```
 
 而不是把 `.sty` 单独抽出来当一个轻量通用包使用。
@@ -18,6 +26,7 @@
 这个模板目前最适合：
 
 - 中文数学讲义
+- 中文课程汇报与专题演示文稿
 - 带大量示意图的课程笔记
 - 需要讲次导读页和章内导航的课程讲义
 - 教学型技术说明文档
@@ -35,6 +44,8 @@
   更完整的讲义模板，适合看整体风格和页面效果。
 - [`example.tex`](../example.tex)
   更适合作为新项目起点，结构较轻。
+- [`beamer-demo.tex`](../beamer-demo.tex)
+  Beamer 支持的完整示例，适合直接改造成课程汇报。
 - [`tikz-template-pages.tex`](../tikz-template-pages.tex)
   图形模板册，适合直接复制结构图。
 
@@ -42,6 +53,7 @@
 
 - 想直接写内容：从 `example.tex` 开始
 - 想整体了解模板能力：看 `document2.tex`
+- 想写演示文稿：看 `beamer-demo.tex`
 - 想找图形模板：看 `tikz-template-pages.tex`
 
 ## 编译方式
@@ -51,6 +63,7 @@
 ```sh
 make main
 make example
+make beamer-demo
 make tikz-templates
 make smoke
 make test
@@ -63,6 +76,8 @@ make clean
   编译 [`document2.tex`](../document2.tex)
 - `make example`
   编译 [`example.tex`](../example.tex)
+- `make beamer-demo`
+  编译 [`beamer-demo.tex`](../beamer-demo.tex)
 - `make tikz-templates`
   编译 [`tikz-template-pages.tex`](../tikz-template-pages.tex)
 - `make smoke`
@@ -72,7 +87,7 @@ make clean
 
 ## 类选项
 
-模板当前主要开放两类类选项：
+模板当前主要开放两类跨 notes / beamer 共享的类选项：
 
 - `fontpreset=common|auto|windows|macos|linux`
 - `theme=default|ocean|forest|graphite|amber|berry|sandstone`
@@ -130,7 +145,7 @@ make clean
 
 ## 公开能力概览
 
-模板当前最重要的公开能力可以分成 4 类：
+模板当前最重要的公开能力可以分成 6 类：
 
 ### 1. 文档结构和讲义环境
 
@@ -179,7 +194,19 @@ make clean
 
 - [`tikz-template-pages.md`](./tikz-template-pages.md)
 
-### 4. GitHub 自动化
+### 5. Beamer 演示文稿入口
+
+- `maki-beamer.cls`：基于 `ctexbeamer` 的演示文稿入口
+- `beamerthememaki.sty`：参考 `beamer-example/` 设计的 title page、outline、headline、footline
+- `\MakeTitlePage`、`\makeoutline[标题]`：稳定入口
+- 继续复用 `keyformula`、`methodnote`、`pitfall`、`examfocus`
+- 继续复用 Transformer / PINN / fPINN 等 TikZ 语义样式
+
+这部分单独文档见：
+
+- [`beamer-guide.md`](./beamer-guide.md)
+
+### 6. GitHub 自动化
 
 仓库已经配置了 tag push 才触发的 release workflow，以及若干 GitHub Models 自动化流程。
 
@@ -194,19 +221,22 @@ make clean
 
 1. 从 [`example.tex`](../example.tex) 开始写内容  
 2. 需要课程元信息、章节导读或本章导航时看 [`workflow-guide.md`](./workflow-guide.md)  
-3. 需要插图绕排时看 [`wrapfig-margin-notes.md`](./wrapfig-margin-notes.md)  
-4. 需要结构图时从 [`tikz-template-pages.tex`](../tikz-template-pages.tex) 复制  
-5. 改完后用 `make example` 或 `make main` 检查输出
+3. 需要汇报版课件时看 [`beamer-guide.md`](./beamer-guide.md) 和 [`beamer-demo.tex`](../beamer-demo.tex)  
+4. 需要插图绕排时看 [`wrapfig-margin-notes.md`](./wrapfig-margin-notes.md)  
+5. 需要结构图时从 [`tikz-template-pages.tex`](../tikz-template-pages.tex) 复制  
+6. 改完后用 `make example`、`make beamer-demo` 或 `make main` 检查输出
 
 ### 作为模板维护者
 
 1. 改 `.cls` / `.sty` 前先确认用户可见接口是否变化  
 2. 改文档结构、颜色或字体后，先跑 `make test`  
 3. 新增图形样式时，同步更新模板册和对应文档  
-4. 发布时推送 tag，让 workflow 自动构建 release
+4. 调整 Beamer 支持时，同步更新 [`beamer-guide.md`](./beamer-guide.md) 与 [`tests/test-beamer.tex`](../tests/test-beamer.tex)
+5. 发布时推送 tag，让 workflow 自动构建 release
 
 ## 相关文档
 
 - 文档索引：[`README.md`](./README.md)
+- Beamer 支持：[`beamer-guide.md`](./beamer-guide.md)
 - 图文绕排与页边批注：[`wrapfig-margin-notes.md`](./wrapfig-margin-notes.md)
 - TikZ 模板册说明：[`tikz-template-pages.md`](./tikz-template-pages.md)
