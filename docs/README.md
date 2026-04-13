@@ -5,6 +5,7 @@
 - 这个模板整体怎么用
 - 类选项、主题和字体预设怎么选
 - 课程元信息、章节导读和本章导航怎么写
+- 研究笔记、开放问题和符号表怎么整理
 - 演示文稿怎么和讲义共享一套设计层
 - 图文绕排、页边批注怎么排
 - TikZ 模板页和预设样式怎么复用
@@ -25,19 +26,25 @@
 - 适合：想把模板从“排版模板”用成“课程讲义工作台”的人
 - 内容：课程元信息、章节导读页、本章导航、核心公式/误区/方法/考试关注块
 
-### 3. Beamer 课件支持
+### 3. 研究写作工作台
+
+- 文件：[`research-writing-guide.md`](./research-writing-guide.md)
+- 适合：想把模板用于长期研究笔记、读论文摘录、开放问题整理和符号表维护的人
+- 内容：研究元信息、条目导引、研究语义环境、符号表、开放问题表以及与正式论文类的边界
+
+### 4. Beamer 课件支持
 
 - 文件：[`beamer-guide.md`](./beamer-guide.md)
 - 适合：想在当前仓库上直接写课程汇报、专题报告或答辩式课件的人
 - 内容：`maki-beamer.cls` 的接口、`layout=` 版式选择、与 `maki-notes.sty` 的共享关系、可复用内容块、与书式讲义的差异
 
-### 4. 图文绕排与页边批注
+### 5. 图文绕排与页边批注
 
 - 文件：[`wrapfig-margin-notes.md`](./wrapfig-margin-notes.md)
 - 适合：正文中需要插图绕排、侧题注、页边批注的人
 - 内容：接口说明、推荐用法、图题选择、页边批注策略、常见排版注意事项
 
-### 5. TikZ 模板册与源码手册
+### 6. TikZ 模板册与源码手册
 
 - 文件：[`tikz-template-pages.md`](./tikz-template-pages.md)
 - 适合：需要直接复用结构图、球面/流形图、交换图、傅里叶图、流程图、时间轴、概率图、图论图的人
@@ -60,6 +67,7 @@
 
 - 改字体或配色预设：先看 [`template-guide.md`](./template-guide.md)
 - 改课程元信息、章节导读或本章导航：先看 [`workflow-guide.md`](./workflow-guide.md)
+- 改研究元信息、条目导引、符号表或开放问题表：先看 [`research-writing-guide.md`](./research-writing-guide.md)
 - 改 Beamer 的 `layout=` 版式或共享 `theme=` 配色：先看 [`beamer-guide.md`](./beamer-guide.md) 与 [`template-guide.md`](./template-guide.md)
 - 改图文绕排、侧题注或页边批注：先看 [`wrapfig-margin-notes.md`](./wrapfig-margin-notes.md)
 - 改 TikZ 结构图或新增模板页：先看 [`tikz-template-pages.md`](./tikz-template-pages.md)

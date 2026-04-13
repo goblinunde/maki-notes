@@ -31,6 +31,9 @@
 _minted-*/
 texput.log
 
+# Local planning artifacts
+/docs/superpowers/
+
 # Generated PDFs for this project
 /document.pdf
 /document2.pdf
@@ -42,7 +45,9 @@ texput.log
 /test-beamer.pdf
 /test-environments.pdf
 /test-graphics.pdf
+/test-research-workflow.pdf
 /test-tikz-styles.pdf
 /test-wrap-layout.pdf
+/test-workflow-guide.pdf
 /tikz-template-pages.pdf
 /tikz-example.pdf

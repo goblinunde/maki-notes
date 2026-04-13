@@ -1,0 +1,89 @@
+\documentclass[a4paper,12pt,oneside]{maki-notes}
+
+\renewcommand{\LectureNotesTitle}{Research Workflow Test}
+\renewcommand{\AuthorInfo}{Test Runner}
+
+\begin{document}
+\frontmatter
+\tableofcontents
+
+\mainmatter
+
+\SetResearchInfo{
+  project={紧算子与谱结构},
+  area={泛函分析},
+  author={Maki},
+  collaborators={A. B.},
+  status={working draft},
+  created={2026-04-13},
+  updated={2026-04-13},
+  tags={compact operator, spectrum}
+}
+
+\chapter{紧算子谱笔记}
+
+\SetEntryInfo{
+  topic={Riesz--Schauder 结构},
+  source={Reed--Simon I},
+  sourcekey={reed-simon-1},
+  updated={2026-04-13},
+  tags={compact operator, Fredholm},
+  objective={整理非零谱离散性的证明骨架}
+}
+
+\MakeEntryGuide{
+  summary={当前条目整理紧算子非零谱离散性的证明结构。},
+  dependencies={Fredholm alternative; compact perturbation},
+  targets={补全非零谱特征值有限重数部分},
+  blockers={resolvent 紧性的引理链还不够紧凑},
+  nextsteps={核对 Kato 的表述; 补 lemma 的引用位置}
+}
+
+\section{基础对象}
+
+\DeclareSymbol{$\sigma(T)$}{算子 $T$ 的谱}
+\DeclareSymbol{$\rho(T)$}{算子 $T$ 的 resolvent set}
+
+\begin{notation}[谱与 resolvent]
+记 $\sigma(T)$ 为算子 $T$ 的谱，$\rho(T)$ 为其 resolvent set。
+\end{notation}
+
+\begin{claim}[非零谱候选]
+\label{clm:nonzero-spectrum}
+若 $\lambda \neq 0$ 且 $\lambda \in \sigma(T)$，则它应表现出离散谱点的行为。
+\end{claim}
+
+\begin{remark}
+这一节只整理论证骨架，不追求最强一般性。
+\end{remark}
+
+\begin{proofsketch}
+先把 $(\lambda I - T)^{-1}$ 的分析拆成有限秩逼近与 Fredholm 备选两步。
+\end{proofsketch}
+
+\section{开放问题}
+
+\begin{question}[更短证明链]
+能否不调用最完整的 Fredholm alternative，而是直接证明非零谱只能由有限重特征值组成？
+\end{question}
+
+\begin{conjecture}[谱点有限重]
+对 Banach 空间上的紧算子，所有非零谱点都对应有限代数重数。
+\end{conjecture}
+
+\begin{idea}[从 resolvent 展开入手]
+先把 resolvent identity 写成可迭代的局部形式，再决定是否需要更强的 Fredholm machinery。
+\end{idea}
+
+\begin{obstacle}
+目前缺少一个足够短的引理链把有限秩逼近与局部可逆性拼起来。
+\end{obstacle}
+
+\begin{nextstep}
+把 Claim~\ref{clm:nonzero-spectrum} 改写为可独立引用的 lemma。
+\end{nextstep}
+
+\PrintSymbolIndex
+\PrintOpenProblemIndex
+
+\end{document}

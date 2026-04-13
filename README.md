@@ -37,6 +37,7 @@
 - 提供定义、定理、例题、真题、注释等讲义常用盒子环境
 - 提供课程元信息、整页章节导读与章内导航
 - 提供核心公式、方法提要、常见误区、考试关注等数学讲义专用块
+- 提供研究条目导引、问题/猜想/claim/proof sketch、符号表与开放问题表
 - 提供参考 `beamer-example/` 设计的 Beamer 主题页、目录页与章节导航
 - 提供左右图文绕排、页边侧题注与无边框页边批注
 - 集成 `TikZ`、`PGFPlots`、`tikz-3dplot` 等绘图能力
@@ -48,6 +49,7 @@
 
 - [`docs/template-guide.md`](./docs/template-guide.md)：模板总览、类选项、编译方式和维护建议
 - [`docs/workflow-guide.md`](./docs/workflow-guide.md)：课程元信息、章节导读、本章导航与数学讲义专用块
+- [`docs/research-writing-guide.md`](./docs/research-writing-guide.md)：研究笔记元信息、条目导引、研究环境、符号表与开放问题表
 - [`docs/beamer-guide.md`](./docs/beamer-guide.md)：`maki-beamer.cls` 的接口、共享层关系与演示文稿建议写法
 - [`docs/wrapfig-margin-notes.md`](./docs/wrapfig-margin-notes.md)：图文绕排、侧题注与页边批注
 - [`docs/tikz-template-pages.md`](./docs/tikz-template-pages.md)：TikZ 模板册、样式族、新增页面索引和源码手册入口
@@ -129,6 +131,49 @@ xelatex -interaction=nonstopmode -file-line-error
 ```
 
 详细写法见 [`docs/workflow-guide.md`](./docs/workflow-guide.md)。
+
+如果你希望把模板继续用成“数学研究笔记工作台”，可以写成：
+
+```tex
+\SetResearchInfo{
+  project={紧算子与谱结构},
+  area={泛函分析},
+  author={Maki},
+  status={working draft},
+  updated={2026-04-13},
+  tags={compact operator, spectrum}
+}
+
+\chapter{紧算子谱笔记}
+
+\SetEntryInfo{
+  topic={Riesz--Schauder 结构},
+  source={Reed--Simon I},
+  sourcekey={reed-simon-1},
+  updated={2026-04-13},
+  tags={compact operator, Fredholm},
+  objective={整理非零谱离散性的证明骨架}
+}
+
+\MakeEntryGuide{
+  summary={当前条目整理紧算子非零谱离散性的证明结构。},
+  dependencies={Fredholm alternative; compact perturbation},
+  targets={补全非零谱特征值有限重数部分},
+  blockers={resolvent 紧性的引理链还不够紧凑},
+  nextsteps={核对 Kato 的表述; 补 lemma 的引用位置}
+}
+
+\DeclareSymbol{$\sigma(T)$}{算子 $T$ 的谱}
+
+\begin{question}[更短证明链]
+能否不调用最完整的 Fredholm alternative, 直接说明非零谱只能由有限重特征值组成?
+\end{question}
+
+\PrintSymbolIndex
+\PrintOpenProblemIndex
+```
+
+详细写法见 [`docs/research-writing-guide.md`](./docs/research-writing-guide.md)。
 
 如果你要写演示文稿, 建议直接从 [`beamer-demo.tex`](./beamer-demo.tex) 开始：
 

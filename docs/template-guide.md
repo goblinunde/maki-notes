@@ -29,6 +29,7 @@
 - 中文课程汇报与专题演示文稿
 - 带大量示意图的课程笔记
 - 需要讲次导读页和章内导航的课程讲义
+- 长期研究笔记、论文前草稿与读论文摘录
 - 教学型技术说明文档
 - 需要统一风格的 LaTeX 模板仓库
 
@@ -168,7 +169,7 @@ make clean
 
 ## 公开能力概览
 
-模板当前最重要的公开能力可以分成 6 类：
+模板当前最重要的公开能力可以分成 7 类：
 
 ### 1. 文档结构和讲义环境
 
@@ -188,7 +189,21 @@ make clean
 
 - [`workflow-guide.md`](./workflow-guide.md)
 
-### 3. 图文绕排与页边批注
+### 3. 数学研究写作层
+
+- `\SetResearchInfo{...}`：项目、方向、作者、状态、更新时间、标签等研究元信息
+- `\SetEntryInfo{...}`：当前研究条目的主题、来源、标签、目标等信息
+- `\MakeEntryGuide{...}`：生成条目导引块，集中写摘要、依赖、障碍和下一步
+- `notation`、`question`、`conjecture`、`claim`：可编号的研究对象
+- `remark`、`proofsketch`、`idea`、`obstacle`、`nextstep`：面向研究过程的记录块
+- `\DeclareSymbol`、`\PrintSymbolIndex`：手动维护符号表
+- `\PrintOpenProblemIndex`：自动汇总 `question` / `conjecture`
+
+这部分单独文档见：
+
+- [`research-writing-guide.md`](./research-writing-guide.md)
+
+### 4. 图文绕排与页边批注
 
 - 左图右文、右图左文的自动绕排
 - 图下题注与页边侧题注
@@ -198,7 +213,7 @@ make clean
 
 - [`wrapfig-margin-notes.md`](./wrapfig-margin-notes.md)
 
-### 4. TikZ 语义样式族
+### 5. TikZ 语义样式族
 
 模板里的 TikZ 不是“每张图重新手写颜色”，而是有一层统一的语义样式：
 
@@ -217,7 +232,7 @@ make clean
 
 - [`tikz-template-pages.md`](./tikz-template-pages.md)
 
-### 5. Beamer 演示文稿入口
+### 6. Beamer 演示文稿入口
 
 - `maki-beamer.cls`：基于 `ctexbeamer` 的演示文稿入口
 - `beamerthememaki.sty`：参考 `beamer-example/` 设计的 title page、outline、headline、footline
@@ -230,7 +245,7 @@ make clean
 
 - [`beamer-guide.md`](./beamer-guide.md)
 
-### 6. GitHub 自动化
+### 7. GitHub 自动化
 
 仓库已经配置了 tag push 才触发的 release workflow，以及若干 GitHub Models 自动化流程。
 
@@ -249,6 +264,15 @@ make clean
 4. 需要插图绕排时看 [`wrapfig-margin-notes.md`](./wrapfig-margin-notes.md)  
 5. 需要结构图时从 [`tikz-template-pages.tex`](../tikz-template-pages.tex) 复制  
 6. 改完后用 `make example`、`make beamer-demo` 或 `make main` 检查输出
+
+### 作为研究笔记作者
+
+1. 先用 `\SetResearchInfo{...}` 写项目级上下文  
+2. 每个条目前用 `\SetEntryInfo{...}` 和 `\MakeEntryGuide{...}` 说明当前目标  
+3. 用 `question`、`conjecture`、`claim` 写可引用对象，用 `idea`、`obstacle`、`nextstep` 记录过程  
+4. 重要符号显式写进 `\DeclareSymbol`，在适当位置输出 `\PrintSymbolIndex`  
+5. 在章末、附录或全文末尾输出 `\PrintOpenProblemIndex` 回看未解决问题  
+6. 正式投稿前再决定是否切换到期刊 / 会议自己的类文件
 
 ### 作为模板维护者
 

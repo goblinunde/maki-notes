@@ -425,8 +425,73 @@ f(x)=\dfrac{e^x+e^{-x}}{2}=\cosh x.
 若平面 $\Pi$ 过点 $(1,-2,3)$ 且法向量为 $\bm n=(2,1,-1)$, 则平面方程可写为 \fillin[5cm].
 \end{exercise}
 
+\SetResearchInfo{
+	project={紧算子与谱结构},
+	area={泛函分析},
+	author={Maki Notes Example},
+	status={working draft},
+	updated={2026-04-13},
+	tags={compact operator, spectrum}
+}
+
+\chapter{研究笔记片段}
+
+\SetEntryInfo{
+	topic={Riesz--Schauder 结构},
+	source={Reed--Simon I},
+	sourcekey={reed-simon-1},
+	updated={2026-04-13},
+	tags={compact operator, Fredholm},
+	objective={整理非零谱离散性的证明骨架}
+}
+
+\MakeEntryGuide{
+	summary={这一条目只演示如何把研究对象、障碍和下一步写成结构化笔记。},
+	dependencies={Fredholm alternative; compact perturbation},
+	targets={补全非零谱特征值有限重数部分},
+	blockers={resolvent 紧性的引理链还不够短},
+	nextsteps={核对 Kato 的表述; 补 lemma 的引用位置}
+}
+
+\section{条目记录}
+
+\DeclareSymbol{$\sigma(T)$}{算子 $T$ 的谱}
+\DeclareSymbol{$\rho(T)$}{算子 $T$ 的 resolvent set}
+
+\begin{notation}[谱与 resolvent]
+记 $\sigma(T)$ 为算子 $T$ 的谱，$\rho(T)$ 为其 resolvent set。
+\end{notation}
+
+\begin{claim}[非零谱候选]
+\label{clm:example-nonzero-spectrum}
+若 $\lambda \neq 0$ 且 $\lambda \in \sigma(T)$, 则它应表现出离散谱点的行为。
+\end{claim}
+
+\begin{question}[更短证明链]
+能否不调用最完整的 Fredholm alternative，而是直接说明非零谱只能由有限重特征值组成？
+\end{question}
+
+\begin{proofsketch}
+先把有限秩逼近与局部可逆性拆成两步，再决定是否需要完整的 Fredholm machinery。
+\end{proofsketch}
+
+\begin{idea}
+从 resolvent identity 的局部展开入手，把主要工作压缩到更容易复用的引理上。
+\end{idea}
+
+\begin{obstacle}
+当前还缺一个足够短的引理链把 Claim~\ref{clm:example-nonzero-spectrum} 接到有限秩逼近上。
+\end{obstacle}
+
+\begin{nextstep}
+把上面的 claim 改写成独立 lemma，并明确其与谱投影论证的接口。
+\end{nextstep}
+
+\PrintSymbolIndex
+\PrintOpenProblemIndex
+
 \begin{note}
-到这里为止, 模板中的标题页、目录、页眉页脚、盒子环境、跨页例题、题型辅助命令、表格与图形模块都已经被真实内容覆盖了一遍. 如果你要继续扩展模板, 最稳妥的方式就是先在本文件中加一个新章节或新环境, 确认编译稳定后再向正式讲义迁移.
+到这里为止, 模板中的讲义工作流、研究条目导引、盒子环境、跨页例题、题型辅助命令、表格与图形模块都已经被真实内容覆盖了一遍. 如果你要继续扩展模板, 最稳妥的方式就是先在本文件中加一个新章节或新环境, 确认编译稳定后再向正式讲义或研究笔记迁移.
 \end{note}
 
 \end{document}

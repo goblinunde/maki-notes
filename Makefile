@@ -8,8 +8,8 @@ TIKZ_TEMPLATE_DOC := tikz-template-pages.tex
 TIKZ_EXAMPLE_DOC := tikz-example.tex
 TIKZ_EXAMPLE_LISTING := $(TIKZ_EXAMPLE_DOC:.tex=.listing)
 SMOKE_DOC := smoke-packaging.tex
-TEST_DOCS := tests/test-basic.tex tests/test-beamer.tex tests/test-environments.tex tests/test-graphics.tex tests/test-tikz-styles.tex tests/test-wrap-layout.tex tests/test-workflow-guide.tex
-TEST_NAMES := test-basic test-beamer test-environments test-graphics test-tikz-styles test-wrap-layout test-workflow-guide
+TEST_DOCS := tests/test-basic.tex tests/test-beamer.tex tests/test-environments.tex tests/test-graphics.tex tests/test-tikz-styles.tex tests/test-wrap-layout.tex tests/test-workflow-guide.tex tests/test-research-workflow.tex
+TEST_NAMES := test-basic test-beamer test-environments test-graphics test-tikz-styles test-wrap-layout test-workflow-guide test-research-workflow
 
 MAIN_PDF := $(MAIN_DOC:.tex=.pdf)
 EXAMPLE_PDF := $(EXAMPLE_DOC:.tex=.pdf)

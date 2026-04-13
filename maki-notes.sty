@@ -562,6 +562,15 @@
 \newcommand{\MakiCourseInfoLecture}{}
 \newcommand{\MakiCourseInfoDate}{}
 
+\newcommand{\MakiResearchInfoProject}{}
+\newcommand{\MakiResearchInfoArea}{}
+\newcommand{\MakiResearchInfoAuthor}{}
+\newcommand{\MakiResearchInfoCollaborators}{}
+\newcommand{\MakiResearchInfoStatus}{}
+\newcommand{\MakiResearchInfoCreated}{}
+\newcommand{\MakiResearchInfoUpdated}{}
+\newcommand{\MakiResearchInfoTags}{}
+
 \newcommand{\MakiPendingChapterSubtitle}{}
 \newcommand{\MakiPendingChapterLecture}{}
 \newcommand{\MakiPendingChapterDate}{}
@@ -586,6 +595,19 @@
 \newcommand{\MakiGuidePitfalls}{}
 \newcommand{\MakiGuideMethods}{}
 \newcommand{\MakiGuideExamFocus}{}
+
+\newcommand{\MakiEntryInfoTopic}{}
+\newcommand{\MakiEntryInfoSource}{}
+\newcommand{\MakiEntryInfoSourceKey}{}
+\newcommand{\MakiEntryInfoUpdated}{}
+\newcommand{\MakiEntryInfoTags}{}
+\newcommand{\MakiEntryInfoObjective}{}
+
+\newcommand{\MakiEntryGuideSummary}{}
+\newcommand{\MakiEntryGuideDependencies}{}
+\newcommand{\MakiEntryGuideTargets}{}
+\newcommand{\MakiEntryGuideBlockers}{}
+\newcommand{\MakiEntryGuideNextSteps}{}
 
 \newcommand{\MakiClearPendingChapterInfo}{%
 	\gdef\MakiPendingChapterSubtitle{}%
@@ -617,15 +639,28 @@
 }
 
 \newcommand{\MakiHeaderLeftText}{%
-	\ifdefempty{\MakiCourseInfoCourse}{\LectureNotesTitle}{\MakiCourseInfoCourse}%
+	\ifdefempty{\MakiResearchInfoProject}{%
+		\ifdefempty{\MakiCourseInfoCourse}{\LectureNotesTitle}{\MakiCourseInfoCourse}%
+	}{%
+		\MakiResearchInfoProject
+	}%
 }
 
 \newcommand{\MakiHeaderRightText}{%
-	\ifdefempty{\MakiEffectiveChapterLecture}{%
-		\ifdefempty{\MakiEffectiveChapterDate}{\AuthorInfo}{\MakiEffectiveChapterDate}%
+	\ifdefempty{\MakiResearchInfoStatus}{%
+		\ifdefempty{\MakiResearchInfoUpdated}{%
+			\ifdefempty{\MakiEffectiveChapterLecture}{%
+				\ifdefempty{\MakiEffectiveChapterDate}{\AuthorInfo}{\MakiEffectiveChapterDate}%
+			}{%
+				\MakiEffectiveChapterLecture
+				\ifdefempty{\MakiEffectiveChapterDate}{}{ \quad \MakiEffectiveChapterDate}%
+			}%
+		}{%
+			\MakiResearchInfoUpdated
+		}%
 	}{%
-		\MakiEffectiveChapterLecture
-		\ifdefempty{\MakiEffectiveChapterDate}{}{ \quad \MakiEffectiveChapterDate}%
+		\MakiResearchInfoStatus
+		\ifdefempty{\MakiResearchInfoUpdated}{}{ \quad \MakiResearchInfoUpdated}%
 	}%
 }
 
@@ -637,6 +672,23 @@
 	\gdef\MakiGuideExamFocus{}%
 }
 
+\newcommand{\MakiClearEntryInfo}{%
+	\gdef\MakiEntryInfoTopic{}%
+	\gdef\MakiEntryInfoSource{}%
+	\gdef\MakiEntryInfoSourceKey{}%
+	\gdef\MakiEntryInfoUpdated{}%
+	\gdef\MakiEntryInfoTags{}%
+	\gdef\MakiEntryInfoObjective{}%
+}
+
+\newcommand{\MakiClearEntryGuideInfo}{%
+	\gdef\MakiEntryGuideSummary{}%
+	\gdef\MakiEntryGuideDependencies{}%
+	\gdef\MakiEntryGuideTargets{}%
+	\gdef\MakiEntryGuideBlockers{}%
+	\gdef\MakiEntryGuideNextSteps{}%
+}
+
 \pgfkeys{
 	/maki/course/.is family,
 	/maki/course,
@@ -646,6 +698,19 @@
 	instructor/.store in=\MakiCourseInfoInstructor,
 	lecture/.store in=\MakiCourseInfoLecture,
 	date/.store in=\MakiCourseInfoDate
+}
+
+\pgfkeys{
+	/maki/research/.is family,
+	/maki/research,
+	project/.store in=\MakiResearchInfoProject,
+	area/.store in=\MakiResearchInfoArea,
+	author/.store in=\MakiResearchInfoAuthor,
+	collaborators/.store in=\MakiResearchInfoCollaborators,
+	status/.store in=\MakiResearchInfoStatus,
+	created/.store in=\MakiResearchInfoCreated,
+	updated/.store in=\MakiResearchInfoUpdated,
+	tags/.store in=\MakiResearchInfoTags
 }
 
 \pgfkeys{
@@ -669,14 +734,44 @@
 	examfocus/.store in=\MakiGuideExamFocus
 }
 
+\pgfkeys{
+	/maki/entry/.is family,
+	/maki/entry,
+	topic/.store in=\MakiEntryInfoTopic,
+	source/.store in=\MakiEntryInfoSource,
+	sourcekey/.store in=\MakiEntryInfoSourceKey,
+	updated/.store in=\MakiEntryInfoUpdated,
+	tags/.store in=\MakiEntryInfoTags,
+	objective/.store in=\MakiEntryInfoObjective
+}
+
+\pgfkeys{
+	/maki/entryguide/.is family,
+	/maki/entryguide,
+	summary/.store in=\MakiEntryGuideSummary,
+	dependencies/.store in=\MakiEntryGuideDependencies,
+	targets/.store in=\MakiEntryGuideTargets,
+	blockers/.store in=\MakiEntryGuideBlockers,
+	nextsteps/.store in=\MakiEntryGuideNextSteps
+}
+
 \NewDocumentCommand{\SetCourseInfo}{m}{%
 	\pgfkeys{/maki/course, #1}%
 	\MakiResolveEffectiveChapterInfo
 }
 
+\NewDocumentCommand{\SetResearchInfo}{m}{%
+	\pgfkeys{/maki/research, #1}%
+}
+
 \NewDocumentCommand{\SetChapterInfo}{m}{%
 	\MakiClearPendingChapterInfo
 	\pgfkeys{/maki/chapter, #1}%
+}
+
+\NewDocumentCommand{\SetEntryInfo}{m}{%
+	\MakiClearEntryInfo
+	\pgfkeys{/maki/entry, #1}%
 }
 
 \tikzset{
@@ -1650,6 +1745,77 @@
 	}
 \fi
 
+	\newcommand{\maki@entryguideinforow}[2]{%
+		\ifdefempty{#2}{}{%
+			{\color{LogicColor}\bfseries #1}\hspace{0.6em}#2\par
+		}%
+	}
+
+	\newcommand{\maki@entryguidefieldbox}[2]{%
+		\ifdefempty{#2}{}{%
+			\begin{tcolorbox}[maki workflow card,title={#1}]
+				#2
+			\end{tcolorbox}%
+		}%
+	}
+
+	\newcommand{\maki@entryguidetitle}{%
+		\ifdefempty{\MakiEntryInfoTopic}{研究条目}{\MakiEntryInfoTopic}%
+	}
+
+	\newcommand{\maki@entryguidesource}{%
+		\ifdefempty{\MakiEntryInfoSource}{%
+			\ifdefempty{\MakiEntryInfoSourceKey}{}{\texttt{\MakiEntryInfoSourceKey}}%
+		}{%
+			\MakiEntryInfoSource
+			\ifdefempty{\MakiEntryInfoSourceKey}{}{ \quad \texttt{\MakiEntryInfoSourceKey}}%
+		}%
+	}
+
+	\newcommand{\maki@entryguidepeople}{%
+		\ifdefempty{\MakiResearchInfoAuthor}{%
+			\MakiResearchInfoCollaborators
+		}{%
+			\MakiResearchInfoAuthor
+			\ifdefempty{\MakiResearchInfoCollaborators}{}{ \quad / \quad \MakiResearchInfoCollaborators}%
+		}%
+	}
+
+	\newcommand{\maki@entryguideupdated}{%
+		\ifdefempty{\MakiEntryInfoUpdated}{\MakiResearchInfoUpdated}{\MakiEntryInfoUpdated}%
+	}
+
+	\newcommand{\maki@entryguidetags}{%
+		\ifdefempty{\MakiEntryInfoTags}{%
+			\MakiResearchInfoTags
+		}{%
+			\MakiEntryInfoTags
+			\ifdefempty{\MakiResearchInfoTags}{}{ \quad / \quad \MakiResearchInfoTags}%
+		}%
+	}
+
+	\NewDocumentCommand{\MakeEntryGuide}{m}{%
+		\MakiClearEntryGuideInfo
+		\pgfkeys{/maki/entryguide, #1}%
+		\begin{tcolorbox}[maki workflow hero,title={\maki@entryguidetitle}]
+			\maki@entryguideinforow{项目}{\MakiResearchInfoProject}
+			\maki@entryguideinforow{方向}{\MakiResearchInfoArea}
+			\maki@entryguideinforow{来源}{\maki@entryguidesource}
+			\maki@entryguideinforow{作者}{\maki@entryguidepeople}
+			\maki@entryguideinforow{状态}{\MakiResearchInfoStatus}
+			\maki@entryguideinforow{更新}{\maki@entryguideupdated}
+			\maki@entryguideinforow{标签}{\maki@entryguidetags}
+		\end{tcolorbox}
+		\begin{tcbraster}[raster columns=2,raster column skip=6mm,raster row skip=6mm]
+			\maki@entryguidefieldbox{条目目标}{\MakiEntryInfoObjective}
+			\maki@entryguidefieldbox{摘要}{\MakiEntryGuideSummary}
+			\maki@entryguidefieldbox{依赖}{\MakiEntryGuideDependencies}
+			\maki@entryguidefieldbox{目标}{\MakiEntryGuideTargets}
+			\maki@entryguidefieldbox{障碍}{\MakiEntryGuideBlockers}
+			\maki@entryguidefieldbox{下一步}{\MakiEntryGuideNextSteps}
+		\end{tcbraster}
+	}
+
 	\newcommand{\maki@marginnoteformatright}[1]{%
 		\begin{tabular}{@{}p{\MakiMarginRuleWidth}@{\hspace{\MakiMarginNoteGap}}>{\raggedright\arraybackslash}p{\dimexpr\marginparwidth-\MakiMarginRuleWidth-\MakiMarginNoteGap\relax}@{}}%
 			{\color{LogicColor}\vrule width \MakiMarginRuleWidth} & #1
@@ -1856,6 +2022,60 @@
 		colback=ExBg,
 		colbacktitle=ExColor,
 		coltitle=ExColor
+	},
+	maki notation box/.style={
+		maki workflow block,
+		colback=DefBg,
+		colbacktitle=DefColor,
+		coltitle=DefColor
+	},
+	maki question box/.style={
+		maki workflow block,
+		colback=GeometryBg,
+		colbacktitle=GeometryColor,
+		coltitle=GeometryColor
+	},
+	maki conjecture box/.style={
+		maki workflow block,
+		colback=TopologyBg,
+		colbacktitle=NoteColor,
+		coltitle=NoteColor
+	},
+	maki claim box/.style={
+		maki workflow block,
+		colback=LogicBg,
+		colbacktitle=LogicColor,
+		coltitle=LogicColor
+	},
+	maki remark box/.style={
+		maki workflow block,
+		colback=white,
+		colbacktitle=MainText,
+		coltitle=MainText
+	},
+	maki proof sketch box/.style={
+		maki workflow block,
+		colback=LogicBg,
+		colbacktitle=LogicColor,
+		coltitle=LogicColor
+	},
+	maki idea box/.style={
+		maki workflow block,
+		colback=TopologyBg,
+		colbacktitle=NoteColor,
+		coltitle=NoteColor
+	},
+	maki obstacle box/.style={
+		maki workflow block,
+		colback=ExBg,
+		colbacktitle=ExColor,
+		coltitle=ExColor
+	},
+	maki nextstep box/.style={
+		maki workflow block,
+		colback=DefBg,
+		colbacktitle=DefColor,
+		coltitle=DefColor
 	}
 }
 
@@ -1952,6 +2172,90 @@
 	\newenvironment{longrealexam}[1][]{\begin{longrealexamBox}{#1}}{\end{longrealexamBox}}
 \fi
 
+\makeatletter
+\newcounter{makiSymbolEntry}
+\newcounter{makiOpenProblemEntry}
+
+\newcommand{\maki@symbolfield}[2]{%
+	\csname maki@symbol@#1@#2\endcsname
+}
+
+\newcommand{\maki@openproblemfield}[2]{%
+	\csname maki@openproblem@#1@#2\endcsname
+}
+
+\newcommand{\maki@registersymbol}[2]{%
+	\stepcounter{makiSymbolEntry}%
+	\expandafter\gdef\csname maki@symbol@\arabic{makiSymbolEntry}@symbol\endcsname{#1}%
+	\expandafter\gdef\csname maki@symbol@\arabic{makiSymbolEntry}@desc\endcsname{#2}%
+}
+
+\newcommand{\maki@registeropenproblem}[3]{%
+	\stepcounter{makiOpenProblemEntry}%
+	\expandafter\gdef\csname maki@openproblem@\arabic{makiOpenProblemEntry}@type\endcsname{#1}%
+	\expandafter\xdef\csname maki@openproblem@\arabic{makiOpenProblemEntry}@number\endcsname{#2}%
+	\expandafter\gdef\csname maki@openproblem@\arabic{makiOpenProblemEntry}@title\endcsname{#3}%
+	\expandafter\xdef\csname maki@openproblem@\arabic{makiOpenProblemEntry}@page\endcsname{\thepage}%
+}
+
+\newcommand{\DeclareSymbol}[2]{%
+	\maki@registersymbol{#1}{#2}%
+}
+
+\ifMakiBeamerMode
+	\newcounter{notation}[section]
+	\newcounter{question}[section]
+	\newcounter{conjecture}[section]
+	\newcounter{claim}[section]
+	\renewcommand{\thenotation}{\thesection.\arabic{notation}}
+	\renewcommand{\thequestion}{\thesection.\arabic{question}}
+	\renewcommand{\theconjecture}{\thesection.\arabic{conjecture}}
+	\renewcommand{\theclaim}{\thesection.\arabic{claim}}
+\else
+	\newcounter{notation}[chapter]
+	\newcounter{question}[chapter]
+	\newcounter{conjecture}[chapter]
+	\newcounter{claim}[chapter]
+	\renewcommand{\thenotation}{\thechapter.\arabic{notation}}
+	\renewcommand{\thequestion}{\thechapter.\arabic{question}}
+	\renewcommand{\theconjecture}{\thechapter.\arabic{conjecture}}
+	\renewcommand{\theclaim}{\thechapter.\arabic{claim}}
+\fi
+
+\NewDocumentEnvironment{notation}{o +b}{%
+	\refstepcounter{notation}%
+	\begin{tcolorbox}[maki notation box,title={记号 \thenotation\IfNoValueF{#1}{（#1）}}]
+		#2
+	\end{tcolorbox}
+}{}
+
+\NewDocumentEnvironment{question}{o +b}{%
+	\refstepcounter{question}%
+	\IfNoValueTF{#1}
+		{\maki@registeropenproblem{问题}{\thequestion}{}}
+		{\maki@registeropenproblem{问题}{\thequestion}{#1}}%
+	\begin{tcolorbox}[maki question box,title={问题 \thequestion\IfNoValueF{#1}{（#1）}}]
+		#2
+	\end{tcolorbox}
+}{}
+
+\NewDocumentEnvironment{conjecture}{o +b}{%
+	\refstepcounter{conjecture}%
+	\IfNoValueTF{#1}
+		{\maki@registeropenproblem{猜想}{\theconjecture}{}}
+		{\maki@registeropenproblem{猜想}{\theconjecture}{#1}}%
+	\begin{tcolorbox}[maki conjecture box,title={猜想 \theconjecture\IfNoValueF{#1}{（#1）}}]
+		#2
+	\end{tcolorbox}
+}{}
+
+\NewDocumentEnvironment{claim}{o +b}{%
+	\refstepcounter{claim}%
+	\begin{tcolorbox}[maki claim box,title={断言 \theclaim\IfNoValueF{#1}{（#1）}}]
+		#2
+	\end{tcolorbox}
+}{}
+
 \NewDocumentEnvironment{keyformula}{o +b}{%
 	\begin{tcolorbox}[maki keyformula box,title={\IfNoValueTF{#1}{核心公式}{#1}}]
 		#2
@@ -1975,6 +2279,81 @@
 		#2
 	\end{tcolorbox}
 }{}
+
+\NewDocumentEnvironment{remark}{o +b}{%
+	\begin{tcolorbox}[maki remark box,title={\IfNoValueTF{#1}{备注}{#1}}]
+		#2
+	\end{tcolorbox}
+}{}
+
+\NewDocumentEnvironment{proofsketch}{o +b}{%
+	\begin{tcolorbox}[maki proof sketch box,title={\IfNoValueTF{#1}{证明思路}{#1}}]
+		#2
+	\end{tcolorbox}
+}{}
+
+\NewDocumentEnvironment{idea}{o +b}{%
+	\begin{tcolorbox}[maki idea box,title={\IfNoValueTF{#1}{想法}{#1}}]
+		#2
+	\end{tcolorbox}
+}{}
+
+\NewDocumentEnvironment{obstacle}{o +b}{%
+	\begin{tcolorbox}[maki obstacle box,title={\IfNoValueTF{#1}{障碍}{#1}}]
+		#2
+	\end{tcolorbox}
+}{}
+
+\NewDocumentEnvironment{nextstep}{o +b}{%
+	\begin{tcolorbox}[maki nextstep box,title={\IfNoValueTF{#1}{下一步}{#1}}]
+		#2
+	\end{tcolorbox}
+}{}
+
+\newcommand{\maki@printsymbolentry}[1]{%
+	\par\noindent
+	{\color{DefColor}\bfseries \maki@symbolfield{#1}{symbol}}\hspace{0.8em}%
+	\maki@symbolfield{#1}{desc}\par
+}
+
+\newcommand{\maki@printopenproblementry}[1]{%
+	\begingroup
+		\edef\maki@openproblemtitle{\maki@openproblemfield{#1}{title}}%
+		\par\noindent
+		{\color{LogicColor}\bfseries \maki@openproblemfield{#1}{type}\ \maki@openproblemfield{#1}{number}}%
+		\ifstrempty{\maki@openproblemtitle}{}{（\maki@openproblemtitle）}%
+		\hfill{\footnotesize\color{MainText!62} 第 \maki@openproblemfield{#1}{page} 页}\par
+	\endgroup
+}
+
+\newcommand{\PrintSymbolIndex}{%
+	\begin{tcolorbox}[maki workflow card,title={符号表}]
+		\ifnum\value{makiSymbolEntry}=0
+			暂无已登记符号。%
+		\else
+			\@tempcnta=1\relax
+			\@whilenum\@tempcnta<\numexpr\value{makiSymbolEntry}+1\relax\do{%
+				\maki@printsymbolentry{\number\@tempcnta}%
+				\advance\@tempcnta\@ne
+			}%
+		\fi
+	\end{tcolorbox}
+}
+
+\newcommand{\PrintOpenProblemIndex}{%
+	\begin{tcolorbox}[maki workflow card,title={开放问题表}]
+		\ifnum\value{makiOpenProblemEntry}=0
+			暂无开放问题。%
+		\else
+			\@tempcnta=1\relax
+			\@whilenum\@tempcnta<\numexpr\value{makiOpenProblemEntry}+1\relax\do{%
+				\maki@printopenproblementry{\number\@tempcnta}%
+				\advance\@tempcnta\@ne
+			}%
+		\fi
+	\end{tcolorbox}
+}
+\makeatother
 
 \ifMakiBeamerMode\else
 	\newenvironment{note}{%
