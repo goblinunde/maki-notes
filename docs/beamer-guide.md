@@ -21,13 +21,16 @@
 
 这套 Beamer 主题参考了仓库中的 [`beamer-example/`](../beamer-example) 设计, 尤其是 Durham 风格的 title page、outline page 和顶部导航思路；但最终实现改成了 `maki-notes` 自己的语义色位, 因此会自动跟随 `theme=...` 切换。
 
+当前默认版式就是 `layout=durham`。在此基础上, `maki-beamer` 还额外提供了更克制的 `layout=minimal` 和更强调导航条的 `layout=splitbar`。
+
 ## 快速开始
 
 ```tex
 \documentclass[
   aspectratio=169,
   fontpreset=common,
-  theme=graphite
+  theme=cobalt,
+  layout=splitbar
 ]{maki-beamer}
 
 \title{科学机器学习讲义}
@@ -61,12 +64,14 @@
 ### 与 `maki-notes` 共享的选项
 
 - `fontpreset=common|auto|windows|macos|linux`
-- `theme=default|ocean|forest|graphite|amber|berry|sandstone`
+- `theme=default|ocean|forest|graphite|amber|berry|sandstone|cobalt|sage|ruby|midnight`
 
 这两类选项仍然由 [`maki-notes.sty`](../maki-notes.sty) 解释, 所以讲义与课件会共享同一套字体策略与语义色位。
 
 ### `maki-beamer` 额外支持的选项
 
+- `layout=durham|minimal|splitbar`
+  只控制 Beamer 的版式层, 包括标题页、目录页、页眉页脚和导航条。
 - `plain`
   关闭主题页眉和页脚。
 - `invert`
@@ -79,6 +84,26 @@
 - `aspectratio=169`
 - `11pt`
 - `handout`
+
+## `theme` 与 `layout` 的分工
+
+- `theme=...`
+  管共享配色。讲义和 Beamer 会一起切换 `LogicColor`、`ExColor`、`NoteColor` 等语义色位。
+- `layout=...`
+  只管 Beamer 版式。你可以在不改配色的前提下切换标题页、目录页、导航条和页脚结构。
+
+推荐把它们分开理解：先用 `theme=` 选课程视觉方向, 再用 `layout=` 选演示文稿的版式节奏。
+
+## Beamer 版式
+
+- `durham`
+  默认版式。最接近 `beamer-example/` 参考设计, 标题页有右下角主题色三角区, 顶部导航也更完整。
+- `minimal`
+  更克制的页面骨架, 适合数学推导页较多、希望把视觉干扰压低的课件。
+- `splitbar`
+  强调顶部导航和分栏式信息组织, 更适合课程讲解、结构图页和教学型专题报告。
+
+如果你不显式写 `layout=...`, 模板会自动使用 `durham`。
 
 ## 推荐接口
 

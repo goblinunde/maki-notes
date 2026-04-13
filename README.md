@@ -32,6 +32,7 @@
 
 - 基于 `ctexbook` 的中文讲义排版入口
 - 基于 `ctexbeamer` 的中文课件排版入口
+- Beamer 端把共享配色 `theme=` 和版式选择 `layout=` 分开开放
 - 内置封面、章节标题、页眉页脚与数学环境样式
 - 提供定义、定理、例题、真题、注释等讲义常用盒子环境
 - 提供课程元信息、整页章节导读与章内导航
@@ -135,7 +136,8 @@ xelatex -interaction=nonstopmode -file-line-error
 \documentclass[
   aspectratio=169,
   fontpreset=common,
-  theme=graphite
+  theme=cobalt,
+  layout=splitbar
 ]{maki-beamer}
 
 \title{科学机器学习讲义}
@@ -166,12 +168,16 @@ xelatex -interaction=nonstopmode -file-line-error
 模板现在支持两组跨 notes / beamer 共享的类选项：
 
 - `fontpreset=common|auto|windows|macos|linux`
-- `theme=default|ocean|forest|graphite|amber|berry|sandstone`
+- `theme=default|ocean|forest|graphite|amber|berry|sandstone|cobalt|sage|ruby|midnight`
 
 默认值是：
 
 - `fontpreset=common`
 - `theme=default`
+
+如果你在用 `maki-beamer`，还可以额外使用：
+
+- `layout=durham|minimal|splitbar`
 
 推荐写法：
 
@@ -204,8 +210,20 @@ xelatex -interaction=nonstopmode -file-line-error
 - `amber`：偏琥珀与蓝灰，适合讲义封面和流程图
 - `berry`：偏莓红与靛灰，层次更强但仍保持克制
 - `sandstone`：偏砂岩与石板灰，更接近纸面笔记气质
+- `cobalt`：偏钴蓝与青绿，更适合科学计算、机器学习和课程汇报
+- `sage`：偏鼠尾草绿与灰蓝，适合推导页较多的稳态讲义
+- `ruby`：偏暗红与蓝灰，层次更强，适合专题报告和强调性页面
+- `midnight`：偏深蓝灰与冷色强调，适合正式汇报和结构图页
 
 主题切换不会改变公开接口，只会改写现有的语义色位，例如 `LogicColor`、`DefColor`、`ExColor`、`NoteColor` 等。因此现有环境、TikZ 样式和页边批注会一起换色，但代码写法不需要变。
+
+### `layout`
+
+- `durham`：默认版式，最接近 `beamer-example/` 参考设计
+- `minimal`：减少装饰条和导航干扰，更适合内容密集型数学课件
+- `splitbar`：强调顶部导航与信息分栏，更适合课程讲授和结构图页
+
+可以把它理解成：`theme=` 管配色，`layout=` 管 Beamer 的页面骨架。
 
 ### 回退与报错
 

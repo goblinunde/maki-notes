@@ -430,11 +430,91 @@
 	\definecolor{MainText}{RGB}{32, 29, 26}%
 }
 
+\newcommand{\makiapplythemecobalt}{%
+	\renewcommand{\MakiResolvedTheme}{cobalt}%
+	\definecolor{LogicColor}{RGB}{58, 88, 160}%
+	\definecolor{LogicBg}{RGB}{239, 243, 252}%
+	\definecolor{DefColor}{RGB}{170, 117, 63}%
+	\definecolor{DefBg}{RGB}{249, 245, 238}%
+	\definecolor{ExColor}{RGB}{49, 120, 173}%
+	\definecolor{ExBg}{RGB}{236, 244, 252}%
+	\definecolor{NoteColor}{RGB}{58, 130, 116}%
+	\definecolor{NNInputColor}{RGB}{70, 146, 122}%
+	\definecolor{NNHiddenColor}{RGB}{74, 104, 180}%
+	\definecolor{NNOutputColor}{RGB}{186, 92, 78}%
+	\definecolor{NNTensorColor}{RGB}{192, 150, 79}%
+	\definecolor{GeometryColor}{RGB}{53, 114, 176}%
+	\definecolor{GeometryBg}{RGB}{236, 244, 253}%
+	\definecolor{TopologyColor}{RGB}{56, 124, 121}%
+	\definecolor{TopologyBg}{RGB}{237, 246, 245}%
+	\definecolor{MainText}{RGB}{22, 27, 38}%
+}
+
+\newcommand{\makiapplythemesage}{%
+	\renewcommand{\MakiResolvedTheme}{sage}%
+	\definecolor{LogicColor}{RGB}{90, 109, 96}%
+	\definecolor{LogicBg}{RGB}{242, 246, 243}%
+	\definecolor{DefColor}{RGB}{174, 119, 72}%
+	\definecolor{DefBg}{RGB}{250, 244, 239}%
+	\definecolor{ExColor}{RGB}{80, 109, 143}%
+	\definecolor{ExBg}{RGB}{239, 243, 249}%
+	\definecolor{NoteColor}{RGB}{76, 128, 109}%
+	\definecolor{NNInputColor}{RGB}{94, 145, 117}%
+	\definecolor{NNHiddenColor}{RGB}{94, 116, 147}%
+	\definecolor{NNOutputColor}{RGB}{178, 104, 81}%
+	\definecolor{NNTensorColor}{RGB}{182, 147, 92}%
+	\definecolor{GeometryColor}{RGB}{73, 111, 149}%
+	\definecolor{GeometryBg}{RGB}{238, 243, 249}%
+	\definecolor{TopologyColor}{RGB}{74, 124, 113}%
+	\definecolor{TopologyBg}{RGB}{239, 246, 243}%
+	\definecolor{MainText}{RGB}{27, 31, 28}%
+}
+
+\newcommand{\makiapplythemeruby}{%
+	\renewcommand{\MakiResolvedTheme}{ruby}%
+	\definecolor{LogicColor}{RGB}{166, 72, 86}%
+	\definecolor{LogicBg}{RGB}{251, 240, 243}%
+	\definecolor{DefColor}{RGB}{184, 116, 73}%
+	\definecolor{DefBg}{RGB}{250, 243, 239}%
+	\definecolor{ExColor}{RGB}{78, 104, 160}%
+	\definecolor{ExBg}{RGB}{239, 243, 251}%
+	\definecolor{NoteColor}{RGB}{72, 123, 118}%
+	\definecolor{NNInputColor}{RGB}{88, 138, 124}%
+	\definecolor{NNHiddenColor}{RGB}{94, 104, 154}%
+	\definecolor{NNOutputColor}{RGB}{181, 86, 96}%
+	\definecolor{NNTensorColor}{RGB}{190, 145, 85}%
+	\definecolor{GeometryColor}{RGB}{74, 111, 160}%
+	\definecolor{GeometryBg}{RGB}{237, 242, 251}%
+	\definecolor{TopologyColor}{RGB}{72, 120, 121}%
+	\definecolor{TopologyBg}{RGB}{239, 246, 246}%
+	\definecolor{MainText}{RGB}{32, 25, 31}%
+}
+
+\newcommand{\makiapplythememidnight}{%
+	\renewcommand{\MakiResolvedTheme}{midnight}%
+	\definecolor{LogicColor}{RGB}{72, 92, 148}%
+	\definecolor{LogicBg}{RGB}{238, 242, 251}%
+	\definecolor{DefColor}{RGB}{168, 119, 72}%
+	\definecolor{DefBg}{RGB}{248, 244, 238}%
+	\definecolor{ExColor}{RGB}{58, 126, 168}%
+	\definecolor{ExBg}{RGB}{236, 244, 251}%
+	\definecolor{NoteColor}{RGB}{61, 124, 115}%
+	\definecolor{NNInputColor}{RGB}{72, 138, 118}%
+	\definecolor{NNHiddenColor}{RGB}{76, 97, 161}%
+	\definecolor{NNOutputColor}{RGB}{177, 94, 79}%
+	\definecolor{NNTensorColor}{RGB}{182, 145, 84}%
+	\definecolor{GeometryColor}{RGB}{63, 112, 171}%
+	\definecolor{GeometryBg}{RGB}{236, 243, 252}%
+	\definecolor{TopologyColor}{RGB}{64, 118, 118}%
+	\definecolor{TopologyBg}{RGB}{238, 245, 245}%
+	\definecolor{MainText}{RGB}{21, 24, 32}%
+}
+
 \newcommand{\makiapplytheme}{%
 	\ifcsname makiapplytheme\MakiTheme\endcsname
 		\csname makiapplytheme\MakiTheme\endcsname
 	\else
-		\PackageError{maki-notes}{Unsupported theme `\MakiTheme'}{Valid values are default, ocean, forest, graphite, amber, berry, sandstone. Falling back to `default'.}%
+		\PackageError{maki-notes}{Unsupported theme `\MakiTheme'}{Valid values are default, ocean, forest, graphite, amber, berry, sandstone, cobalt, sage, ruby, midnight. Falling back to `default'.}%
 		\makiapplythemedefault
 	\fi
 }

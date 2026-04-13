@@ -90,7 +90,11 @@ make clean
 模板当前主要开放两类跨 notes / beamer 共享的类选项：
 
 - `fontpreset=common|auto|windows|macos|linux`
-- `theme=default|ocean|forest|graphite|amber|berry|sandstone`
+- `theme=default|ocean|forest|graphite|amber|berry|sandstone|cobalt|sage|ruby|midnight`
+
+如果你使用的是 `maki-beamer`，还可以额外指定：
+
+- `layout=durham|minimal|splitbar`
 
 最常见写法：
 
@@ -135,8 +139,27 @@ make clean
   偏莓红与靛灰，层次更明显。
 - `sandstone`
   偏砂岩和石板灰，更接近纸面笔记感。
+- `cobalt`
+  偏钴蓝与青绿，适合科学计算、机器学习和课程汇报。
+- `sage`
+  偏鼠尾草绿与灰蓝，更稳，更适合推导页较多的内容。
+- `ruby`
+  偏暗红与蓝灰，适合强调性更强的专题报告。
+- `midnight`
+  偏深蓝灰与冷色强调，适合正式汇报和结构图页。
 
 这些主题不会改变公开接口，只会改写语义色位。所以你现有的盒子环境、TikZ 图和页边批注在换主题后都会一起换色。
+
+### Beamer 版式
+
+- `durham`
+  默认版式，延续 `beamer-example/` 参考设计的标题页和导航逻辑。
+- `minimal`
+  更克制，弱化装饰条，更强调正文内容。
+- `splitbar`
+  更强调导航条和分栏式信息组织，适合教学型汇报。
+
+推荐把接口理解成两层：`theme=` 负责共享配色，`layout=` 负责 Beamer 版式。
 
 ### 错误与回退
 
@@ -198,6 +221,7 @@ make clean
 
 - `maki-beamer.cls`：基于 `ctexbeamer` 的演示文稿入口
 - `beamerthememaki.sty`：参考 `beamer-example/` 设计的 title page、outline、headline、footline
+- `maki-beamer` 公开 `layout=durham|minimal|splitbar`，把版式层和共享配色层分开了
 - `\MakeTitlePage`、`\makeoutline[标题]`：稳定入口
 - 继续复用 `keyformula`、`methodnote`、`pitfall`、`examfocus`
 - 继续复用 Transformer / PINN / fPINN 等 TikZ 语义样式

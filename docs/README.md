@@ -29,7 +29,7 @@
 
 - 文件：[`beamer-guide.md`](./beamer-guide.md)
 - 适合：想在当前仓库上直接写课程汇报、专题报告或答辩式课件的人
-- 内容：`maki-beamer.cls` 的接口、与 `maki-notes.sty` 的共享关系、可复用内容块、与书式讲义的差异
+- 内容：`maki-beamer.cls` 的接口、`layout=` 版式选择、与 `maki-notes.sty` 的共享关系、可复用内容块、与书式讲义的差异
 
 ### 4. 图文绕排与页边批注
 
@@ -60,7 +60,7 @@
 
 - 改字体或配色预设：先看 [`template-guide.md`](./template-guide.md)
 - 改课程元信息、章节导读或本章导航：先看 [`workflow-guide.md`](./workflow-guide.md)
-- 改 Beamer 课件入口、主题页或目录页：先看 [`beamer-guide.md`](./beamer-guide.md)
+- 改 Beamer 的 `layout=` 版式或共享 `theme=` 配色：先看 [`beamer-guide.md`](./beamer-guide.md) 与 [`template-guide.md`](./template-guide.md)
 - 改图文绕排、侧题注或页边批注：先看 [`wrapfig-margin-notes.md`](./wrapfig-margin-notes.md)
 - 改 TikZ 结构图或新增模板页：先看 [`tikz-template-pages.md`](./tikz-template-pages.md)
 - 按样式名查源码和最小可复制图例：先看 [`tikz-example.tex`](../tikz-example.tex)

@@ -4,12 +4,14 @@
 \newif\ifMakiBeamerAccessibility
 \newif\ifMakiBeamerPlain
 \newif\ifMakiBeamerInvert
+\providecommand{\MakiBeamerLayout}{durham}
 \MakiBeamerAccessibilityfalse
 \MakiBeamerPlainfalse
 \MakiBeamerInvertfalse
 \DeclareOptionBeamer{accessibility}{\MakiBeamerAccessibilitytrue}
 \DeclareOptionBeamer{plain}{\MakiBeamerPlaintrue}
 \DeclareOptionBeamer{invert}{\MakiBeamerInverttrue}
+\DeclareOptionBeamer{layout}{\renewcommand{\MakiBeamerLayout}{#1}}
 \ProcessOptionsBeamer
 
 \RequirePackage{xcolor}
@@ -34,6 +36,9 @@
 \colorlet{MakiAccentColor}{ExColor}
 \colorlet{MakiSoftBar}{MainText!8}
 \colorlet{MakiSoftPanel}{MainText!4}
+\colorlet{MakiCanvasColor}{white}
+\colorlet{MakiBodyColor}{MainText}
+\colorlet{MakiMutedTextColor}{MainText!72}
 
 \mode<presentation>
 \setbeamertemplate{navigation symbols}{}
@@ -46,6 +51,9 @@
 \fi
 
 \ifMakiBeamerInvert
+	\colorlet{MakiCanvasColor}{black}
+	\colorlet{MakiBodyColor}{white}
+	\colorlet{MakiMutedTextColor}{white!76}
 	\setbeamercolor{background canvas}{bg=black}
 	\setbeamercolor{normal text}{fg=white,bg=black}
 	\setbeamercolor{structure}{fg=white}
@@ -105,21 +113,14 @@
 }
 \makeatother
 
-\setbeamertemplate{title page}{%
+\makeatletter
+\newcommand{\MakiBeamerTitlePage@durham}{%
 	\begin{tikzpicture}[remember picture,overlay]
-		\ifMakiBeamerInvert
-			\fill[black] (current page.south west) rectangle (current page.north east);
-			\fill[MakiThemeColor]
-				($(current page.south east)+(0,0)$) --
-				($(current page.south east)+(-4.4cm,0)$) --
-				($(current page.south east)+(0,4.4cm)$) -- cycle;
-		\else
-			\fill[white] (current page.south west) rectangle (current page.north east);
-			\fill[MakiThemeColor]
-				($(current page.south east)+(0,0)$) --
-				($(current page.south east)+(-4.4cm,0)$) --
-				($(current page.south east)+(0,4.4cm)$) -- cycle;
-		\fi
+		\fill[MakiCanvasColor] (current page.south west) rectangle (current page.north east);
+		\fill[MakiThemeColor]
+			($(current page.south east)+(0,0)$) --
+			($(current page.south east)+(-4.4cm,0)$) --
+			($(current page.south east)+(0,4.4cm)$) -- cycle;
 	\end{tikzpicture}
 	\begin{tikzpicture}[remember picture,overlay]
 		\node[
@@ -127,15 +128,19 @@
 			align=left,
 			text width=0.8\paperwidth
 		] at ($(current page.north west)+(1.2cm,-1.4cm)$) {%
-			{\usebeamerfont{title}\color{MakiThemeColor}\inserttitle\par}
-			\vspace{0.45em}
-			{\usebeamerfont{subtitle}\color{MainText}\insertsubtitle\par}
-			\vspace{1.0em}
+			{\usebeamerfont{title}\color{MakiThemeColor}\inserttitle\par}%
+			\ifx\insertsubtitle\@empty\else
+				\vspace{0.45em}%
+				{\usebeamerfont{subtitle}\color{MakiBodyColor}\insertsubtitle\par}%
+			\fi
+			\vspace{1.0em}%
 			\MakiBeamerTitleRule
-			\vspace{1.8em}
-			{\usebeamerfont{author}\color{MainText}\insertauthor\par}
-			\vspace{0.8em}
-			{\usebeamerfont{institute}\color{MainText}\insertinstitute\par}
+			\vspace{1.8em}%
+			{\usebeamerfont{author}\color{MakiBodyColor}\insertauthor\par}%
+			\ifx\insertinstitute\@empty\else
+				\vspace{0.8em}%
+				{\usebeamerfont{institute}\color{MakiBodyColor}\insertinstitute\par}%
+			\fi
 		};
 	\end{tikzpicture}
 	\begin{tikzpicture}[remember picture,overlay]
@@ -149,13 +154,100 @@
 	\end{tikzpicture}
 }
 
-\renewcommand{\maketitle}{%
-	\begin{frame}[plain,noframenumbering]
-		\titlepage
-	\end{frame}
+\newcommand{\MakiBeamerTitlePage@minimal}{%
+	\begin{tikzpicture}[remember picture,overlay]
+		\fill[MakiCanvasColor] (current page.south west) rectangle (current page.north east);
+		\fill[MakiThemeColor!10!MakiCanvasColor]
+			([xshift=1.0cm,yshift=-1.1cm]current page.north west) rectangle
+			([xshift=1.75cm,yshift=-8.6cm]current page.north west);
+		\draw[MakiThemeColor,line width=1.1pt]
+			([xshift=2.2cm,yshift=-1.4cm]current page.north west) --
+			([xshift=8.9cm,yshift=-1.4cm]current page.north west);
+	\end{tikzpicture}
+	\begin{tikzpicture}[remember picture,overlay]
+		\node[
+			anchor=north west,
+			align=left,
+			text width=0.68\paperwidth
+		] at ($(current page.north west)+(2.3cm,-2.0cm)$) {%
+			{\fontsize{9pt}{10pt}\selectfont\bfseries\color{MakiThemeColor}Maki Beamer\par}%
+			\vspace{0.9em}%
+			{\usebeamerfont{title}\color{MakiBodyColor}\inserttitle\par}%
+			\ifx\insertsubtitle\@empty\else
+				\vspace{0.45em}%
+				{\usebeamerfont{subtitle}\color{MakiMutedTextColor}\insertsubtitle\par}%
+			\fi
+			\vspace{1.3em}%
+			\MakiBeamerTitleRule
+			\vspace{1.5em}%
+			{\usebeamerfont{author}\color{MakiBodyColor}\insertauthor\par}%
+			\ifx\insertinstitute\@empty\else
+				\vspace{0.6em}%
+				{\usebeamerfont{institute}\color{MakiBodyColor}\insertinstitute\par}%
+			\fi
+		};
+		\node[
+			anchor=north east,
+			align=right,
+			text=MakiThemeColor
+		] at ($(current page.north east)+(-1.2cm,-1.55cm)$) {%
+			{\usebeamerfont{date}\insertdate}%
+		};
+	\end{tikzpicture}
 }
 
-\newcommand{\MakiOutline}[1][目录]{%
+\newcommand{\MakiBeamerTitlePage@splitbar}{%
+	\begin{tikzpicture}[remember picture,overlay]
+		\fill[MakiCanvasColor] (current page.south west) rectangle (current page.north east);
+		\fill[MakiThemeColor]
+			(current page.north west) rectangle
+			([yshift=-0.30\paperheight]current page.north east);
+		\fill[MakiAccentColor]
+			([yshift=-0.30\paperheight]current page.north west) rectangle
+			([yshift=-0.315\paperheight]current page.north east);
+		\fill[MakiThemeColor!8!MakiCanvasColor]
+			([xshift=1.0cm,yshift=-0.40\paperheight]current page.north west) rectangle
+			([xshift=-1.0cm,yshift=-0.77\paperheight]current page.north east);
+	\end{tikzpicture}
+	\begin{tikzpicture}[remember picture,overlay]
+		\node[
+			anchor=west,
+			align=left,
+			text=white,
+			text width=0.72\paperwidth
+		] at ([xshift=1.2cm,yshift=-0.16\paperheight]current page.north west) {%
+			{\usebeamerfont{title}\inserttitle\par}%
+			\ifx\insertsubtitle\@empty\else
+				\vspace{0.4em}%
+				{\usebeamerfont{subtitle}\color{white!82}\insertsubtitle\par}%
+			\fi
+		};
+		\node[
+			anchor=north west,
+			align=left,
+			text width=0.46\paperwidth
+		] at ([xshift=1.3cm,yshift=-0.45\paperheight]current page.north west) {%
+			{\usebeamerfont{author}\color{MakiBodyColor}\insertauthor\par}%
+			\ifx\insertinstitute\@empty\else
+				\vspace{0.55em}%
+				{\usebeamerfont{institute}\color{MakiBodyColor}\insertinstitute\par}%
+			\fi
+		};
+		\node[
+			anchor=north east,
+			fill=MakiCanvasColor,
+			draw=MakiAccentColor,
+			rounded corners=4pt,
+			inner xsep=0.95em,
+			inner ysep=0.55em,
+			text=MakiThemeColor
+		] at ([xshift=-1.2cm,yshift=-0.45\paperheight]current page.north east) {%
+			{\usebeamerfont{date}\insertdate}%
+		};
+	\end{tikzpicture}
+}
+
+\newcommand{\MakiBeamerOutline@durham}[1]{%
 	\begingroup
 	\setbeamertemplate{background canvas}{%
 		\begin{tikzpicture}[remember picture,overlay]
@@ -186,9 +278,73 @@
 	\end{frame}
 	\endgroup
 }
-\let\makeoutline\MakiOutline
 
-\makeatletter
+\newcommand{\MakiBeamerOutline@minimal}[1]{%
+	\begingroup
+	\setbeamertemplate{background canvas}{%
+		\begin{tikzpicture}[remember picture,overlay]
+			\fill[MakiCanvasColor] (current page.south west) rectangle (current page.north east);
+			\fill[MakiThemeColor]
+				([xshift=1.0cm,yshift=-1.1cm]current page.north west) rectangle
+				([xshift=1.2cm,yshift=-0.82\paperheight]current page.north west);
+		\end{tikzpicture}%
+	}%
+	\begin{frame}[plain,noframenumbering]
+		\vspace*{1.3cm}
+		\hspace*{1.45cm}%
+		\begin{minipage}{0.74\paperwidth}
+			{\usebeamerfont{title}\color{MakiThemeColor}\bfseries #1\par}%
+			\vspace{0.6em}%
+			{\color{MakiThemeColor}\rule{0.2\linewidth}{1pt}\par}%
+			\vspace{1.1em}%
+			\setlength{\parskip}{0pt}%
+			\tableofcontents
+		\end{minipage}
+	\end{frame}
+	\endgroup
+}
+
+\newcommand{\MakiBeamerOutline@splitbar}[1]{%
+	\begingroup
+	\setbeamertemplate{background canvas}{%
+		\begin{tikzpicture}[remember picture,overlay]
+			\fill[MakiCanvasColor] (current page.south west) rectangle (current page.north east);
+			\fill[MakiThemeColor]
+				(current page.north west) rectangle
+				([xshift=0.26\paperwidth]current page.south west);
+			\fill[MakiAccentColor]
+				([xshift=0.26\paperwidth]current page.north west) rectangle
+				([xshift=0.275\paperwidth]current page.south west);
+		\end{tikzpicture}%
+	}%
+	\begin{frame}[plain,noframenumbering]
+		\vspace*{0.16\paperheight}
+		\hspace*{0.08\paperwidth}%
+		\begin{minipage}[t][0.65\paperheight]{0.13\paperwidth}
+			{\usebeamerfont{title}\color{white}\bfseries #1\par}%
+			\vspace{0.9em}%
+			{\small\color{white!82}章节导览\par}%
+		\end{minipage}%
+		\hspace*{0.12\paperwidth}%
+		\begin{minipage}[t]{0.48\paperwidth}
+			\setlength{\parskip}{0pt}%
+			\tableofcontents
+		\end{minipage}
+	\end{frame}
+	\endgroup
+}
+
+\renewcommand{\maketitle}{%
+	\begin{frame}[plain,noframenumbering]
+		\titlepage
+	\end{frame}
+}
+
+\newcommand{\MakiOutline}[1][目录]{%
+	\csname MakiBeamerOutline@\MakiBeamerLayout\endcsname{#1}%
+}
+\providecommand{\makeoutline}[1][目录]{\MakiOutline[#1]}
+
 \newif\ifMaki@TOC@needgap
 \Maki@TOC@needgapfalse
 \setbeamertemplate{section in toc}{%
@@ -205,12 +361,11 @@
 	\global\Maki@TOC@needgapfalse
 	\leavevmode\noindent\hspace*{1.8em}%
 	\MakiTOCSubDot\hspace{0.75em}%
-	{\color{MainText}\MakiBeamerTrunc{\inserttocsubsection}{\MakiBeamerMaxCharsSubOutline}}%
+	{\color{MakiBodyColor}\MakiBeamerTrunc{\inserttocsubsection}{\MakiBeamerMaxCharsSubOutline}}%
 	\par\nobreak
 	\addvspace{0.55ex}%
 }
 \pretocmd{\tableofcontents}{\global\Maki@TOC@needgapfalse}{}{}
-\makeatother
 
 \newcommand{\MakiProgressBar}{%
 	\begin{tikzpicture}[remember picture,overlay]
@@ -228,13 +383,15 @@
 \setbeamercolor{headline}{fg=white,bg=MakiThemeColor}
 \ifMakiBeamerInvert
 	\setbeamercolor{headline second}{fg=white,bg=black!85}
+	\setbeamercolor{footline muted}{fg=white,bg=black!82}
 \else
-	\setbeamercolor{headline second}{fg=MainText,bg=MakiSoftBar}
+	\setbeamercolor{headline second}{fg=MakiBodyColor,bg=MakiSoftBar}
+	\setbeamercolor{footline muted}{fg=MakiBodyColor,bg=MakiSoftPanel}
 \fi
+\setbeamercolor{footline}{fg=white,bg=MakiThemeColor}
 \setbeamercolor{section in head/foot}{fg=white,bg=MakiThemeColor}
 \setbeamercolor{section in head/foot shaded}{fg=white,bg=MakiThemeColor}
 
-\makeatletter
 \setbeamertemplate{section in head/foot}{%
 	\raisebox{0.35ex}{\tikz[baseline=-0.2ex]\fill[fg] (0,0) circle (0.5ex);}%
 	\hspace{0.55ex}%
@@ -250,57 +407,138 @@
 	\hspace{1.1em}%
 }
 
-\ifMakiBeamerPlain
-	\setbeamertemplate{headline}{}
-\else
-	\setbeamertemplate{headline}{%
+\newcommand{\MakiBeamerHeadline@durham}{%
+	\begin{beamercolorbox}[
+		wd=\paperwidth,
+		ht=3ex,dp=2.0ex,
+		leftskip=1.2em,rightskip=1.2em
+	]{headline}
+		\insertsectionnavigationhorizontal{\dimexpr\paperwidth-2.4em\relax}{}{}%
+	\end{beamercolorbox}%
+	\ifx\insertsubsectionhead\@empty
+	\else
 		\begin{beamercolorbox}[
 			wd=\paperwidth,
-			ht=3ex,dp=2.0ex,
-			leftskip=1.2em,rightskip=1.2em
-		]{headline}
-			\insertsectionnavigationhorizontal{\dimexpr\paperwidth-2.4em\relax}{}{}%
+			ht=2.7ex,dp=0.9ex,
+			leftskip=1.3em,rightskip=1.2em
+		]{headline second}
+			\usebeamerfont{subsection in head/foot}%
+			\MakiBeamerTrunc{\insertsubsectionhead}{\MakiBeamerMaxCharsSubHeadline}%
 		\end{beamercolorbox}%
+	\fi
+}
+
+\newcommand{\MakiBeamerHeadline@minimal}{%
+	\begin{beamercolorbox}[
+		wd=\paperwidth,
+		ht=2.5ex,dp=1.0ex,
+		leftskip=1.2em,rightskip=1.2em
+	]{footline muted}
+		\usebeamerfont{footline}%
+		\color{MakiBodyColor}\insertshorttitle
+		\hfill
+		\color{MakiThemeColor}\MakiBeamerTrunc{\insertsectionhead}{\MakiBeamerMaxCharsHeadline}%
+	\end{beamercolorbox}%
+}
+
+\newcommand{\MakiBeamerHeadline@splitbar}{%
+	\begin{beamercolorbox}[
+		wd=\paperwidth,
+		ht=2.4ex,dp=1.0ex,
+		leftskip=1.2em,rightskip=1.2em
+	]{headline}
+		\usebeamerfont{footline}\insertshorttitle
+		\hfill
+		\insertframenumber/\inserttotalframenumber
+	\end{beamercolorbox}%
+	\begin{beamercolorbox}[
+		wd=\paperwidth,
+		ht=2.8ex,dp=1.0ex,
+		leftskip=1.2em,rightskip=1.2em
+	]{headline second}
+		{\color{MakiThemeColor}\bfseries\MakiBeamerTrunc{\insertsectionhead}{24}}%
 		\ifx\insertsubsectionhead\@empty
 		\else
-			\begin{beamercolorbox}[
-				wd=\paperwidth,
-				ht=2.7ex,dp=0.9ex,
-				leftskip=1.3em,rightskip=1.2em
-			]{headline second}
-				\usebeamerfont{subsection in head/foot}%
-				\MakiBeamerTrunc{\insertsubsectionhead}{\MakiBeamerMaxCharsSubHeadline}%
-			\end{beamercolorbox}%
+			\hfill
+			\usebeamerfont{subsection in head/foot}%
+			\MakiBeamerTrunc{\insertsubsectionhead}{24}%
 		\fi
-	}
-\fi
+	\end{beamercolorbox}%
+}
+
+\newcommand{\MakiBeamerFootline@durham}{%
+	\leavevmode%
+	\begin{beamercolorbox}[
+		wd=\paperwidth,
+		ht=2.5ex,
+		dp=1.1ex,
+		leftskip=1.2em,
+		rightskip=1.2em
+	]{footline}
+		\usebeamerfont{footline}%
+		\insertshorttitle
+		\hfill
+		\insertframenumber/\inserttotalframenumber
+	\end{beamercolorbox}%
+	\MakiProgressBar%
+}
+
+\newcommand{\MakiBeamerFootline@minimal}{%
+	\leavevmode%
+	\begin{beamercolorbox}[
+		wd=\paperwidth,
+		ht=2.4ex,
+		dp=1.0ex,
+		leftskip=1.2em,
+		rightskip=1.2em
+	]{footline muted}
+		\usebeamerfont{footline}%
+		\color{MakiBodyColor}\insertshortauthor
+		\hfill
+		\color{MakiThemeColor}\insertframenumber/\inserttotalframenumber
+	\end{beamercolorbox}%
+}
+
+\newcommand{\MakiBeamerFootline@splitbar}{%
+	\leavevmode%
+	\begin{beamercolorbox}[
+		wd=\paperwidth,
+		ht=2.4ex,
+		dp=1.0ex,
+		leftskip=1.2em,
+		rightskip=1.2em
+	]{footline muted}
+		\usebeamerfont{footline}%
+		\color{MakiBodyColor}\insertshortauthor
+		\hfill
+		\color{MakiBodyColor}\insertshortdate
+	\end{beamercolorbox}%
+	\MakiProgressBar%
+}
+
+\newcommand{\MakiBeamerValidateLayout}{%
+	\ifcsname MakiBeamerTitlePage@\MakiBeamerLayout\endcsname
+	\else
+		\PackageError{beamerthememaki}{Unsupported layout `\MakiBeamerLayout'}{Valid values are durham, minimal, splitbar. Falling back to `durham'.}%
+		\renewcommand{\MakiBeamerLayout}{durham}%
+	\fi
+}
 \makeatother
 
+\MakiBeamerValidateLayout
+\setbeamertemplate{title page}{\csname MakiBeamerTitlePage@\MakiBeamerLayout\endcsname}
+
 \ifMakiBeamerPlain
+	\setbeamertemplate{headline}{}
 	\setbeamertemplate{footline}{}
 \else
-	\setbeamercolor{footline}{fg=white,bg=MakiThemeColor}
-	\setbeamertemplate{footline}{%
-		\leavevmode%
-		\begin{beamercolorbox}[
-			wd=\paperwidth,
-			ht=2.5ex,
-			dp=1.1ex,
-			leftskip=1.2em,
-			rightskip=1.2em
-		]{footline}
-			\usebeamerfont{footline}%
-			\insertshorttitle
-			\hfill
-			\insertframenumber/\inserttotalframenumber
-		\end{beamercolorbox}%
-		\MakiProgressBar%
-	}
+	\setbeamertemplate{headline}{\csname MakiBeamerHeadline@\MakiBeamerLayout\endcsname}
+	\setbeamertemplate{footline}{\csname MakiBeamerFootline@\MakiBeamerLayout\endcsname}
 \fi
 
 \setbeamertemplate{frametitle}{%
 	\vspace{0.5em}%
-	{\usebeamerfont{frametitle}\color{MainText}\insertframetitle\par}%
+	{\usebeamerfont{frametitle}\color{MakiBodyColor}\insertframetitle\par}%
 	\vspace{0.15em}%
 	{\color{MakiThemeColor}\rule{0.18\linewidth}{0.9pt}\par}%
 	\vspace{0.35em}%

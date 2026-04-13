@@ -8,6 +8,7 @@
 }
 \DeclareStringOption[common]{fontpreset}
 \DeclareStringOption[default]{theme}
+\DeclareStringOption[durham]{layout}
 \DeclareBoolOption[false]{plain}
 \DeclareBoolOption[false]{invert}
 \DeclareBoolOption[false]{accessibility}
@@ -23,8 +24,10 @@
 \newcommand{\CoverFooterBlock}{}
 \newcommand{\MakiFontPreset}{common}
 \newcommand{\MakiTheme}{default}
+\newcommand{\MakiBeamerLayout}{durham}
 \edef\MakiFontPreset{\makiBeamer@fontpreset}
 \edef\MakiTheme{\makiBeamer@theme}
+\edef\MakiBeamerLayout{\makiBeamer@layout}
 
 \RequirePackage{maki-notes}
 
@@ -38,6 +41,7 @@
 	\fi
 }
 
+\MakiBeamerAddThemeOption{layout=\MakiBeamerLayout}%
 \ifmakiBeamer@plain
 	\MakiBeamerAddThemeOption{plain}%
 \fi
