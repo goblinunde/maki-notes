@@ -4,6 +4,7 @@
 
 - 这个模板整体怎么用
 - 类选项、主题和字体预设怎么选
+- 课程元信息、章节导读和本章导航怎么写
 - 图文绕排、页边批注怎么排
 - TikZ 模板页和预设样式怎么复用
 
@@ -17,13 +18,19 @@
 - 适合：第一次上手、准备基于本仓库写讲义或改模板的人
 - 内容：模板结构、编译方式、类选项、主题/字体预设、主要入口文件、构建与发布约定
 
-### 2. 图文绕排与页边批注
+### 2. 数学讲义工作流导读
+
+- 文件：[`workflow-guide.md`](./workflow-guide.md)
+- 适合：想把模板从“排版模板”用成“课程讲义工作台”的人
+- 内容：课程元信息、章节导读页、本章导航、核心公式/误区/方法/考试关注块
+
+### 3. 图文绕排与页边批注
 
 - 文件：[`wrapfig-margin-notes.md`](./wrapfig-margin-notes.md)
 - 适合：正文中需要插图绕排、侧题注、页边批注的人
 - 内容：接口说明、推荐用法、图题选择、页边批注策略、常见排版注意事项
 
-### 3. TikZ 模板册
+### 4. TikZ 模板册
 
 - 文件：[`tikz-template-pages.md`](./tikz-template-pages.md)
 - 适合：需要直接复用结构图、球面/流形图、交换图、傅里叶图、流程图、时间轴、概率图、图论图的人
@@ -41,6 +48,7 @@
 ## 当你要做不同类型的修改时
 
 - 改字体或配色预设：先看 [`template-guide.md`](./template-guide.md)
+- 改课程元信息、章节导读或本章导航：先看 [`workflow-guide.md`](./workflow-guide.md)
 - 改图文绕排、侧题注或页边批注：先看 [`wrapfig-margin-notes.md`](./wrapfig-margin-notes.md)
 - 改 TikZ 结构图或新增模板页：先看 [`tikz-template-pages.md`](./tikz-template-pages.md)
 - 验证样式没有被改坏：优先运行 `make test`

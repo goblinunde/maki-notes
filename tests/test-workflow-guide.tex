@@ -1,0 +1,73 @@
+\documentclass[a4paper,12pt,oneside]{maki-notes}
+
+\renewcommand{\LectureNotesTitle}{Workflow Guide Test}
+\renewcommand{\AuthorInfo}{Test Runner}
+
+\SetCourseInfo{
+  course={高等数学},
+  term={2026 春},
+  audience={考研数学},
+  instructor={Maki},
+  lecture={第 3 讲},
+  date={2026-04-13}
+}
+
+\begin{document}
+\frontmatter
+\tableofcontents
+
+\mainmatter
+
+\SetChapterInfo{
+  subtitle={从定义到连续性},
+  lecture={第 1 讲},
+  date={2026-04-13},
+  keywords={极限, 连续, 夹逼准则},
+  prereq={函数与实数基础},
+  goals={理解极限定义; 会判断连续性; 会使用夹逼准则}
+}
+
+\chapter{极限与连续}
+\MakeChapterGuide{
+  route={定义 -> 性质 -> 计算 -> 连续},
+  formulas={
+    \[
+      \lim_{x \to x_0} f(x) = A
+    \]
+  },
+  pitfalls={连续不必可导; 去心邻域条件不能漏写},
+  methods={夹逼, 等价无穷小, 代数变形},
+  examfocus={极限定义判断题, 连续性与分段函数}
+}
+
+\section{函数极限}
+这里用来验证章节导读页后的正文和局部导航能否稳定共存。
+
+\begin{keyformula}
+\[
+  \lim_{x \to x_0} f(x) = A
+\]
+\end{keyformula}
+
+\begin{pitfall}[易错点]
+写极限定义时不能漏掉去心邻域条件。
+\end{pitfall}
+
+\section{连续性}
+这一节提供第二个 section，确保本章导航不是空结构。
+
+\begin{methodnote}
+判断连续性时要同时检查极限存在与函数值匹配。
+\end{methodnote}
+
+\begin{examfocus}
+分段函数在分界点的连续性与可导性是高频考点。
+\end{examfocus}
+
+\chapter{导数}
+这一章不设置章节元信息，用来验证上一章的专属字段不会泄漏到下一章。
+
+\section{导数定义}
+这里用于验证未设置章节元信息时文档仍能正常编译。
+
+\end{document}

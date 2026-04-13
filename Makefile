@@ -5,8 +5,8 @@ MAIN_DOC := document2.tex
 EXAMPLE_DOC := example.tex
 TIKZ_TEMPLATE_DOC := tikz-template-pages.tex
 SMOKE_DOC := smoke-packaging.tex
-TEST_DOCS := tests/test-basic.tex tests/test-environments.tex tests/test-graphics.tex tests/test-tikz-styles.tex tests/test-wrap-layout.tex
-TEST_NAMES := test-basic test-environments test-graphics test-tikz-styles test-wrap-layout
+TEST_DOCS := tests/test-basic.tex tests/test-environments.tex tests/test-graphics.tex tests/test-tikz-styles.tex tests/test-wrap-layout.tex tests/test-workflow-guide.tex
+TEST_NAMES := test-basic test-environments test-graphics test-tikz-styles test-wrap-layout test-workflow-guide
 
 MAIN_PDF := $(MAIN_DOC:.tex=.pdf)
 EXAMPLE_PDF := $(EXAMPLE_DOC:.tex=.pdf)

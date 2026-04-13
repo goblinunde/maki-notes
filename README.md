@@ -20,6 +20,8 @@
 - 基于 `ctexbook` 的中文讲义排版入口
 - 内置封面、章节标题、页眉页脚与数学环境样式
 - 提供定义、定理、例题、真题、注释等讲义常用盒子环境
+- 提供课程元信息、整页章节导读与章内导航
+- 提供核心公式、方法提要、常见误区、考试关注等数学讲义专用块
 - 提供左右图文绕排、页边侧题注与无边框页边批注
 - 集成 `TikZ`、`PGFPlots`、`tikz-3dplot` 等绘图能力
 - 自带示例文档和基础测试文档，便于二次开发和回归验证
@@ -29,6 +31,7 @@
 如果你希望看比 README 更完整的说明，建议直接从 [`docs/README.md`](./docs/README.md) 开始。`docs/` 目录目前包含：
 
 - [`docs/template-guide.md`](./docs/template-guide.md)：模板总览、类选项、编译方式和维护建议
+- [`docs/workflow-guide.md`](./docs/workflow-guide.md)：课程元信息、章节导读、本章导航与数学讲义专用块
 - [`docs/wrapfig-margin-notes.md`](./docs/wrapfig-margin-notes.md)：图文绕排、侧题注与页边批注
 - [`docs/tikz-template-pages.md`](./docs/tikz-template-pages.md)：TikZ 模板册、样式族和新增页面索引
 
@@ -78,6 +81,37 @@ xelatex -interaction=nonstopmode -file-line-error
   theme=default
 ]{maki-notes}
 ```
+
+如果你希望把模板用成更完整的“数学讲义工作台”，可以在章节前后继续加上：
+
+```tex
+\SetCourseInfo{
+  course={高等数学},
+  term={2026 春},
+  audience={考研数学},
+  instructor={Maki},
+  lecture={第 3 讲},
+  date={2026-04-13}
+}
+
+\SetChapterInfo{
+  subtitle={从定义到连续性},
+  keywords={极限, 连续, 夹逼准则},
+  prereq={函数与实数基础},
+  goals={理解极限定义; 会判断连续性; 会使用夹逼准则}
+}
+
+\chapter{极限与连续}
+\MakeChapterGuide{
+  route={定义 -> 性质 -> 计算 -> 连续},
+  formulas={\[\lim_{x \to x_0} f(x)=A\]},
+  pitfalls={连续不必可导; 去心邻域条件不能漏写},
+  methods={夹逼, 等价无穷小, 代数变形},
+  examfocus={极限定义判断题, 连续性与分段函数}
+}
+```
+
+详细写法见 [`docs/workflow-guide.md`](./docs/workflow-guide.md)。
 
 ## 字体与主题预设
 
@@ -233,6 +267,7 @@ make clean
 ├── latexmkrc
 ├── Makefile
 ├── docs/
+├── docs/workflow-guide.md
 ├── document2.tex
 ├── example.tex
 ├── tikz-template-pages.tex
@@ -246,10 +281,11 @@ make clean
 - `maki-notes.sty`：样式主体，集中管理字体预设、主题色、环境和 TikZ 样式
 - `document2.tex`：较完整的讲义模板示例
 - `example.tex`：更适合作为二次开发起点的示例文档
+- `docs/workflow-guide.md`：课程元信息、章节导读与本章导航说明
 - `docs/wrapfig-margin-notes.md`：图文绕排与页边批注用法说明
 - `docs/tikz-template-pages.md`：TikZ 模板册结构与新增页面索引
 - `tikz-template-pages.tex`：可直接复用的图形模板页
-- `tests/`：用于验证模板基础能力的测试文档，其中 `tests/test-basic.tex` 覆盖类选项兼容，`tests/test-wrap-layout.tex` 集中覆盖新版绕排与页边接口
+- `tests/`：用于验证模板基础能力的测试文档，其中 `tests/test-basic.tex` 覆盖类选项兼容，`tests/test-wrap-layout.tex` 集中覆盖新版绕排与页边接口，`tests/test-workflow-guide.tex` 集中覆盖课程元信息与章节导读工作流
 
 ## GitHub Release 流程
 

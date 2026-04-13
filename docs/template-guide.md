@@ -19,6 +19,7 @@
 
 - 中文数学讲义
 - 带大量示意图的课程笔记
+- 需要讲次导读页和章内导航的课程讲义
 - 教学型技术说明文档
 - 需要统一风格的 LaTeX 模板仓库
 
@@ -137,7 +138,19 @@ make clean
 - 定义、定理、例题、真题、注释等盒子环境
 - 页眉页脚和统一色彩层级
 
-### 2. 图文绕排与页边批注
+### 2. 数学讲义工作流层
+
+- `\SetCourseInfo{...}`：课程、学期、对象、讲次、日期等元信息
+- `\SetChapterInfo{...}`：当前章的副标题、关键词、先修要求、学习目标
+- `\MakeChapterGuide{...}`：生成整页章节导读
+- 当前章局部导航：在导读页里展示本章 `section`
+- `keyformula`、`pitfall`、`methodnote`、`examfocus`：数学讲义专用信息块
+
+这部分单独文档见：
+
+- [`workflow-guide.md`](./workflow-guide.md)
+
+### 3. 图文绕排与页边批注
 
 - 左图右文、右图左文的自动绕排
 - 图下题注与页边侧题注
@@ -147,7 +160,7 @@ make clean
 
 - [`wrapfig-margin-notes.md`](./wrapfig-margin-notes.md)
 
-### 3. TikZ 语义样式族
+### 4. TikZ 语义样式族
 
 模板里的 TikZ 不是“每张图重新手写颜色”，而是有一层统一的语义样式：
 
@@ -180,9 +193,10 @@ make clean
 ### 作为讲义作者
 
 1. 从 [`example.tex`](../example.tex) 开始写内容  
-2. 需要插图绕排时看 [`wrapfig-margin-notes.md`](./wrapfig-margin-notes.md)  
-3. 需要结构图时从 [`tikz-template-pages.tex`](../tikz-template-pages.tex) 复制  
-4. 改完后用 `make example` 或 `make main` 检查输出
+2. 需要课程元信息、章节导读或本章导航时看 [`workflow-guide.md`](./workflow-guide.md)  
+3. 需要插图绕排时看 [`wrapfig-margin-notes.md`](./wrapfig-margin-notes.md)  
+4. 需要结构图时从 [`tikz-template-pages.tex`](../tikz-template-pages.tex) 复制  
+5. 改完后用 `make example` 或 `make main` 检查输出
 
 ### 作为模板维护者
 

@@ -17,6 +17,7 @@
 \RequirePackage{xcolor}
 \RequirePackage{newunicodechar}
 \RequirePackage{etoolbox}
+\RequirePackage{etoc}
 \RequirePackage{esint}
 \RequirePackage{multirow}
 \RequirePackage{diagbox}
@@ -453,6 +454,130 @@
 \setlength{\MakiWrapColumnSep}{1.2em}
 \setlength{\MakiWrapTextSep}{0.8em}
 \setlength{\marginparpush}{0.85em}
+
+\newcommand{\MakiCourseInfoCourse}{}
+\newcommand{\MakiCourseInfoTerm}{}
+\newcommand{\MakiCourseInfoAudience}{}
+\newcommand{\MakiCourseInfoInstructor}{}
+\newcommand{\MakiCourseInfoLecture}{}
+\newcommand{\MakiCourseInfoDate}{}
+
+\newcommand{\MakiPendingChapterSubtitle}{}
+\newcommand{\MakiPendingChapterLecture}{}
+\newcommand{\MakiPendingChapterDate}{}
+\newcommand{\MakiPendingChapterKeywords}{}
+\newcommand{\MakiPendingChapterPrereq}{}
+\newcommand{\MakiPendingChapterGoals}{}
+
+\newcommand{\MakiCurrentChapterTitle}{}
+\newcommand{\MakiCurrentChapterNumber}{}
+\newcommand{\MakiCurrentChapterSubtitle}{}
+\newcommand{\MakiCurrentChapterLecture}{}
+\newcommand{\MakiCurrentChapterDate}{}
+\newcommand{\MakiCurrentChapterKeywords}{}
+\newcommand{\MakiCurrentChapterPrereq}{}
+\newcommand{\MakiCurrentChapterGoals}{}
+
+\newcommand{\MakiEffectiveChapterLecture}{}
+\newcommand{\MakiEffectiveChapterDate}{}
+
+\newcommand{\MakiGuideRoute}{}
+\newcommand{\MakiGuideFormulas}{}
+\newcommand{\MakiGuidePitfalls}{}
+\newcommand{\MakiGuideMethods}{}
+\newcommand{\MakiGuideExamFocus}{}
+
+\newcommand{\MakiClearPendingChapterInfo}{%
+	\gdef\MakiPendingChapterSubtitle{}%
+	\gdef\MakiPendingChapterLecture{}%
+	\gdef\MakiPendingChapterDate{}%
+	\gdef\MakiPendingChapterKeywords{}%
+	\gdef\MakiPendingChapterPrereq{}%
+	\gdef\MakiPendingChapterGoals{}%
+}
+
+\newcommand{\MakiBindPendingChapterInfo}{%
+	\global\let\MakiCurrentChapterSubtitle\MakiPendingChapterSubtitle
+	\global\let\MakiCurrentChapterLecture\MakiPendingChapterLecture
+	\global\let\MakiCurrentChapterDate\MakiPendingChapterDate
+	\global\let\MakiCurrentChapterKeywords\MakiPendingChapterKeywords
+	\global\let\MakiCurrentChapterPrereq\MakiPendingChapterPrereq
+	\global\let\MakiCurrentChapterGoals\MakiPendingChapterGoals
+	\MakiResolveEffectiveChapterInfo
+	\MakiClearPendingChapterInfo
+}
+
+\newcommand{\MakiResolveEffectiveChapterInfo}{%
+	\ifdefempty{\MakiCurrentChapterLecture}
+		{\global\let\MakiEffectiveChapterLecture\MakiCourseInfoLecture}
+		{\global\let\MakiEffectiveChapterLecture\MakiCurrentChapterLecture}%
+	\ifdefempty{\MakiCurrentChapterDate}
+		{\global\let\MakiEffectiveChapterDate\MakiCourseInfoDate}
+		{\global\let\MakiEffectiveChapterDate\MakiCurrentChapterDate}%
+}
+
+\newcommand{\MakiHeaderLeftText}{%
+	\ifdefempty{\MakiCourseInfoCourse}{\LectureNotesTitle}{\MakiCourseInfoCourse}%
+}
+
+\newcommand{\MakiHeaderRightText}{%
+	\ifdefempty{\MakiEffectiveChapterLecture}{%
+		\ifdefempty{\MakiEffectiveChapterDate}{\AuthorInfo}{\MakiEffectiveChapterDate}%
+	}{%
+		\MakiEffectiveChapterLecture
+		\ifdefempty{\MakiEffectiveChapterDate}{}{ \quad \MakiEffectiveChapterDate}%
+	}%
+}
+
+\newcommand{\MakiClearGuideInfo}{%
+	\gdef\MakiGuideRoute{}%
+	\gdef\MakiGuideFormulas{}%
+	\gdef\MakiGuidePitfalls{}%
+	\gdef\MakiGuideMethods{}%
+	\gdef\MakiGuideExamFocus{}%
+}
+
+\pgfkeys{
+	/maki/course/.is family,
+	/maki/course,
+	course/.store in=\MakiCourseInfoCourse,
+	term/.store in=\MakiCourseInfoTerm,
+	audience/.store in=\MakiCourseInfoAudience,
+	instructor/.store in=\MakiCourseInfoInstructor,
+	lecture/.store in=\MakiCourseInfoLecture,
+	date/.store in=\MakiCourseInfoDate
+}
+
+\pgfkeys{
+	/maki/chapter/.is family,
+	/maki/chapter,
+	subtitle/.store in=\MakiPendingChapterSubtitle,
+	lecture/.store in=\MakiPendingChapterLecture,
+	date/.store in=\MakiPendingChapterDate,
+	keywords/.store in=\MakiPendingChapterKeywords,
+	prereq/.store in=\MakiPendingChapterPrereq,
+	goals/.store in=\MakiPendingChapterGoals
+}
+
+\pgfkeys{
+	/maki/guide/.is family,
+	/maki/guide,
+	route/.store in=\MakiGuideRoute,
+	formulas/.store in=\MakiGuideFormulas,
+	pitfalls/.store in=\MakiGuidePitfalls,
+	methods/.store in=\MakiGuideMethods,
+	examfocus/.store in=\MakiGuideExamFocus
+}
+
+\NewDocumentCommand{\SetCourseInfo}{m}{%
+	\pgfkeys{/maki/course, #1}%
+	\MakiResolveEffectiveChapterInfo
+}
+
+\NewDocumentCommand{\SetChapterInfo}{m}{%
+	\MakiClearPendingChapterInfo
+	\pgfkeys{/maki/chapter, #1}%
+}
 
 \tikzset{
 	>=Latex,
@@ -1111,6 +1236,99 @@
 
 \makeatletter
 
+\pretocmd{\@chapter}{\MakiBindPendingChapterInfo}{}{}
+\pretocmd{\@schapter}{\MakiBindPendingChapterInfo}{}{}
+
+\renewcommand{\chaptermark}[1]{%
+	\markboth{#1}{}%
+	\gdef\MakiCurrentChapterTitle{#1}%
+	\xdef\MakiCurrentChapterNumber{\thechapter}%
+}
+
+\newbox\maki@localtocbox
+
+\newcommand{\maki@guideinforow}[2]{%
+	\ifdefempty{#2}{}{%
+		{\color{LogicColor}\bfseries #1}\hspace{0.6em}#2\par
+	}%
+}
+
+\newcommand{\maki@guidefieldbox}[2]{%
+	\ifdefempty{#2}{}{%
+		\begin{tcolorbox}[maki workflow card,title={#1}]
+			#2
+		\end{tcolorbox}%
+	}%
+}
+
+\newcommand{\maki@chapterguideheader}{%
+	\begin{center}
+		{\fontsize{28pt}{34pt}\selectfont\heavykaishu\color{LogicColor} 第\ \MakiCurrentChapterNumber\ 章\par}
+		\vspace{0.75em}
+		{\fontsize{26pt}{32pt}\selectfont\heavykaishu\color{MainText} \MakiCurrentChapterTitle\par}
+		\ifdefempty{\MakiCurrentChapterSubtitle}{}{%
+			\vspace{0.7em}
+			{\large\kaishu\color{MainText!78} \MakiCurrentChapterSubtitle\par}
+		}%
+	\end{center}
+}
+
+\newcommand{\maki@chapterguideoverview}{%
+	\begin{tcolorbox}[maki workflow hero]
+		\maki@guideinforow{课程}{\MakiCourseInfoCourse}
+		\maki@guideinforow{学期}{\MakiCourseInfoTerm}
+		\maki@guideinforow{对象}{\MakiCourseInfoAudience}
+		\maki@guideinforow{授课}{\MakiCourseInfoInstructor}
+		\maki@guideinforow{讲次}{\MakiEffectiveChapterLecture}
+		\maki@guideinforow{日期}{\MakiEffectiveChapterDate}
+	\end{tcolorbox}
+}
+
+\newcommand{\maki@chapterguidenavigation}{%
+	\begingroup
+		\etocchecksemptiness
+		\etocsettocstyle{}{}%
+		\etocsetstyle{section}
+			{\begin{list}{}{\leftmargin=0pt\itemsep=0.45em\topsep=0pt\parsep=0pt\partopsep=0pt\labelwidth=0pt\labelsep=0pt}}%
+			{}%
+			{\item \textcolor{LogicColor}{\bfseries\etocthenumber}\hspace{0.6em}\etocname\hfill{\footnotesize\color{MainText!58}\etocthepage}}%
+			{\end{list}}%
+		\etocsetnexttocdepth{section}%
+		\setbox\maki@localtocbox=\vbox{%
+			\hsize=\linewidth
+			\localtableofcontents
+		}%
+		\etocifwasempty{}{%
+			\begin{tcolorbox}[maki workflow card,title={本章导航}]
+				\unvbox\maki@localtocbox
+			\end{tcolorbox}%
+		}%
+	\endgroup
+}
+
+\NewDocumentCommand{\MakeChapterGuide}{m}{%
+	\MakiClearGuideInfo
+	\pgfkeys{/maki/guide, #1}%
+	\MakiResolveEffectiveChapterInfo
+	\clearpage
+	\thispagestyle{plain}
+	\maki@chapterguideheader
+	\vspace{0.4em}
+	\maki@chapterguideoverview
+	\begin{tcbraster}[raster columns=2,raster column skip=6mm,raster row skip=6mm]
+		\maki@guidefieldbox{先修要求}{\MakiCurrentChapterPrereq}
+		\maki@guidefieldbox{学习目标}{\MakiCurrentChapterGoals}
+		\maki@guidefieldbox{关键词}{\MakiCurrentChapterKeywords}
+		\maki@guidefieldbox{本章路线}{\MakiGuideRoute}
+		\maki@guidefieldbox{核心公式}{\MakiGuideFormulas}
+		\maki@guidefieldbox{方法提要}{\MakiGuideMethods}
+		\maki@guidefieldbox{常见误区}{\MakiGuidePitfalls}
+		\maki@guidefieldbox{考试关注}{\MakiGuideExamFocus}
+	\end{tcbraster}
+	\maki@chapterguidenavigation
+	\clearpage
+}
+
 \newcommand{\maki@marginnoteformatright}[1]{%
 	\begin{tabular}{@{}p{\MakiMarginRuleWidth}@{\hspace{\MakiMarginNoteGap}}>{\raggedright\arraybackslash}p{\dimexpr\marginparwidth-\MakiMarginRuleWidth-\MakiMarginNoteGap\relax}@{}}%
 		{\color{LogicColor}\vrule width \MakiMarginRuleWidth} & #1
@@ -1249,6 +1467,72 @@
 		middle=1em,
 		before skip=1.7em, after skip=1.2em,
 		fontupper=\linespread{1.7}\selectfont
+	},
+	maki workflow card/.style={
+		enhanced,
+		breakable,
+		colback=white,
+		colframe=LogicColor!18,
+		boxrule=0.6pt,
+		arc=8pt,
+		left=5mm,
+		right=5mm,
+		top=3mm,
+		bottom=4mm,
+		fonttitle=\bfseries\large\color{LogicColor},
+		coltitle=LogicColor,
+		title filled=false,
+		before skip=0pt,
+		after skip=0pt,
+		fontupper=\linespread{1.33}\selectfont
+	},
+	maki workflow hero/.style={
+		maki workflow card,
+		colback=LogicBg!55!white,
+		colframe=LogicColor!26,
+		boxrule=0.8pt
+	},
+	maki workflow block/.style={
+		enhanced,
+		breakable,
+		boxrule=0pt,
+		frame hidden,
+		sharp corners=downhill,
+		rounded corners,
+		arc=8pt,
+		left=7mm,
+		right=5mm,
+		top=3mm,
+		bottom=4mm,
+		before skip=1.2em,
+		after skip=1em,
+		fonttitle=\bfseries\large,
+		title filled=false,
+		fontupper=\linespread{1.45}\selectfont
+	},
+	maki keyformula box/.style={
+		maki workflow block,
+		colback=GeometryBg,
+		colbacktitle=GeometryColor,
+		coltitle=GeometryColor
+	},
+	maki pitfall box/.style={
+		maki workflow block,
+		colback=LogicBg,
+		colbacktitle=LogicColor,
+		coltitle=LogicColor
+	},
+	maki method box/.style={
+		maki workflow block,
+		colback=TopologyBg,
+		colbacktitle=NoteColor,
+		coltitle=NoteColor
+	},
+	maki examfocus box/.style={
+		maki workflow block,
+		colback=ExBg,
+		colbacktitle=ExColor,
+		coltitle=ExColor
 	}
 }
 
@@ -1331,6 +1615,30 @@
 \newenvironment{realexam}[1][]{\begin{realexamBox}{#1}}{\end{realexamBox}}
 \newenvironment{longrealexam}[1][]{\begin{longrealexamBox}{#1}}{\end{longrealexamBox}}
 
+\NewDocumentEnvironment{keyformula}{o +b}{%
+	\begin{tcolorbox}[maki keyformula box,title={\IfNoValueTF{#1}{核心公式}{#1}}]
+		#2
+	\end{tcolorbox}
+}{}
+
+\NewDocumentEnvironment{pitfall}{o +b}{%
+	\begin{tcolorbox}[maki pitfall box,title={\IfNoValueTF{#1}{常见误区}{#1}}]
+		#2
+	\end{tcolorbox}
+}{}
+
+\NewDocumentEnvironment{methodnote}{o +b}{%
+	\begin{tcolorbox}[maki method box,title={\IfNoValueTF{#1}{方法提要}{#1}}]
+		#2
+	\end{tcolorbox}
+}{}
+
+\NewDocumentEnvironment{examfocus}{o +b}{%
+	\begin{tcolorbox}[maki examfocus box,title={\IfNoValueTF{#1}{考试关注}{#1}}]
+		#2
+	\end{tcolorbox}
+}{}
+
 \newenvironment{note}{%
 	\par\vspace{0.5em}\noindent
 	\textbf{\color{NoteColor} 注：}%
@@ -1347,16 +1655,16 @@
 
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[L]{\small \kaishu \LectureNotesTitle}
-\fancyhead[R]{\small \kaishu \AuthorInfo}
+\fancyhead[L]{\small \kaishu \MakiHeaderLeftText}
+\fancyhead[R]{\small \kaishu \MakiHeaderRightText}
 \fancyfoot[C]{\thepage}
 \renewcommand{\headrulewidth}{0.5pt}
 \renewcommand{\headrule}{\hbox to\headwidth{\color{LogicColor}\leaders\hrule height \headrulewidth\hfill}}
 
 \fancypagestyle{plain}{
 	\fancyhf{}
-	\fancyhead[L]{\small \kaishu \LectureNotesTitle}
-	\fancyhead[R]{\small \kaishu \AuthorInfo}
+	\fancyhead[L]{\small \kaishu \MakiHeaderLeftText}
+	\fancyhead[R]{\small \kaishu \MakiHeaderRightText}
 	\fancyfoot[C]{\thepage}
 	\renewcommand{\headrulewidth}{0.5pt}
 	\renewcommand{\headrule}{\hbox to\headwidth{\color{LogicColor}\leaders\hrule height \headrulewidth\hfill}}

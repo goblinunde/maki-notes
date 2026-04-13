@@ -18,6 +18,15 @@
 	二〇二六年四月
 }
 
+\SetCourseInfo{
+	course={高等数学},
+	term={2026 春},
+	audience={本科数学分析 / 考研数学},
+	instructor={Maki Notes Example},
+	lecture={示例讲次},
+	date={2026-04-13}
+}
+
 \begin{document}
 
 \frontmatter
@@ -32,7 +41,30 @@
 
 \mainmatter
 
+\SetChapterInfo{
+	subtitle={从极限定义到连续语言},
+	lecture={第 1 讲},
+	date={2026-04-13},
+	keywords={极限, 连续, 唯一性, 四则运算},
+	prereq={函数、邻域、绝对值不等式},
+	goals={理解极限定义; 会识别唯一性证明结构; 会把连续写成极限语言}
+}
+
 \chapter{极限与连续的基本结构}
+\MakeChapterGuide{
+	route={极限定义 -> 唯一性 -> 连续定义 -> 连续运算},
+	formulas={
+		\[
+		\lim_{x \to x_0} f(x) = A
+		\]
+		\[
+		\lim_{x \to x_0} f(x) = f(x_0)
+		\]
+	},
+	pitfalls={把连续误写成“极限存在”而忽略函数值; 在定义里漏写去心邻域},
+	methods={三角不等式拼接, 先局部有界再控乘积, 把定义语言转成不等式},
+	examfocus={极限定义题, 分段函数连续性, 连续函数四则运算}
+}
 
 \section{从定义出发理解极限}
 
@@ -52,6 +84,14 @@
 \lim_{x \to x_0} f(x) = A.
 \]
 \end{definition}
+
+\begin{keyformula}
+\[
+\lim_{x \to x_0} f(x) = A
+\quad\Longleftrightarrow\quad
+\forall \varepsilon > 0,\ \exists \delta > 0,\ 0<|x-x_0|<\delta \Rightarrow |f(x)-A|<\varepsilon.
+\]
+\end{keyformula}
 
 \begin{theorem}[极限的唯一性]
 若 $\lim_{x \to x_0} f(x)$ 存在, 则它唯一.
@@ -73,6 +113,10 @@
 唯一性证明的结构非常典型: 先假设存在两个不同候选值, 再通过三角不等式把两边同时逼近的结论拼起来, 最后制造严格小于自身的矛盾. 这种证明方式在连续性、导数与积分的理论中都会反复出现.
 \end{note}
 
+\begin{pitfall}
+“极限存在”不等于“函数在该点连续”. 连续还必须把极限值和函数值对齐, 分段点尤其容易漏掉这一步.
+\end{pitfall}
+
 \begin{example}
 用定义证明
 \[
@@ -93,6 +137,10 @@
 |2x^2 - x + 3 - 4| < 5|x-1| < 5\delta \le \varepsilon.
 \]
 故结论成立. \hfill $\square$
+
+\begin{methodnote}
+这类 $\varepsilon$-$\delta$ 证明最常见的做法不是一步直接猜 $\delta$, 而是先附加一个方便控制的局部条件, 再把剩余因子估成常数.
+\end{methodnote}
 
 \section{连续性的语言}
 
@@ -121,6 +169,10 @@
 \item[D.] 有界 $\Longrightarrow$ 连续
 \end{enumerate}
 \end{exercise}
+
+\begin{examfocus}
+连续、可导、极限存在三者之间的关系是课堂测验与综合题里最容易反复考查的逻辑点。
+\end{examfocus}
 
 \chapter{导数与最值问题}
 
