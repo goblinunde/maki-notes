@@ -93,6 +93,11 @@ make clean
 - `fontpreset=common|auto|windows|macos|linux`
 - `theme=default|ocean|forest|graphite|amber|berry|sandstone|cobalt|sage|ruby|midnight`
 
+`maki-notes` 还开放讲义答案模式：
+
+- `answers=true|false`
+- `solutions=inline|appendix|hidden`
+
 如果你使用的是 `maki-beamer`，还可以额外指定：
 
 - `layout=durham|minimal|splitbar`
@@ -105,7 +110,8 @@ make clean
   12pt,
   oneside,
   fontpreset=common,
-  theme=default
+  theme=default,
+  answers=false
 ]{maki-notes}
 ```
 
@@ -162,6 +168,23 @@ make clean
 
 推荐把接口理解成两层：`theme=` 负责共享配色，`layout=` 负责 Beamer 版式。
 
+### 答案模式
+
+`solution` 环境配合 `exercise` 使用。默认 `answers=false`，答案内容会被隐藏，适合学生版讲义。开启 `answers=true` 后，`solutions=inline` 会原地显示答案，`solutions=appendix` 会先收集答案并在 `\PrintSolutions` 处集中输出，`solutions=hidden` 会强制隐藏答案。
+
+```tex
+\begin{exercise}[极限计算]
+\label{ex:limit}
+计算 \(\lim_{x\to 0}\frac{\sin x}{x}\).
+\end{exercise}
+
+\begin{solution}
+由基本极限可得结果为 \(1\).
+\end{solution}
+
+\PrintSolutions
+```
+
 ### 错误与回退
 
 - 指定平台字体预设但系统缺少相关字体时，会自动回退到 `common`
@@ -175,6 +198,7 @@ make clean
 
 - 封面、目录、章节标题
 - 定义、定理、例题、真题、注释等盒子环境
+- 练习答案可按学生版、内联教师版或附录答案版输出
 - 页眉页脚和统一色彩层级
 
 ### 2. 数学讲义工作流层
@@ -227,6 +251,7 @@ make clean
 - 时间轴
 - 概率/集合图
 - 图论/网络图
+- `\MakiFitTikZ[<width>]{...}`：把较宽 TikZ 图缩放到指定宽度，减少横向溢出
 
 这部分单独文档见：
 
@@ -280,7 +305,8 @@ make clean
 2. 改文档结构、颜色或字体后，先跑 `make test`  
 3. 新增图形样式时，同步更新模板册和对应文档  
 4. 调整 Beamer 支持时，同步更新 [`beamer-guide.md`](./beamer-guide.md) 与 [`tests/test-beamer.tex`](../tests/test-beamer.tex)
-5. 发布时推送 tag，让 workflow 自动构建 release
+5. 新增公开接口时，同步补测试文档并确认 GitHub Actions 的 test workflow 覆盖到新用例
+6. 发布时推送 tag，让 workflow 自动构建 release
 
 ## 相关文档
 

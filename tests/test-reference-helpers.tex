@@ -1,0 +1,83 @@
+\documentclass[a4paper,12pt,oneside]{maki-notes}
+
+\renewcommand{\LectureNotesTitle}{Reference Helpers Test}
+\renewcommand{\AuthorInfo}{Test Runner}
+
+\begin{document}
+\mainmatter
+
+\chapter{Reference Commands}
+\label{chap:refs}
+
+\section{Named Blocks}
+\label{sec:refs-blocks}
+
+\begin{theorem}[夹逼准则]
+\label{thm:squeeze}
+若 \(g(x)\le f(x)\le h(x)\), 且两端极限相同, 则中间函数极限相同.
+\end{theorem}
+
+\begin{definition}[连续]
+\label{def:continuous}
+函数在一点的极限等于函数值时称为连续.
+\end{definition}
+
+\begin{example}[平方函数]
+\label{ex:square}
+函数 \(f(x)=x^2\) 在 \(\mathbb R\) 上连续.
+\end{example}
+
+\begin{claim}[局部结论]
+\label{clm:local}
+连续函数在局部保持有界.
+\end{claim}
+
+\begin{question}[反向问题]
+\label{q:reverse}
+局部有界是否推出连续?
+\end{question}
+
+\begin{conjecture}[示例猜想]
+\label{conj:sample}
+附加单调性后可能得到更强结论.
+\end{conjecture}
+
+\begin{equation}
+\label{eq:identity}
+  (a+b)^2=a^2+2ab+b^2.
+\end{equation}
+
+\begin{figure}[h]
+  \centering
+  \rule{2cm}{1cm}
+  \caption{占位图}
+  \label{fig:placeholder}
+\end{figure}
+
+\begin{table}[h]
+  \centering
+  \begin{tabular}{cc}
+    \toprule
+    A & B\\
+    \midrule
+    1 & 2\\
+    \bottomrule
+  \end{tabular}
+  \caption{占位表}
+  \label{tab:placeholder}
+\end{table}
+
+引用检查:
+\chapref{chap:refs},
+\secref{sec:refs-blocks},
+\thmref{thm:squeeze},
+\defref{def:continuous},
+\exref{ex:square},
+\claimref{clm:local},
+\questionref{q:reverse},
+\conjectureref{conj:sample},
+\figref{fig:placeholder},
+\tabref{tab:placeholder},
+\eqnref{eq:identity}.
+
+\end{document}

@@ -1,0 +1,42 @@
+\documentclass[
+  a4paper,
+  12pt,
+  oneside,
+  answers=true,
+  solutions=appendix
+]{maki-notes}
+
+\renewcommand{\LectureNotesTitle}{Appendix Solutions Test}
+\renewcommand{\AuthorInfo}{Test Runner}
+
+\begin{document}
+\mainmatter
+
+\chapter{Appendix Answers}
+
+\begin{exercise}[极限]
+\label{ex:appendix-limit}
+计算 \(\lim_{x\to 0}\frac{\sin x}{x}\).
+\end{exercise}
+
+\begin{solution}
+由基本极限可得
+\[
+  \lim_{x\to 0}\frac{\sin x}{x}=1.
+\]
+\end{solution}
+
+\begin{exercise}[导数]
+\label{ex:appendix-derivative}
+计算 \(f(x)=x^2\) 的导数.
+\end{exercise}
+
+\begin{solution}
+由幂函数求导公式可得 \(f'(x)=2x\).
+\end{solution}
+
+正文中只保留题目, 答案由 \texttt{\string\PrintSolutions} 统一输出.
+
+\PrintSolutions
+
+\end{document}

@@ -137,8 +137,27 @@
 \providecommand{\MakiTheme}{default}
 \providecommand{\MakiResolvedFontPreset}{common}
 \providecommand{\MakiResolvedTheme}{default}
+\providecommand{\MakiSolutionsMode}{inline}
 \providecommand{\kaishu}{}
 \providecommand{\heavykaishu}{}
+\makeatletter
+\@ifundefined{ifMakiShowAnswers}{%
+	\newif\ifMakiShowAnswers
+	\MakiShowAnswersfalse
+}{}
+
+\newcommand{\maki@validatesolutionsmode}{%
+	\ifdefstring{\MakiSolutionsMode}{inline}{}{%
+		\ifdefstring{\MakiSolutionsMode}{appendix}{}{%
+			\ifdefstring{\MakiSolutionsMode}{hidden}{}{%
+				\PackageWarningNoLine{maki-notes}{Unsupported solutions mode `\MakiSolutionsMode'. Falling back to `inline'}%
+				\renewcommand{\MakiSolutionsMode}{inline}%
+			}%
+		}%
+	}%
+}
+\maki@validatesolutionsmode
+\makeatother
 
 \newcommand{\makisetlatinfonts}{%
 	\IfFileExists{texgyrepagella-regular.otf}{%
@@ -173,7 +192,7 @@
 \newcommand{\makisetcommoncjkfonts}{%
 	\renewcommand{\MakiResolvedFontPreset}{common}%
 	\setCJKmainfont{FandolSong-Regular.otf}[BoldFont = FandolSong-Bold.otf]%
-	\setCJKsansfont{FandolHei-Regular.otf}%
+	\setCJKsansfont{FandolHei-Regular.otf}[BoldFont = FandolHei-Bold.otf]%
 	\setCJKmonofont{FandolFang-Regular.otf}%
 	\setCJKfamilyfont{makiKai}{FandolKai-Regular.otf}%
 	\setCJKfamilyfont{makiHeavyKai}{FandolKai-Regular.otf}[AutoFakeBold = 10]%
@@ -527,15 +546,7 @@
 \color{MainText}
 
 \ifMakiBeamerMode\else
-	\captionsetup[figure]{
-		font={small,stretch=1.08},
-		labelfont={bf,color=LogicColor},
-		textfont={small},
-		justification=raggedright,
-		singlelinecheck=false,
-		skip=4pt
-	}
-	\captionsetup[table]{
+	\captionsetup{
 		font={small,stretch=1.08},
 		labelfont={bf,color=LogicColor},
 		textfont={small},
@@ -554,6 +565,21 @@
 \setlength{\MakiWrapColumnSep}{1.2em}
 \setlength{\MakiWrapTextSep}{0.8em}
 \setlength{\marginparpush}{0.85em}
+
+\newsavebox{\MakiFitTikZBox}
+\NewDocumentCommand{\MakiFitTikZ}{O{\linewidth} +m}{%
+	\begingroup
+		\sbox{\MakiFitTikZBox}{#2}%
+		\ifdim\wd\MakiFitTikZBox>#1\relax
+			\resizebox{#1}{!}{\usebox{\MakiFitTikZBox}}%
+		\else
+			\usebox{\MakiFitTikZBox}%
+		\fi
+	\endgroup
+}
+\NewDocumentEnvironment{makitikzfigure}{O{\linewidth} +b}{%
+	\MakiFitTikZ[#1]{#2}%
+}{}
 
 \newcommand{\MakiCourseInfoCourse}{}
 \newcommand{\MakiCourseInfoTerm}{}
@@ -2081,6 +2107,12 @@
 		colback=DefBg,
 		colbacktitle=DefColor,
 		coltitle=DefColor
+	},
+	maki solution box/.style={
+		maki workflow block,
+		colback=TopologyBg,
+		colbacktitle=NoteColor,
+		coltitle=NoteColor
 	}
 }
 
@@ -2152,7 +2184,7 @@
 \ifMakiBeamerMode\else
 	\newenvironment{example}[1][]{\begin{exBox}{例题}{#1}}{\end{exBox}}
 	\newenvironment{longexample}[1][]{\begin{longexBox}{例题}{#1}}{\end{longexBox}}
-	\newenvironment{exercise}[1][]{\begin{exBox}{练习}{#1}}{\end{exBox}}
+	\newenvironment{exercise}[1][]{\begin{exBox}{练习}{#1}\xdef\MakiCurrentExerciseNumber{\thetheorem}}{\end{exBox}}
 \fi
 
 \newtcolorbox{realexamBox}[2][]{%
@@ -2176,6 +2208,93 @@
 	\newenvironment{realexam}[1][]{\begin{realexamBox}{#1}}{\end{realexamBox}}
 	\newenvironment{longrealexam}[1][]{\begin{longrealexamBox}{#1}}{\end{longrealexamBox}}
 \fi
+
+\providecommand{\chapref}[1]{第~\ref{#1}~章}
+\providecommand{\secref}[1]{第~\ref{#1}~节}
+\providecommand{\thmref}[1]{定理~\ref{#1}}
+\providecommand{\defref}[1]{定义~\ref{#1}}
+\providecommand{\exref}[1]{例题~\ref{#1}}
+\providecommand{\exerciseref}[1]{练习~\ref{#1}}
+\providecommand{\claimref}[1]{断言~\ref{#1}}
+\providecommand{\questionref}[1]{问题~\ref{#1}}
+\providecommand{\conjectureref}[1]{猜想~\ref{#1}}
+\providecommand{\figref}[1]{图~\ref{#1}}
+\providecommand{\tabref}[1]{表~\ref{#1}}
+\providecommand{\eqnref}[1]{式~\eqref{#1}}
+
+\makeatletter
+\ifMakiBeamerMode\else
+\newcounter{makiSolutionEntry}
+\newcommand{\MakiCurrentExerciseNumber}{}
+
+\newcommand{\maki@solutionfield}[2]{%
+	\csname maki@solution@#1@#2\endcsname
+}
+
+\newcommand{\maki@makesolutiontitle}[1]{%
+	\def\maki@solutiontitle{解答}%
+	\ifdefempty{\MakiCurrentExerciseNumber}{}{%
+		\edef\maki@solutiontitle{\maki@solutiontitle（练习 \MakiCurrentExerciseNumber）}%
+	}%
+	\IfNoValueF{#1}{%
+		\edef\maki@solutiontitle{\maki@solutiontitle：#1}%
+	}%
+}
+
+\newcommand{\maki@rendersolution}[2]{%
+	\begin{tcolorbox}[maki solution box,title={#1}]
+		#2
+	\end{tcolorbox}%
+}
+
+\newcommand{\maki@registersolution}[2]{%
+	\stepcounter{makiSolutionEntry}%
+	\expandafter\xdef\csname maki@solution@\arabic{makiSolutionEntry}@title\endcsname{#1}%
+	\expandafter\gdef\csname maki@solution@\arabic{makiSolutionEntry}@body\endcsname{#2}%
+}
+
+\NewDocumentEnvironment{solution}{o +b}{%
+	\ifMakiShowAnswers
+		\begingroup
+			\maki@makesolutiontitle{#1}%
+			\ifdefstring{\MakiSolutionsMode}{appendix}{%
+				\maki@registersolution{\maki@solutiontitle}{#2}%
+			}{%
+				\ifdefstring{\MakiSolutionsMode}{hidden}{}{%
+					\maki@rendersolution{\maki@solutiontitle}{#2}%
+				}%
+			}%
+		\endgroup
+	\fi
+}{}
+
+\NewDocumentCommand{\PrintSolutions}{}{%
+	\ifMakiShowAnswers
+		\ifMakiBeamerMode
+			\begin{frame}[allowframebreaks]{答案与解析}
+		\else
+			\clearpage
+			\chapter*{答案与解析}
+			\addcontentsline{toc}{chapter}{答案与解析}
+		\fi
+		\ifnum\value{makiSolutionEntry}=0
+			暂无已登记答案。%
+		\else
+			\@tempcnta=1\relax
+			\@whilenum\@tempcnta<\numexpr\value{makiSolutionEntry}+1\relax\do{%
+				\maki@rendersolution
+					{\maki@solutionfield{\number\@tempcnta}{title}}
+					{\maki@solutionfield{\number\@tempcnta}{body}}%
+				\advance\@tempcnta\@ne
+			}%
+		\fi
+		\ifMakiBeamerMode
+			\end{frame}
+		\fi
+	\fi
+}
+\fi
+\makeatother
 
 \makeatletter
 \newcounter{makiSymbolEntry}

@@ -40,6 +40,10 @@ jobs:
             tests/test-tikz-styles.tex
             tests/test-wrap-layout.tex
             tests/test-workflow-guide.tex
+            tests/test-research-workflow.tex
+            tests/test-solutions-inline.tex
+            tests/test-solutions-appendix.tex
+            tests/test-reference-helpers.tex
           latexmk_use_xelatex: true
           args: -interaction=nonstopmode -file-line-error -halt-on-error
 

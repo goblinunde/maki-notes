@@ -8,6 +8,8 @@
 }
 \DeclareStringOption[common]{fontpreset}
 \DeclareStringOption[default]{theme}
+\DeclareBoolOption[false]{answers}
+\DeclareStringOption[inline]{solutions}
 \DeclareDefaultOption{\PassOptionsToClass{\CurrentOption}{ctexbook}}
 \ProcessKeyvalOptions*
 
@@ -20,8 +22,16 @@
 \newcommand{\CoverFooterBlock}{日期}
 \newcommand{\MakiFontPreset}{common}
 \newcommand{\MakiTheme}{default}
+\newif\ifMakiShowAnswers
 \edef\MakiFontPreset{\maki@fontpreset}
 \edef\MakiTheme{\maki@theme}
+\ifmaki@answers
+	\MakiShowAnswerstrue
+\else
+	\MakiShowAnswersfalse
+\fi
+\newcommand{\MakiSolutionsMode}{inline}
+\edef\MakiSolutionsMode{\maki@solutions}
 
 \RequirePackage{maki-notes}
 

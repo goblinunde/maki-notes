@@ -216,10 +216,17 @@ xelatex -interaction=nonstopmode -file-line-error
 - `fontpreset=common|auto|windows|macos|linux`
 - `theme=default|ocean|forest|graphite|amber|berry|sandstone|cobalt|sage|ruby|midnight`
 
+`maki-notes` 还支持讲义答案模式：
+
+- `answers=true|false`
+- `solutions=inline|appendix|hidden`
+
 默认值是：
 
 - `fontpreset=common`
 - `theme=default`
+- `answers=false`
+- `solutions=inline`
 
 如果你在用 `maki-beamer`，还可以额外使用：
 
@@ -233,7 +240,9 @@ xelatex -interaction=nonstopmode -file-line-error
   12pt,
   oneside,
   fontpreset=auto,
-  theme=ocean
+  theme=ocean,
+  answers=true,
+  solutions=appendix
 ]{maki-notes}
 ```
 
@@ -271,12 +280,43 @@ xelatex -interaction=nonstopmode -file-line-error
 
 可以把它理解成：`theme=` 管配色，`layout=` 管 Beamer 的页面骨架。
 
+### `answers` 与 `solutions`
+
+`solution` 环境用于给 `exercise` 配套写答案。默认 `answers=false` 时答案内容不输出，适合学生版讲义。
+
+```tex
+\begin{exercise}[极限计算]
+\label{ex:limit}
+计算 \(\lim_{x\to 0}\frac{\sin x}{x}\).
+\end{exercise}
+
+\begin{solution}
+由基本极限可得结果为 \(1\).
+\end{solution}
+```
+
+- `answers=true,solutions=inline`：答案直接显示在题目后
+- `answers=true,solutions=appendix`：答案先收集，调用 `\PrintSolutions` 时统一输出
+- `solutions=hidden`：即使开启 `answers=true` 也不显示答案
+
+常用中文引用命令包括 `\chapref`、`\secref`、`\thmref`、`\defref`、`\exref`、`\exerciseref`、`\figref`、`\tabref` 和 `\eqnref`。
+
 ### 回退与报错
 
 - 如果你选中了某个平台预设，但本机缺少对应字体，模板会自动回退到 `common`
 - 如果你显式写了不支持的值，例如 `fontpreset=desktop` 或 `theme=sunset`，模板会抛出清晰错误并指出合法取值
 
 ## TikZ 预设族
+
+宽图可以用 `\MakiFitTikZ[<width>]{...}` 缩放到指定宽度，避免横向溢出：
+
+```tex
+\MakiFitTikZ[0.8\linewidth]{%
+\begin{tikzpicture}
+  \node[flow process] {步骤};
+\end{tikzpicture}%
+}
+```
 
 模板里的 TikZ 样式不是零散颜色片段，而是按语义整理好的预设族。默认主题切换后，这些样式会自动跟随新的色位，不需要额外改图代码。
 
@@ -417,7 +457,7 @@ make clean
 - `docs/wrapfig-margin-notes.md`：图文绕排与页边批注用法说明
 - `docs/tikz-template-pages.md`：TikZ 模板册结构与新增页面索引
 - `tikz-template-pages.tex`：可直接复用的图形模板页
-- `tests/`：用于验证模板基础能力的测试文档，其中 `tests/test-basic.tex` 覆盖类选项兼容，`tests/test-beamer.tex` 覆盖 `maki-beamer` 与共享内容层，`tests/test-wrap-layout.tex` 集中覆盖新版绕排与页边接口，`tests/test-workflow-guide.tex` 集中覆盖课程元信息与章节导读工作流
+- `tests/`：用于验证模板基础能力的测试文档，其中 `tests/test-basic.tex` 覆盖类选项兼容，`tests/test-beamer.tex` 覆盖 `maki-beamer` 与共享内容层，`tests/test-wrap-layout.tex` 集中覆盖新版绕排与页边接口，`tests/test-workflow-guide.tex` 集中覆盖课程元信息与章节导读工作流，`tests/test-solutions-inline.tex` 与 `tests/test-solutions-appendix.tex` 覆盖答案输出模式
 
 ## GitHub Release 流程
 
@@ -438,6 +478,8 @@ workflow 会执行以下动作：
 - 调用 GitHub Models 生成 release notes
 - 创建或更新与当前 tag 对应的 GitHub Release
 - 上传编译后的 PDF 和源码包作为 release assets
+
+日常 `push` 和 `pull_request` 会由 [`.github/workflows/test.yml`](./.github/workflows/test.yml) 编译烟雾文档与测试文档，提前发现模板接口回归。
 
 当前 release 资产包括：
 

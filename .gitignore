@@ -45,7 +45,10 @@ texput.log
 /test-beamer.pdf
 /test-environments.pdf
 /test-graphics.pdf
+/test-reference-helpers.pdf
 /test-research-workflow.pdf
+/test-solutions-appendix.pdf
+/test-solutions-inline.pdf
 /test-tikz-styles.pdf
 /test-wrap-layout.pdf
 /test-workflow-guide.pdf

@@ -1,0 +1,45 @@
+\documentclass[
+  a4paper,
+  12pt,
+  oneside,
+  answers=true,
+  solutions=inline
+]{maki-notes}
+
+\renewcommand{\LectureNotesTitle}{Inline Solutions Test}
+\renewcommand{\AuthorInfo}{Test Runner}
+
+\begin{document}
+\mainmatter
+
+\chapter{Inline Answers}
+
+\section{Exercise Flow}
+
+\begin{exercise}[等差数列求和]
+\label{ex:inline-sum}
+设 \(a_n = 2n-1\). 求 \(\sum_{n=1}^{5} a_n\).
+\end{exercise}
+
+\begin{solution}
+这是前五个正奇数之和, 因此
+\[
+  \sum_{n=1}^{5}(2n-1)=5^2=25.
+\]
+\end{solution}
+
+上面的答案应当以内联方式显示, 且可以通过 \exerciseref{ex:inline-sum} 引用.
+
+\begin{center}
+\MakiFitTikZ[0.35\linewidth]{%
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \node[flow terminal] (a) at (0,0) {题目};
+  \node[flow process] (b) at (2.6,0) {思路};
+  \node[flow terminal] (c) at (5.2,0) {答案};
+  \draw[flow arrow] (a) -- (b);
+  \draw[flow arrow] (b) -- (c);
+\end{tikzpicture}%
+}
+\end{center}
+
+\end{document}

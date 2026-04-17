@@ -27,7 +27,9 @@
 
 \section{Theme Presets}
 
-这一页同时验证主题色位与 TikZ 预设族是否能一起工作. 文档类本身使用 `theme=amber`, 下方色卡则额外切换并展示所有当前支持的主题, 这样一份测试文档就能覆盖新增主题入口和色位联动.
+这一页同时验证主题色位与 TikZ 预设族是否能一起工作.
+
+文档类本身使用 \texttt{theme=amber}. 下方色卡会额外切换并展示所有当前支持的主题, 用一份测试文档覆盖主题入口和色位联动.
 
 \begin{center}
 \ThemeCard{default}\hspace{0.6em}
@@ -266,6 +268,7 @@
 这一组新增样式参考了 tikz.net 上 flowchart 与 timeline 一类图的组织方法: 节点形状、流程箭头、里程碑和时间窗口各自独立命名, 以后画算法流程、课程安排或项目进度时就不需要重新拼装.
 
 \begin{center}
+\MakiFitTikZ[0.95\linewidth]{%
 \begin{tikzpicture}[x=1cm, y=1cm]
 \node[flow terminal] (start) at (0,2.1) {开始};
 \node[flow process] (readme) at (2.8,2.1) {读取题面\\与仓库约束};
@@ -299,6 +302,7 @@
   \node[maki label, above=2pt of m4] {release};
 \end{scope}
 \end{tikzpicture}
+}
 \captionof{figure}{流程图与时间轴预设样式测试}
 \end{center}
 
@@ -307,6 +311,7 @@
 最后一组新增样式面向概率论与图论讲义. 参考了 tikz.net 的 Venn/集合图和 graph-isomorphism 一类节点边图, 把样本空间、事件区域、条件区域、顶点和特殊边都抽成可复用样式.
 
 \begin{center}
+\MakiFitTikZ[0.95\linewidth]{%
 \begin{tikzpicture}[x=1cm, y=1cm]
 \begin{scope}
   \draw[prob universe] (0,0) rectangle (5.5,4.2);
@@ -345,6 +350,7 @@
   \node[flow note, anchor=west] at (4.55,2.9) {accent edge = shortest path\\dashed edge = cut candidate};
 \end{scope}
 \end{tikzpicture}
+}
 \captionof{figure}{概率/集合图与图论节点边样式测试}
 \end{center}
 
@@ -353,6 +359,7 @@
 这一组新增样式面向三维球体草图和流形局部几何示意. 球体部分参考了 tikz.net 的 \texttt{parametric-sphere} 页面里“经纬线 + 可见/不可见轮廓”的组织方式, 但这里收敛成更轻量的讲义模板; 流形部分则沿用了 tikz.net \texttt{manifold} 的“原空间/局部图/映射”表达习惯, 同时补上切平面、测地线和局部 chart 的语义样式.
 
 \begin{center}
+\MakiFitTikZ[0.95\linewidth]{%
 \begin{tikzpicture}[x=1cm, y=1cm]
 \begin{scope}
   \shade[sphere shell] (0,0) circle (1.8);
@@ -390,14 +397,18 @@
   \node[maki annotation] at (5.65,3.0) {local chart};
 \end{scope}
 \end{tikzpicture}
+}
 \captionof{figure}{三维球体草图与流形局部几何样式测试}
 \end{center}
 
 \section{Fourier and Commutative Diagrams}
 
-这一组新增样式面向分析类讲义与交换图说明. 傅里叶部分参考 tikz.net 的 \texttt{fourier-transform} 页面, 抽出了时域/频域、窗函数、频率标记和变换箭头; 交换图部分则在现有 `diag` 样式上补了更适合 pullback、自然变换和强调对象的语义键.
+这一组新增样式面向分析类讲义与交换图说明.
+
+傅里叶部分参考 tikz.net 的 \texttt{fourier-transform} 页面, 抽出了时域/频域、窗函数、频率标记和变换箭头. 交换图部分则在现有 \texttt{diag} 样式上补了更适合 pullback、自然变换和强调对象的语义键.
 
 \begin{center}
+\MakiFitTikZ[0.95\linewidth]{%
 \begin{tikzpicture}[x=1cm, y=1cm]
 \begin{scope}
   \draw[fourier axis] (-3.3,0) -- (3.4,0) node[right] {$t$};
@@ -423,13 +434,15 @@
     }
     \node[maki annotation] at (0.2,1.72) {frequency domain};
     \node[fourier window, anchor=west] at (1.15,1.2) {$\hat f(\omega)\propto \dfrac{\sin(T\omega)}{\omega}$};
-  \end{scope}
+\end{scope}
 \end{scope}
 \end{tikzpicture}
+}
 \captionof{figure}{傅里叶变换时域/频域样式测试}
 \end{center}
 
 \begin{center}
+\MakiFitTikZ[0.95\linewidth]{%
 \begin{tikzpicture}[x=2.25cm, y=1.55cm]
 \node[diag object accent] (A) at (0,2) {$X\times_Z Y$};
 \node[diag object] (B) at (2.15,2) {$Y$};
@@ -450,6 +463,7 @@
 \node[maki annotation] at (2.15,2.72) {pullback square};
 \node[maki annotation] at (4.25,-0.08) {derived / ambient\\context object};
 \end{tikzpicture}
+}
 \captionof{figure}{交换图与 pullback / 自然变换样式测试}
 \end{center}
 
