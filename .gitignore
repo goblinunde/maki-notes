@@ -7,6 +7,7 @@
 *.glg
 *.glo
 *.gls
+*.hd
 *.idx
 *.ilg
 *.ind
@@ -40,6 +41,8 @@ texput.log
 /beamer-demo.pdf
 /example.pdf
 /main-dist.pdf
+/README.en.pdf
+/README.zh.pdf
 /smoke-packaging.pdf
 /test-basic.pdf
 /test-beamer.pdf

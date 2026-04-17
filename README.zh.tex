@@ -1,0 +1,527 @@
+\documentclass[a4paper,11pt]{ltxdoc}
+\usepackage[UTF8,scheme=plain]{ctex}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{hypdoc}
+
+\geometry{margin=2.55cm}
+\setlength{\emergencystretch}{3em}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!55!black,
+  urlcolor=blue!55!black,
+  citecolor=blue!55!black,
+  pdftitle={Maki Notes Implementation Manual},
+  pdfauthor={Maki Notes}
+}
+
+\definecolor{MakiBlue}{RGB}{42,91,142}
+\definecolor{MakiGray}{RGB}{246,247,249}
+\definecolor{MakiRule}{RGB}{210,216,224}
+
+\lstdefinestyle{maki-doc}{
+  basicstyle=\ttfamily\small,
+  columns=fullflexible,
+  keepspaces=true,
+  frame=single,
+  framerule=0.3pt,
+  rulecolor=\color{MakiRule},
+  backgroundcolor=\color{MakiGray},
+  breaklines=true,
+  tabsize=2
+}
+\lstset{style=maki-doc}
+
+\newcommand{\mfile}[1]{\texttt{#1}}
+\newcommand{\mcls}[1]{\textsf{#1}}
+\newcommand{\mpkg}[1]{\textsf{#1}}
+\newcommand{\mopt}[1]{\texttt{#1}}
+\newcommand{\menv}[1]{\texttt{#1}}
+\newcommand{\mcmd}[1]{\texttt{\textbackslash#1}}
+\newcommand{\mkey}[1]{\texttt{#1}}
+\newcommand{\Maki}{\textsf{Maki Notes}}
+
+\newenvironment{implementation}[1]
+  {\par\medskip\noindent\textbf{\color{MakiBlue}实现要点：#1}\par\smallskip}
+  {\par\medskip}
+
+\newenvironment{interfaceblock}[1]
+  {\par\medskip\noindent\textbf{\color{MakiBlue}接口：#1}\par\smallskip\begin{description}[leftmargin=3.2cm,style=nextline]}
+  {\end{description}\par\medskip}
+
+\title{\Maki{} 实现手册\\
+  \large 按功能划分的 \mfile{.cls}/\mfile{.sty} 源码说明}
+\author{Maki Notes Project}
+\date{2026-04-18}
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\begin{abstract}
+本文是一份面向维护者的实现手册，而不是普通使用教程。它按照功能模块解释
+\mfile{maki-notes.cls}、\mfile{maki-beamer.cls}、\mfile{maki-notes.sty}
+和 \mfile{beamerthememaki.sty} 的职责边界、关键宏、选项流转、计数器策略、
+主题/字体解析、讲义环境、研究笔记层、答案模式、TikZ 语义样式和构建流程。
+写法参考 CTAN 包文档的组织方式：先给出文件映射与公共接口，再解释实现细节和扩展规则。
+\end{abstract}
+
+\section{文件架构}
+
+\Maki{} 的源码被拆成两个文档类入口和两个样式实现层。
+
+\begin{longtable}{@{}p{0.26\linewidth}p{0.68\linewidth}@{}}
+\toprule
+文件 & 职责 \\
+\midrule
+\mfile{maki-notes.cls} &
+书式讲义入口。负责解析 \mopt{fontpreset}、\mopt{theme}、\mopt{answers}、
+\mopt{solutions} 等类选项，装载 \mcls{ctexbook}，建立封面宏，再载入
+\mfile{maki-notes.sty}。\\
+\mfile{maki-beamer.cls} &
+演示文稿入口。负责解析 Beamer 专属的 \mopt{layout}、\mopt{plain}、
+\mopt{invert}、\mopt{accessibility}，装载 \mcls{ctexbeamer}，再把主题选项
+转交给 \mfile{beamerthememaki.sty}。\\
+\mfile{maki-notes.sty} &
+共享样式主体。集中管理字体预设、主题色、数学排版、课程/研究元信息、
+章节导读、研究条目导引、盒子环境、答案模式、引用命令、图文绕排、
+页边批注和 TikZ/PGFPlots 语义样式。\\
+\mfile{beamerthememaki.sty} &
+Beamer 主题层。负责 title page、outline、headline、footline、进度条、
+block 颜色和三种布局变体。\\
+\bottomrule
+\end{longtable}
+
+\begin{implementation}{入口层和共享层分离}
+两个 \mfile{.cls} 文件只做“选项解析 + 基类装配 + 少量顶层命令”。真正的视觉系统和内容环境放在
+\mfile{maki-notes.sty}。这种结构保证讲义和 Beamer 可以共享同一套字体、主题色和 TikZ 样式。
+\end{implementation}
+
+\section{类选项和入口类}
+
+\subsection{\mfile{maki-notes.cls}}
+
+\mfile{maki-notes.cls} 使用 \mpkg{kvoptions} 声明类选项：
+
+\begin{lstlisting}[language=TeX]
+\DeclareStringOption[common]{fontpreset}
+\DeclareStringOption[default]{theme}
+\DeclareBoolOption[false]{answers}
+\DeclareStringOption[inline]{solutions}
+\DeclareDefaultOption{\PassOptionsToClass{\CurrentOption}{ctexbook}}
+\ProcessKeyvalOptions*
+\end{lstlisting}
+
+\begin{interfaceblock}{讲义类选项}
+\item[\mopt{fontpreset}] 取值为 \mopt{common}、\mopt{auto}、\mopt{windows}、\mopt{macos}、\mopt{linux}。
+\item[\mopt{theme}] 取值为 \mopt{default}、\mopt{ocean}、\mopt{forest}、\mopt{graphite}、\mopt{amber}、\mopt{berry}、\mopt{sandstone}、\mopt{cobalt}、\mopt{sage}、\mopt{ruby}、\mopt{midnight}。
+\item[\mopt{answers}] 布尔选项，控制是否显示答案。
+\item[\mopt{solutions}] 字符串选项，控制答案输出位置：\mopt{inline}、\mopt{appendix}、\mopt{hidden}。
+\end{interfaceblock}
+
+解析完成后，类文件把选项值复制到共享层变量：
+
+\begin{lstlisting}[language=TeX]
+\edef\MakiFontPreset{\maki@fontpreset}
+\edef\MakiTheme{\maki@theme}
+\ifmaki@answers
+  \MakiShowAnswerstrue
+\else
+  \MakiShowAnswersfalse
+\fi
+\edef\MakiSolutionsMode{\maki@solutions}
+\end{lstlisting}
+
+\subsection{\mfile{maki-beamer.cls}}
+
+\mfile{maki-beamer.cls} 的结构与 notes 类相似，但基类换成 \mcls{ctexbeamer}，并增加 Beamer 主题选项。
+类文件先把选项收集到 \mcmd{MakiBeamerThemeOptions}，再调用：
+
+\begin{lstlisting}[language=TeX]
+\expandafter\usetheme\expandafter[\MakiBeamerThemeOptions]{maki}
+\end{lstlisting}
+
+\begin{implementation}{为什么不用直接写死 \mcmd{usetheme}}
+主题选项由类选项动态拼接，因此需要通过 \mcmd{expandafter} 把逗号分隔的选项列表展开后传给
+\mcmd{usetheme}。这样用户只需要在类声明中写：
+\begin{lstlisting}[language=TeX]
+\documentclass[layout=splitbar,theme=cobalt]{maki-beamer}
+\end{lstlisting}
+不用再手动调用主题。
+\end{implementation}
+
+\section{共享样式层的模式检测}
+
+\mfile{maki-notes.sty} 第一件事是判断自己运行在普通讲义还是 Beamer 中：
+
+\begin{lstlisting}[language=TeX]
+\newif\ifMakiBeamerMode
+\MakiBeamerModefalse
+\@ifclassloaded{beamer}{\MakiBeamerModetrue}{}
+\@ifclassloaded{ctexbeamer}{\MakiBeamerModetrue}{}
+\end{lstlisting}
+
+随后很多包和环境都使用 \mcmd{ifMakiBeamerMode} 分支。例如：
+
+\begin{itemize}
+\item 讲义模式加载 \mpkg{geometry}、\mpkg{fancyhdr}、\mpkg{caption}、\mpkg{wrapfig}、\mpkg{marginnote}。
+\item Beamer 模式跳过页边距、页眉页脚、浮动题注等书式文档功能。
+\item 研究环境和 TikZ 样式保留给两种模式共用。
+\end{itemize}
+
+\begin{implementation}{模式分支的目的}
+共享层不是一个完全通用的 LaTeX 包，而是给 \mcls{maki-notes} 和 \mcls{maki-beamer} 使用的样式系统。
+模式检测避免了 \mcls{beamer} 与 \mpkg{geometry}/\mpkg{fancyhdr}/\mpkg{caption} 等包之间的冲突。
+\end{implementation}
+
+\section{字体预设系统}
+
+字体系统分成拉丁字体和 CJK 字体两层。
+
+\subsection{拉丁字体}
+
+\mcmd{makisetlatinfonts} 优先使用 TeX Gyre Pagella、TeX Gyre Heros 和 Latin Modern Mono。
+这些字体通常随 TeX Live 安装，能保证跨平台可用性。
+
+\subsection{CJK 字体}
+
+CJK 预设由一组 \mcmd{makiapplyfontpreset...} 宏实现：
+
+\begin{longtable}{@{}p{0.36\linewidth}p{0.56\linewidth}@{}}
+\toprule
+宏 & 实现策略 \\
+\midrule
+\mcmd{makiapplyfontpresetcommon} & 使用 Fandol 宋体、黑体、仿宋、楷体，作为 TeX Live 默认安全方案。\\
+\mcmd{makiapplyfontpresetwindows} & 检测 \mopt{SimSun}，再选择微软雅黑、黑体、楷体等 Windows 常见字体。\\
+\mcmd{makiapplyfontpresetmacos} & 检测 \mopt{Songti SC}，再选择苹方、黑体、楷体等 macOS 字体。\\
+\mcmd{makiapplyfontpresetlinux} & 检测 Noto/Source Han CJK 字体，不存在时回退到 \mopt{common}。\\
+\mcmd{makiapplyfontpresetauto} & 依次探测 macOS、Windows、Linux 字体，最后回退到 \mopt{common}。\\
+\bottomrule
+\end{longtable}
+
+\begin{implementation}{字体选择的容错}
+\mcmd{makipickfirstfont} 接收一个逗号分隔候选列表，使用 \mcmd{IfFontExistsTF} 找到第一个可用字体。
+如果没有命中，则写入回退字体。显式请求的平台预设不存在时，样式层使用
+\mcmd{PackageWarningNoLine} 给出警告并退回 \mopt{common}。
+\end{implementation}
+
+\section{主题色系统}
+
+主题通过 \mcmd{makiapplytheme...} 宏实现。每个主题都会定义相同的一组语义色位：
+
+\begin{itemize}
+\item \mkey{LogicColor}/\mkey{LogicBg}：定理、证明、强调逻辑。
+\item \mkey{DefColor}/\mkey{DefBg}：定义、公理、输入输出。
+\item \mkey{ExColor}/\mkey{ExBg}：例题、练习、流程主线。
+\item \mkey{NoteColor}：注释、方法、研究想法。
+\item \mkey{GeometryColor}/\mkey{GeometryBg} 与 \mkey{TopologyColor}/\mkey{TopologyBg}：几何、拓扑、图形语义。
+\item \mkey{NNInputColor}、\mkey{NNHiddenColor}、\mkey{NNOutputColor}、\mkey{NNTensorColor}：神经网络/Tensor 图形语义。
+\item \mkey{MainText}：正文主色。
+\end{itemize}
+
+\begin{implementation}{主题切换不改公开接口}
+盒子环境、TikZ 样式和 Beamer 主题都引用语义色位，而不是硬编码某个主题的 RGB 值。
+因此新增主题只需要添加一个 \mcmd{makiapplytheme<name>} 宏，并在文档中登记合法取值。
+\end{implementation}
+
+\section{数学排版微调}
+
+\mfile{maki-notes.sty} 对一些数学符号做了讲义化调整：
+
+\begin{itemize}
+\item \mcmd{ge}、\mcmd{le} 改为 \mcmd{geqslant}、\mcmd{leqslant}。
+\item \mcmd{lim}、\mcmd{int}、\mcmd{sum} 默认使用 display style，适配中文讲义的大字号阅读。
+\item \mcmd{dfrac} 增加不可见高度/深度 strut，减少分式上下拥挤。
+\item \menv{pmatrix}、\menv{bmatrix}、\menv{dcases} 等环境通过 LaTeX hook 调整行距。
+\end{itemize}
+
+\begin{implementation}{风险边界}
+这些改写会改变全局数学外观，因此它们适合本模板的讲义定位。如果要把 \mfile{maki-notes.sty}
+拆成通用 CTAN 包，应考虑提供关闭这些重定义的选项。
+\end{implementation}
+
+\section{课程元信息和章节导读}
+
+\subsection{键值接口}
+
+课程、章节和导读信息使用 \mpkg{pgfkeys} 解析：
+
+\begin{lstlisting}[language=TeX]
+\SetCourseInfo{
+  course={高等数学},
+  term={2026 春},
+  lecture={第 3 讲},
+  date={2026-04-13}
+}
+\end{lstlisting}
+
+内部键族包括：
+
+\begin{longtable}{@{}p{0.3\linewidth}p{0.62\linewidth}@{}}
+\toprule
+键族 & 存储变量 \\
+\midrule
+\mkey{/maki/course} & \mcmd{MakiCourseInfoCourse}、\mcmd{MakiCourseInfoTerm}、\mcmd{MakiCourseInfoLecture} 等。\\
+\mkey{/maki/chapter} & 暂存到 \mcmd{MakiPendingChapter...}，在下一次 chapter 时绑定。\\
+\mkey{/maki/guide} & 存储本章路线、核心公式、方法、误区、考试关注等导读内容。\\
+\bottomrule
+\end{longtable}
+
+\subsection{章节绑定}
+
+讲义模式中使用 \mcmd{pretocmd} 挂钩 \mcmd{@chapter} 和 \mcmd{@schapter}：
+
+\begin{lstlisting}[language=TeX]
+\pretocmd{\@chapter}{\MakiBindPendingChapterInfo}{}{}
+\pretocmd{\@schapter}{\MakiBindPendingChapterInfo}{}{}
+\end{lstlisting}
+
+\mcmd{MakiBindPendingChapterInfo} 会把“下一章”的待绑定信息复制到当前章变量，并清空 pending 状态。
+这样用户可以在 \mcmd{chapter} 前写 \mcmd{SetChapterInfo}，不会污染后续章节。
+
+\subsection{导读页生成}
+
+\mcmd{MakeChapterGuide} 负责生成整页导读：
+
+\begin{itemize}
+\item 章节标题来自 \mcmd{chaptermark} 写入的 \mcmd{MakiCurrentChapterTitle}。
+\item 课程信息来自 \mcmd{SetCourseInfo}。
+\item 学习目标、路线、公式、误区等字段通过 \menv{tcbraster} 排成卡片。
+\item 局部目录通过 \mpkg{etoc} 的 \mcmd{localtableofcontents} 生成。
+\end{itemize}
+
+\section{研究笔记工作流}
+
+研究层与课程层并行，使用 \mcmd{SetResearchInfo}、\mcmd{SetEntryInfo} 和
+\mcmd{MakeEntryGuide} 维护项目上下文、条目上下文和条目导引块。
+
+\begin{interfaceblock}{研究接口}
+\item[\mcmd{SetResearchInfo}] 设置项目、方向、作者、合作者、状态、创建时间、更新时间和标签。
+\item[\mcmd{SetEntryInfo}] 设置当前条目的主题、来源、source key、更新时间、标签和目标。
+\item[\mcmd{MakeEntryGuide}] 输出条目导引卡片和摘要/依赖/目标/障碍/下一步等字段。
+\item[\mcmd{DeclareSymbol}] 登记符号说明。
+\item[\mcmd{PrintSymbolIndex}] 输出符号表。
+\item[\mcmd{PrintOpenProblemIndex}] 输出开放问题表。
+\end{interfaceblock}
+
+\begin{implementation}{动态字段存储}
+符号表和开放问题表使用计数器 + \mcmd{csname} 动态控制序列存储条目。例如第 \(n\) 个符号会存入
+\verb|\maki@symbol@n@symbol| 和 \verb|\maki@symbol@n@desc|。打印时用 \mcmd{@whilenum}
+从 1 遍历到当前计数器值。
+\end{implementation}
+
+\section{图文绕排和页边批注}
+
+讲义模式额外加载 \mpkg{wrapfig}、\mpkg{marginnote}、\mpkg{ifoddpage}，提供：
+
+\begin{interfaceblock}{图文/页边接口}
+\item[\menv{leftfiguretext}] 左图右文。
+\item[\menv{rightfiguretext}] 右图左文。
+\item[\menv{figuretextleft}] \menv{leftfiguretext} 的别名式封装。
+\item[\menv{figuretextright}] \menv{rightfiguretext} 的别名式封装。
+\item[\mcmd{sidenote}] 无标题页边批注。
+\item[\mcmd{marginremark}] 带可选标题的页边批注。
+\item[\mcmd{sidecaption}] 使用页边批注输出 figure 题注。
+\end{interfaceblock}
+
+\begin{implementation}{双面排版}
+\mcmd{maki@outernote} 通过 \mcmd{checkoddpage} 判断奇偶页。在双面模式下，奇数页使用右侧格式，
+偶数页使用左侧格式；单面模式固定在右侧。
+\end{implementation}
+
+\section{TikZ 和 PGFPlots 语义样式}
+
+模板把 TikZ 样式按语义分组，而不是只提供颜色片段。
+
+\begin{longtable}{@{}p{0.28\linewidth}p{0.64\linewidth}@{}}
+\toprule
+样式族 & 用途 \\
+\midrule
+\mkey{nn ...} & 神经网络、张量、卷积块、跳连、注意力连接。\\
+\mkey{transformer ...} & token、attention block、FFN、norm、residual flow 等 Transformer 结构图。\\
+\mkey{pinn ...}/\mkey{fpinn ...} & PINN/fPINN 的物理约束、边界、初值、loss、分数阶算子等。\\
+\mkey{math ...}/\mkey{geom ...} & 坐标轴、曲线、切线、法线、几何点和角标。\\
+\mkey{topo ...}/\mkey{manifold ...}/\mkey{sphere ...} & 拓扑基本域、流形局部图、三维球面。\\
+\mkey{fourier ...} & 时域、频域、窗函数、变换箭头和谱线。\\
+\mkey{flow ...}/\mkey{timeline ...} & 流程图和时间轴。\\
+\mkey{prob ...}/\mkey{graph ...} & 概率集合图和图论节点边图。\\
+\bottomrule
+\end{longtable}
+
+\mcmd{MakiFitTikZ} 使用 savebox 测量内容宽度，只在超过目标宽度时调用 \mcmd{resizebox}：
+
+\begin{lstlisting}[language=TeX]
+\sbox{\MakiFitTikZBox}{#2}
+\ifdim\wd\MakiFitTikZBox>#1\relax
+  \resizebox{#1}{!}{\usebox{\MakiFitTikZBox}}
+\else
+  \usebox{\MakiFitTikZBox}
+\fi
+\end{lstlisting}
+
+这比无条件缩放更稳：较小的图保持原始线宽和文字大小，只有过宽图才收缩。
+
+\section{盒子环境和计数器}
+
+讲义环境基于 \mpkg{tcolorbox}。基础样式分三层：
+
+\begin{enumerate}
+\item \mkey{commonbox}：定理、定义、例题等核心盒子的通用外观。
+\item \mkey{maki workflow card}/\mkey{maki workflow hero}：章节导读和研究导引卡片。
+\item \mkey{maki workflow block}：核心公式、方法、误区、研究对象、答案等信息块。
+\end{enumerate}
+
+\begin{interfaceblock}{主要环境}
+\item[\menv{theorem}, \menv{lemma}, \menv{proposition}, \menv{corollary}] 逻辑类盒子。
+\item[\menv{definition}, \menv{axiom}] 定义类盒子。
+\item[\menv{example}, \menv{exercise}, \menv{realexam}] 例题、练习、真题。
+\item[\menv{notation}, \menv{question}, \menv{conjecture}, \menv{claim}] 研究对象。
+\item[\menv{keyformula}, \menv{pitfall}, \menv{methodnote}, \menv{examfocus}] 教学工作流信息块。
+\item[\menv{remark}, \menv{proofsketch}, \menv{idea}, \menv{obstacle}, \menv{nextstep}] 研究过程记录块。
+\end{interfaceblock}
+
+\begin{implementation}{共享 theorem 编号}
+\menv{theorem}、\menv{definition}、\menv{example}、\menv{exercise} 等讲义盒子在当前实现中通过
+下面的 \mpkg{tcolorbox} 选项推进同一个 \mkey{theorem} 计数器：
+\begin{lstlisting}[language=TeX]
+before title={\refstepcounter{theorem}}
+\end{lstlisting}
+这会形成统一的“讲义对象编号流”。源码中也声明了 \mkey{definition} 和 \mkey{example}
+计数器，但当前盒子标题没有使用它们输出编号。
+\end{implementation}
+
+\section{答案模式}
+
+答案模式由 \mfile{maki-notes.cls} 解析选项，再由 \mfile{maki-notes.sty} 实现。
+
+\begin{interfaceblock}{答案接口}
+\item[\mopt{answers=false}] 默认值，不输出 \menv{solution} 内容。
+\item[\mopt{answers=true,solutions=inline}] 在原位置输出答案盒子。
+\item[\mopt{answers=true,solutions=appendix}] 登记答案，等 \mcmd{PrintSolutions} 统一输出。
+\item[\mopt{solutions=hidden}] 即使打开 \mopt{answers=true} 也隐藏答案。
+\end{interfaceblock}
+
+\begin{implementation}{收集式答案}
+\menv{solution} 使用 \mcmd{NewDocumentEnvironment} 的 \verb|+b| 参数捕获环境正文。
+附录模式下，正文不立即排版，而是存入
+\verb|\maki@solution@<n>@title| 和 \verb|\maki@solution@<n>@body|。调用
+\mcmd{PrintSolutions} 时再遍历输出。
+\end{implementation}
+
+\begin{implementation}{Beamer 兼容}
+\mcls{beamer} 自身已经定义过 \menv{solution} theorem。为了避免冲突，本模板的答案收集系统只在
+非 Beamer 模式启用。
+\end{implementation}
+
+\section{引用辅助命令}
+
+模板提供一组轻量中文引用包装：
+
+\begin{lstlisting}[language=TeX]
+\chapref{chap:intro}
+\secref{sec:setup}
+\thmref{thm:main}
+\figref{fig:diagram}
+\eqnref{eq:energy}
+\end{lstlisting}
+
+这些命令只是 \mcmd{ref}/\mcmd{eqref} 的稳定包装，不引入 \mpkg{cleveref}。好处是包依赖少、
+行为可预测；代价是不会自动识别 label 类型，用户需要选择对应命令。
+
+\section{Beamer 主题实现}
+
+\mfile{beamerthememaki.sty} 通过 Beamer 主题接口提供三套布局：
+
+\begin{longtable}{@{}p{0.22\linewidth}p{0.7\linewidth}@{}}
+\toprule
+布局 & 实现内容 \\
+\midrule
+\mopt{durham} & 默认布局。标题页右下角有主题色三角块，headline 显示横向章节导航，footline 显示页码与进度条。\\
+\mopt{minimal} & 减少装饰，使用细竖条和简化页眉页脚，适合内容密集型 slides。\\
+\mopt{splitbar} & 顶部分区明显，outline 页使用左侧色块，适合课程式结构。\\
+\bottomrule
+\end{longtable}
+
+布局选择使用 \mcmd{csname} 调度：
+
+\begin{lstlisting}[language=TeX]
+\setbeamertemplate{title page}{\csname MakiBeamerTitlePage@\MakiBeamerLayout\endcsname}
+\setbeamertemplate{headline}{\csname MakiBeamerHeadline@\MakiBeamerLayout\endcsname}
+\setbeamertemplate{footline}{\csname MakiBeamerFootline@\MakiBeamerLayout\endcsname}
+\end{lstlisting}
+
+\begin{implementation}{主题色复用}
+Beamer 主题不重新定义完整配色，而是读取共享层定义的 \mkey{LogicColor}、\mkey{ExColor}、
+\mkey{DefColor}、\mkey{MainText} 等语义色位。若用户单独加载主题，主题文件会提供最低限度的 fallback 色。
+\end{implementation}
+
+\section{构建、测试和发布}
+
+\mfile{Makefile} 维护常用构建入口：
+
+\begin{longtable}{@{}p{0.22\linewidth}p{0.7\linewidth}@{}}
+\toprule
+目标 & 说明 \\
+\midrule
+\mkey{make main} & 编译 \mfile{document2.tex}。\\
+\mkey{make example} & 编译 \mfile{example.tex}。\\
+\mkey{make beamer-demo} & 编译 \mfile{beamer-demo.tex}。\\
+\mkey{make tikz-templates} & 编译 \mfile{tikz-template-pages.tex}。\\
+\mkey{make smoke} & 编译最小打包测试文档。\\
+\mkey{make test} & 编译 smoke 和所有测试文档。\\
+\mkey{make all} & 编译主文档、示例、Beamer、TikZ 模板册和测试。\\
+\bottomrule
+\end{longtable}
+
+\noindent\mfile{.github/workflows/test.yml}
+在 push/PR 时编译 smoke 和测试文档。
+
+\noindent\mfile{.github/workflows/release.yml}
+在 tag push 时编译完整示例、打包源码并上传 release assets。
+
+\section{扩展指南}
+
+\subsection{新增主题}
+
+\begin{enumerate}
+\item 在 \mfile{maki-notes.sty} 中新增 \mcmd{makiapplytheme<name>}。
+\item 定义完整语义色位，不要只覆盖部分颜色。
+\item 在 README、template guide 和测试文档中登记取值。
+\item 用 \mfile{tests/test-tikz-styles.tex} 验证 TikZ 样式跟随主题变化。
+\end{enumerate}
+
+\subsection{新增讲义环境}
+
+\begin{enumerate}
+\item 先决定是否应使用共享 \mkey{theorem} 计数器。
+\item 在 \mcmd{tcbset} 中添加语义盒子样式，或复用现有 \mkey{maki workflow block}。
+\item 用 \mcmd{NewDocumentEnvironment} 或 \mcmd{newenvironment} 暴露用户接口。
+\item 新增测试文档或扩展现有测试文档。
+\end{enumerate}
+
+\subsection{新增 TikZ 样式族}
+
+\begin{enumerate}
+\item 按语义命名，例如 \mkey{flow process}、\mkey{graph edge strong}。
+\item 颜色引用语义色位，不直接绑定某个主题。
+\item 在 \mfile{tikz-template-pages.tex} 中加入可复制模板页。
+\item 在 \mfile{tests/test-tikz-styles.tex} 中加入最小覆盖图。
+\end{enumerate}
+
+\section{维护注意事项}
+
+\begin{itemize}
+\item 不要让 \mfile{.cls} 直接实现大量视觉逻辑；入口类应保持薄层。
+\item 新增公开选项时，先在类文件解析，再传给 \mfile{maki-notes.sty} 或主题层处理。
+\item 涉及 Beamer 的改动必须确认 \mcmd{ifMakiBeamerMode} 分支。
+\item 涉及浮动、caption、wrapfig、fancyhdr 的改动通常只适合 notes 模式。
+\item 新增计数器或索引时，应同步考虑 \mcmd{label}/\mcmd{ref} 行为和测试覆盖。
+\item 完成修改后至少运行 \verb|make -B test|；发布前运行 \verb|make -B all|。
+\end{itemize}
+
+\end{document}

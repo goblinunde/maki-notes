@@ -1,0 +1,551 @@
+\documentclass[a4paper,11pt]{ltxdoc}
+\usepackage[UTF8,scheme=plain]{ctex}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{hypdoc}
+
+\geometry{margin=2.55cm}
+\setlength{\emergencystretch}{3em}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!55!black,
+  urlcolor=blue!55!black,
+  citecolor=blue!55!black,
+  pdftitle={Maki Notes Implementation Manual},
+  pdfauthor={Maki Notes}
+}
+
+\definecolor{MakiBlue}{RGB}{42,91,142}
+\definecolor{MakiGray}{RGB}{246,247,249}
+\definecolor{MakiRule}{RGB}{210,216,224}
+
+\lstdefinestyle{maki-doc}{
+  basicstyle=\ttfamily\small,
+  columns=fullflexible,
+  keepspaces=true,
+  frame=single,
+  framerule=0.3pt,
+  rulecolor=\color{MakiRule},
+  backgroundcolor=\color{MakiGray},
+  breaklines=true,
+  tabsize=2
+}
+\lstset{style=maki-doc}
+
+\newcommand{\mfile}[1]{\texttt{#1}}
+\newcommand{\mcls}[1]{\textsf{#1}}
+\newcommand{\mpkg}[1]{\textsf{#1}}
+\newcommand{\mopt}[1]{\texttt{#1}}
+\newcommand{\menv}[1]{\texttt{#1}}
+\newcommand{\mcmd}[1]{\texttt{\textbackslash#1}}
+\newcommand{\mkey}[1]{\texttt{#1}}
+\newcommand{\Maki}{\textsf{Maki Notes}}
+
+\newenvironment{implementation}[1]
+  {\par\medskip\noindent\textbf{\color{MakiBlue}Implementation note: #1}\par\smallskip}
+  {\par\medskip}
+
+\newenvironment{interfaceblock}[1]
+  {\par\medskip\noindent\textbf{\color{MakiBlue}Interface: #1}\par\smallskip\begin{description}[leftmargin=3.2cm,style=nextline]}
+  {\end{description}\par\medskip}
+
+\title{\Maki{} Implementation Manual\\
+  \large A Functional Guide to the \mfile{.cls} and \mfile{.sty} Sources}
+\author{Maki Notes Project}
+\date{2026-04-18}
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\begin{abstract}
+This document is an implementation manual for maintainers. It explains how
+\mfile{maki-notes.cls}, \mfile{maki-beamer.cls}, \mfile{maki-notes.sty}, and
+\mfile{beamerthememaki.sty} work internally. The structure follows the style of
+professional CTAN package documentation: file map first, public interfaces next,
+then implementation notes grouped by function. It covers option parsing, mode
+detection, font and theme selection, metadata workflows, theorem-like boxes,
+solution modes, cross-reference helpers, TikZ semantic styles, Beamer templates,
+and build automation.
+\end{abstract}
+
+\section{Source File Architecture}
+
+\Maki{} is organized as two document-class entry points and two style layers.
+
+\begin{longtable}{@{}p{0.26\linewidth}p{0.68\linewidth}@{}}
+\toprule
+File & Responsibility \\
+\midrule
+\mfile{maki-notes.cls} &
+Book-style lecture-note entry point. It parses \mopt{fontpreset}, \mopt{theme},
+\mopt{answers}, and \mopt{solutions}; loads \mcls{ctexbook}; initializes cover
+macros; and loads \mfile{maki-notes.sty}.\\
+\mfile{maki-beamer.cls} &
+Presentation entry point. It parses \mopt{layout}, \mopt{plain}, \mopt{invert},
+and \mopt{accessibility}; loads \mcls{ctexbeamer}; and forwards theme options to
+\mfile{beamerthememaki.sty}.\\
+\mfile{maki-notes.sty} &
+Shared style implementation. It owns font presets, semantic themes, mathematical
+typography, course and research metadata, guide pages, tcolorbox environments,
+solution collection, reference helpers, wrap figures, margin notes, and
+TikZ/PGFPlots semantic styles.\\
+\mfile{beamerthememaki.sty} &
+Beamer theme implementation. It defines title pages, outline pages, headlines,
+footlines, progress bars, block colors, and three layout variants.\\
+\bottomrule
+\end{longtable}
+
+\begin{implementation}{Thin entry classes}
+The \mfile{.cls} files intentionally remain thin. They parse options, choose the
+base class, define a few top-level document commands, and then delegate visual
+and semantic behavior to the style layers. This keeps notes and slides aligned.
+\end{implementation}
+
+\section{Document Classes and Option Flow}
+
+\subsection{\mfile{maki-notes.cls}}
+
+The notes class uses \mpkg{kvoptions} to declare stable class options:
+
+\begin{lstlisting}[language=TeX]
+\DeclareStringOption[common]{fontpreset}
+\DeclareStringOption[default]{theme}
+\DeclareBoolOption[false]{answers}
+\DeclareStringOption[inline]{solutions}
+\DeclareDefaultOption{\PassOptionsToClass{\CurrentOption}{ctexbook}}
+\ProcessKeyvalOptions*
+\end{lstlisting}
+
+\begin{interfaceblock}{Notes class options}
+\item[\mopt{fontpreset}] One of \mopt{common}, \mopt{auto}, \mopt{windows}, \mopt{macos}, or \mopt{linux}.
+\item[\mopt{theme}] One of \mopt{default}, \mopt{ocean}, \mopt{forest}, \mopt{graphite}, \mopt{amber}, \mopt{berry}, \mopt{sandstone}, \mopt{cobalt}, \mopt{sage}, \mopt{ruby}, or \mopt{midnight}.
+\item[\mopt{answers}] Boolean switch controlling whether solution bodies are visible.
+\item[\mopt{solutions}] Output mode for solutions: \mopt{inline}, \mopt{appendix}, or \mopt{hidden}.
+\end{interfaceblock}
+
+After option processing, the class copies option values into macros consumed by
+\mfile{maki-notes.sty}:
+
+\begin{lstlisting}[language=TeX]
+\edef\MakiFontPreset{\maki@fontpreset}
+\edef\MakiTheme{\maki@theme}
+\ifmaki@answers
+  \MakiShowAnswerstrue
+\else
+  \MakiShowAnswersfalse
+\fi
+\edef\MakiSolutionsMode{\maki@solutions}
+\end{lstlisting}
+
+\subsection{\mfile{maki-beamer.cls}}
+
+The Beamer class mirrors the same pattern, but uses \mcls{ctexbeamer} as the base
+class and adds presentation-specific options. The selected layout and boolean
+theme flags are assembled into \mcmd{MakiBeamerThemeOptions}; the class then
+loads the theme by expanding that option list into \mcmd{usetheme}.
+
+\begin{lstlisting}[language=TeX]
+\expandafter\usetheme\expandafter[\MakiBeamerThemeOptions]{maki}
+\end{lstlisting}
+
+\begin{implementation}{Dynamic theme option forwarding}
+The option list is built incrementally because \mopt{layout}, \mopt{plain},
+\mopt{invert}, and \mopt{accessibility} are parsed at the class level but applied
+by the Beamer theme. Expanding the list before \mcmd{usetheme} keeps the user
+interface at the \mcmd{documentclass} level.
+\end{implementation}
+
+\section{Shared Style Mode Detection}
+
+\mfile{maki-notes.sty} begins by detecting whether it is running under Beamer:
+
+\begin{lstlisting}[language=TeX]
+\newif\ifMakiBeamerMode
+\MakiBeamerModefalse
+\@ifclassloaded{beamer}{\MakiBeamerModetrue}{}
+\@ifclassloaded{ctexbeamer}{\MakiBeamerModetrue}{}
+\end{lstlisting}
+
+This switch controls package loading and feature availability:
+
+\begin{itemize}
+\item Notes mode loads \mpkg{geometry}, \mpkg{fancyhdr}, \mpkg{caption}, \mpkg{wrapfig}, and \mpkg{marginnote}.
+\item Beamer mode skips book-specific page geometry, headers, captions, and marginalia.
+\item Shared mathematical environments, research blocks, and TikZ styles remain available.
+\end{itemize}
+
+\begin{implementation}{Compatibility boundary}
+The shared style is not intended to be a standalone generic package. It is a
+support layer for \mcls{maki-notes} and \mcls{maki-beamer}. The mode switch
+prevents conflicts between Beamer and book-oriented packages.
+\end{implementation}
+
+\section{Font Presets}
+
+Font setup has two layers: Latin fonts and CJK fonts.
+
+\subsection{Latin Fonts}
+
+\mcmd{makisetlatinfonts} prefers TeX Gyre Pagella for text, TeX Gyre Heros for
+sans serif, and Latin Modern Mono for monospaced text. These fonts are usually
+available in TeX Live installations, making the default path portable.
+
+\subsection{CJK Fonts}
+
+CJK presets are implemented by named dispatcher macros:
+
+\begin{longtable}{@{}p{0.38\linewidth}p{0.54\linewidth}@{}}
+\toprule
+Macro & Strategy \\
+\midrule
+\mcmd{makiapplyfontpresetcommon} & Uses Fandol fonts as the safest TeX Live fallback.\\
+\mcmd{makiapplyfontpresetwindows} & Detects \mopt{SimSun}, then chooses common Windows CJK fonts.\\
+\mcmd{makiapplyfontpresetmacos} & Detects \mopt{Songti SC}, then chooses common macOS CJK fonts.\\
+\mcmd{makiapplyfontpresetlinux} & Detects Noto or Source Han CJK fonts, otherwise falls back to \mopt{common}.\\
+\mcmd{makiapplyfontpresetauto} & Probes macOS, Windows, and Linux candidates in order, then falls back to \mopt{common}.\\
+\bottomrule
+\end{longtable}
+
+\begin{implementation}{Font probing}
+\mcmd{makipickfirstfont} receives a comma-separated list of candidate font names
+and stores the first available one in \mcmd{MakiPickedFont}. If no candidate is
+available, it stores a known fallback. Explicit but unavailable presets emit a
+\mcmd{PackageWarningNoLine} and fall back to \mopt{common}.
+\end{implementation}
+
+\section{Semantic Theme System}
+
+Themes are implemented by macros named \mcmd{makiapplytheme<name>}. Each theme
+defines the same semantic color slots:
+
+\begin{itemize}
+\item \mkey{LogicColor}/\mkey{LogicBg}: theorem, proof, and logical emphasis.
+\item \mkey{DefColor}/\mkey{DefBg}: definitions, axioms, and input/output blocks.
+\item \mkey{ExColor}/\mkey{ExBg}: examples, exercises, and primary flow nodes.
+\item \mkey{NoteColor}: notes, methods, and research ideas.
+\item \mkey{GeometryColor}/\mkey{GeometryBg} and \mkey{TopologyColor}/\mkey{TopologyBg}: geometry and topology diagrams.
+\item \mkey{NNInputColor}, \mkey{NNHiddenColor}, \mkey{NNOutputColor}, and \mkey{NNTensorColor}: neural-network diagrams.
+\item \mkey{MainText}: main body text color.
+\end{itemize}
+
+\begin{implementation}{Why semantic colors matter}
+Boxes, TikZ styles, and Beamer templates all consume semantic color slots rather
+than hard-coded palette values. A new theme only needs to define the slots and
+register its name in the documentation and tests.
+\end{implementation}
+
+\section{Mathematical Typography}
+
+\mfile{maki-notes.sty} applies lecture-note-oriented mathematical defaults:
+
+\begin{itemize}
+\item \mcmd{ge} and \mcmd{le} are mapped to \mcmd{geqslant} and \mcmd{leqslant}.
+\item \mcmd{lim}, \mcmd{int}, and \mcmd{sum} use display style by default.
+\item \mcmd{dfrac} adds invisible struts to improve vertical spacing.
+\item Matrix and cases environments use LaTeX hooks to increase line spread.
+\end{itemize}
+
+\begin{implementation}{Scope of the global math changes}
+These changes intentionally optimize lecture-note readability. If the project is
+ever split into a generic CTAN package, these global redefinitions should become
+optional.
+\end{implementation}
+
+\section{Course Metadata and Chapter Guides}
+
+\subsection{Key--Value Interface}
+
+Course, chapter, and guide metadata are parsed with \mpkg{pgfkeys}:
+
+\begin{lstlisting}[language=TeX]
+\SetCourseInfo{
+  course={Advanced Mathematics},
+  term={Spring 2026},
+  lecture={Lecture 3},
+  date={2026-04-13}
+}
+\end{lstlisting}
+
+\begin{longtable}{@{}p{0.3\linewidth}p{0.62\linewidth}@{}}
+\toprule
+Key family & Stored state \\
+\midrule
+\mkey{/maki/course} & Course, term, audience, instructor, lecture, and date.\\
+\mkey{/maki/chapter} & Pending chapter metadata, later bound to the next chapter.\\
+\mkey{/maki/guide} & Route, formulas, pitfalls, methods, and exam focus fields.\\
+\bottomrule
+\end{longtable}
+
+\subsection{Binding Chapter State}
+
+In notes mode, \mcmd{pretocmd} hooks into \mcmd{@chapter} and \mcmd{@schapter}:
+
+\begin{lstlisting}[language=TeX]
+\pretocmd{\@chapter}{\MakiBindPendingChapterInfo}{}{}
+\pretocmd{\@schapter}{\MakiBindPendingChapterInfo}{}{}
+\end{lstlisting}
+
+\mcmd{MakiBindPendingChapterInfo} copies pending fields into current chapter
+fields, resolves effective lecture/date values, and clears the pending state.
+This lets authors write \mcmd{SetChapterInfo} before a chapter without leaking
+metadata into later chapters.
+
+\subsection{Guide Page Generation}
+
+\mcmd{MakeChapterGuide} builds a chapter-opening guide page:
+
+\begin{itemize}
+\item The chapter title is captured through \mcmd{chaptermark}.
+\item Course information is read from \mcmd{SetCourseInfo}.
+\item Learning goals, route, formulas, methods, pitfalls, and exam focus are rendered with \menv{tcbraster}.
+\item Local navigation is generated with \mpkg{etoc} and \mcmd{localtableofcontents}.
+\end{itemize}
+
+\section{Research Notebook Layer}
+
+The research layer is parallel to the course layer. It provides project metadata,
+entry metadata, research guide cards, research objects, and simple indexes.
+
+\begin{interfaceblock}{Research interfaces}
+\item[\mcmd{SetResearchInfo}] Stores project, area, author, collaborators, status, creation date, update date, and tags.
+\item[\mcmd{SetEntryInfo}] Stores the current entry topic, source, source key, update date, tags, and objective.
+\item[\mcmd{MakeEntryGuide}] Prints the current research entry guide.
+\item[\mcmd{DeclareSymbol}] Registers a symbol and its explanation.
+\item[\mcmd{PrintSymbolIndex}] Prints all registered symbols.
+\item[\mcmd{PrintOpenProblemIndex}] Prints registered questions and conjectures.
+\end{interfaceblock}
+
+\begin{implementation}{Dynamic entry storage}
+Symbol and open-problem indexes use counters plus dynamic control sequence names.
+For example, the \(n\)-th symbol is stored in
+\verb|\maki@symbol@n@symbol| and \verb|\maki@symbol@n@desc|. Printing iterates
+from 1 to the current counter value with \mcmd{@whilenum}.
+\end{implementation}
+
+\section{Wrap Figures and Marginal Notes}
+
+In notes mode, the package loads \mpkg{wrapfig}, \mpkg{marginnote}, and
+\mpkg{ifoddpage}. It exposes a small public layer:
+
+\begin{interfaceblock}{Figure/text and margin-note interfaces}
+\item[\menv{leftfiguretext}] Wrap a figure on the left and text on the right.
+\item[\menv{rightfiguretext}] Wrap a figure on the right and text on the left.
+\item[\menv{figuretextleft}] Alias-style wrapper around \menv{leftfiguretext}.
+\item[\menv{figuretextright}] Alias-style wrapper around \menv{rightfiguretext}.
+\item[\mcmd{sidenote}] Untitled marginal note.
+\item[\mcmd{marginremark}] Marginal note with an optional title.
+\item[\mcmd{sidecaption}] Figure caption in the margin.
+\end{interfaceblock}
+
+\begin{implementation}{Outer-margin placement}
+\mcmd{maki@outernote} uses \mcmd{checkoddpage}. In two-sided documents it chooses
+right-side formatting on odd pages and left-side formatting on even pages; in
+one-sided documents it always uses the right-side format.
+\end{implementation}
+
+\section{TikZ and PGFPlots Semantic Styles}
+
+TikZ styles are grouped by meaning rather than by raw appearance.
+
+\begin{longtable}{@{}p{0.29\linewidth}p{0.63\linewidth}@{}}
+\toprule
+Style family & Use case \\
+\midrule
+\mkey{nn ...} & Neural-network neurons, tensors, convolution blocks, skip links, and attention edges.\\
+\mkey{transformer ...} & Tokens, attention blocks, FFNs, norms, residual flows, and memory nodes.\\
+\mkey{pinn ...}/\mkey{fpinn ...} & PINN/fPINN physics constraints, boundary/initial blocks, losses, and fractional operators.\\
+\mkey{math ...}/\mkey{geom ...} & Axes, curves, tangents, normals, geometric points, segments, and angle marks.\\
+\mkey{topo ...}/\mkey{manifold ...}/\mkey{sphere ...} & Fundamental domains, manifolds, local charts, tangent planes, and spheres.\\
+\mkey{fourier ...} & Time-domain signals, frequency-domain spectra, windows, transform arrows, and markers.\\
+\mkey{flow ...}/\mkey{timeline ...} & Flowcharts and timelines.\\
+\mkey{prob ...}/\mkey{graph ...} & Probability diagrams and graph structures.\\
+\bottomrule
+\end{longtable}
+
+\mcmd{MakiFitTikZ} measures its content in a savebox and only rescales it if the
+content is wider than the requested width:
+
+\begin{lstlisting}[language=TeX]
+\sbox{\MakiFitTikZBox}{#2}
+\ifdim\wd\MakiFitTikZBox>#1\relax
+  \resizebox{#1}{!}{\usebox{\MakiFitTikZBox}}
+\else
+  \usebox{\MakiFitTikZBox}
+\fi
+\end{lstlisting}
+
+This preserves the original size of small figures while preventing wide template
+figures from overflowing the page.
+
+\section{Box Environments and Counters}
+
+Most content blocks are implemented with \mpkg{tcolorbox}. The style hierarchy is:
+
+\begin{enumerate}
+\item \mkey{commonbox}: shared appearance for theorem, definition, example, and exercise boxes.
+\item \mkey{maki workflow card}/\mkey{maki workflow hero}: guide-card layouts.
+\item \mkey{maki workflow block}: reusable block style for formulas, methods, research objects, and solutions.
+\end{enumerate}
+
+\begin{interfaceblock}{Main environments}
+\item[\menv{theorem}, \menv{lemma}, \menv{proposition}, \menv{corollary}] Logical theorem-like blocks.
+\item[\menv{definition}, \menv{axiom}] Definition-like blocks.
+\item[\menv{example}, \menv{exercise}, \menv{realexam}] Example, exercise, and exam-problem blocks.
+\item[\menv{notation}, \menv{question}, \menv{conjecture}, \menv{claim}] Research objects.
+\item[\menv{keyformula}, \menv{pitfall}, \menv{methodnote}, \menv{examfocus}] Teaching workflow blocks.
+\item[\menv{remark}, \menv{proofsketch}, \menv{idea}, \menv{obstacle}, \menv{nextstep}] Research-process blocks.
+\end{interfaceblock}
+
+\begin{implementation}{Shared lecture-object numbering}
+Theorem, definition, example, and exercise boxes currently step the shared
+\mkey{theorem} counter through this \mpkg{tcolorbox} option:
+\begin{lstlisting}[language=TeX]
+before title={\refstepcounter{theorem}}
+\end{lstlisting}
+This creates a single lecture object sequence. The source also declares
+\mkey{definition} and \mkey{example} counters, but current box titles do not use
+those counters for output.
+\end{implementation}
+
+\section{Solution Modes}
+
+Solution behavior is parsed by \mfile{maki-notes.cls} and implemented by
+\mfile{maki-notes.sty}.
+
+\begin{interfaceblock}{Solution interface}
+\item[\mopt{answers=false}] Default mode. Solution bodies are not printed.
+\item[\mopt{answers=true,solutions=inline}] Solution boxes are printed in place.
+\item[\mopt{answers=true,solutions=appendix}] Solution bodies are collected and printed by \mcmd{PrintSolutions}.
+\item[\mopt{solutions=hidden}] Solutions are hidden even when \mopt{answers=true}.
+\end{interfaceblock}
+
+\begin{implementation}{Appendix-style solution collection}
+\menv{solution} uses the \verb|+b| argument type of \mcmd{NewDocumentEnvironment}
+to capture its full body. In appendix mode, the body is not typeset immediately;
+it is stored in dynamic commands such as
+\verb|\maki@solution@<n>@title| and \verb|\maki@solution@<n>@body|. Later,
+\mcmd{PrintSolutions} iterates through the registered entries.
+\end{implementation}
+
+\begin{implementation}{Beamer compatibility}
+Beamer already defines a theorem-like \menv{solution} environment. To avoid a
+name collision, Maki's solution collection layer is only enabled outside Beamer
+mode.
+\end{implementation}
+
+\section{Reference Helpers}
+
+The package exposes lightweight Chinese reference wrappers:
+
+\begin{lstlisting}[language=TeX]
+\chapref{chap:intro}
+\secref{sec:setup}
+\thmref{thm:main}
+\figref{fig:diagram}
+\eqnref{eq:energy}
+\end{lstlisting}
+
+These helpers are stable wrappers around \mcmd{ref} and \mcmd{eqref}; they do not
+load \mpkg{cleveref}. The benefit is low dependency risk and predictable output.
+The tradeoff is that the user chooses the correct reference command.
+
+\section{Beamer Theme Implementation}
+
+\mfile{beamerthememaki.sty} implements three layouts:
+
+\begin{longtable}{@{}p{0.22\linewidth}p{0.7\linewidth}@{}}
+\toprule
+Layout & Behavior \\
+\midrule
+\mopt{durham} & Default layout. Title page uses a theme-colored corner shape; headline shows horizontal section navigation; footline shows title and frame number with a progress bar.\\
+\mopt{minimal} & Reduced decoration, small header/footline, better for dense technical slides.\\
+\mopt{splitbar} & Stronger structural navigation, with a split color band and a distinctive outline page.\\
+\bottomrule
+\end{longtable}
+
+Layout-specific templates are dispatched with \mcmd{csname}:
+
+\begin{lstlisting}[language=TeX]
+\setbeamertemplate{title page}{\csname MakiBeamerTitlePage@\MakiBeamerLayout\endcsname}
+\setbeamertemplate{headline}{\csname MakiBeamerHeadline@\MakiBeamerLayout\endcsname}
+\setbeamertemplate{footline}{\csname MakiBeamerFootline@\MakiBeamerLayout\endcsname}
+\end{lstlisting}
+
+\begin{implementation}{Theme reuse}
+The Beamer theme consumes semantic colors such as \mkey{LogicColor},
+\mkey{ExColor}, \mkey{DefColor}, and \mkey{MainText} from the shared style layer.
+If the theme is loaded without that layer, it defines minimal fallback colors.
+\end{implementation}
+
+\section{Build, Test, and Release Automation}
+
+The \mfile{Makefile} provides the main local entry points:
+
+\begin{longtable}{@{}p{0.22\linewidth}p{0.7\linewidth}@{}}
+\toprule
+Target & Meaning \\
+\midrule
+\mkey{make main} & Build \mfile{document2.tex}.\\
+\mkey{make example} & Build \mfile{example.tex}.\\
+\mkey{make beamer-demo} & Build \mfile{beamer-demo.tex}.\\
+\mkey{make tikz-templates} & Build \mfile{tikz-template-pages.tex}.\\
+\mkey{make smoke} & Build the minimal packaging smoke document.\\
+\mkey{make test} & Build the smoke document and all test documents.\\
+\mkey{make all} & Build the main document, examples, Beamer demo, TikZ templates, and tests.\\
+\bottomrule
+\end{longtable}
+
+\noindent\mfile{.github/workflows/test.yml}
+builds smoke and test documents for push and pull request events.
+
+\noindent\mfile{.github/workflows/release.yml}
+builds the full example set, prepares release assets, and publishes tagged
+releases.
+
+\section{Extension Guidelines}
+
+\subsection{Adding a Theme}
+
+\begin{enumerate}
+\item Add \mcmd{makiapplytheme<name>} in \mfile{maki-notes.sty}.
+\item Define every semantic color slot, not only the colors that differ visibly.
+\item Register the new value in README, template guide, and tests.
+\item Use \mfile{tests/test-tikz-styles.tex} to verify that TikZ styles follow the theme.
+\end{enumerate}
+
+\subsection{Adding a Lecture Environment}
+
+\begin{enumerate}
+\item Decide whether the environment belongs to the shared \mkey{theorem} sequence.
+\item Add or reuse a \mpkg{tcolorbox} style.
+\item Expose the environment with \mcmd{NewDocumentEnvironment} or \mcmd{newenvironment}.
+\item Add or extend a test document.
+\end{enumerate}
+
+\subsection{Adding a TikZ Style Family}
+
+\begin{enumerate}
+\item Use semantic names such as \mkey{flow process} or \mkey{graph edge strong}.
+\item Reference semantic color slots instead of fixed palette values.
+\item Add a copyable example page to \mfile{tikz-template-pages.tex}.
+\item Add minimal coverage to \mfile{tests/test-tikz-styles.tex}.
+\end{enumerate}
+
+\section{Maintenance Notes}
+
+\begin{itemize}
+\item Keep the \mfile{.cls} files thin; large visual logic belongs in style files.
+\item Parse new public options in the relevant class, then pass resolved values to the style layer.
+\item Check \mcmd{ifMakiBeamerMode} whenever a feature might touch Beamer.
+\item Features involving floats, captions, wrap figures, marginalia, or page headers normally belong to notes mode only.
+\item New counters and indexes should define label/reference behavior and test coverage.
+\item Run \verb|make -B test| after interface changes; run \verb|make -B all| before release.
+\end{itemize}
+
+\end{document}
